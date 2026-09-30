@@ -528,21 +528,7 @@ tr:hover td {
 </head>
 <body>
 <div class="app">
-<nav class="nav-suite">
-  <a href="indicadores-capacitacion-ia.html" class="nav-tab active">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-    Formaciones IA
-  </a>
-  <a href="indicadores-iniciativas-ia.html" class="nav-tab">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-    Colaboradores en Iniciativas
-  </a>
-  <a href="indicadores-unificados-ia.html" class="nav-tab">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    Indicador Unificado (IA)
-  </a>
-  <a href="tablero-integral-ia.html" class="nav-tab" style="margin-left:auto; background:var(--g800); color:var(--white)" title="Vista consolidada completa para compartir"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M15 3v18"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>Suite Completa (Todo en Uno)</a>
-</nav>
+
 
 <div class="hdr">
   <h1>Capacitación en IA</h1>
@@ -603,17 +589,9 @@ tr:hover td {
   </div>
 </div>
 
-<div class="pop-section" style="margin-top: 20px">
-  <div class="pop-title">Cobertura de Capacitación vs Población Total</div>
-  <div class="pop-sub">Datos automÁticos de la pestaña "Colaboradores por compañía".</div>
-  <div class="pond-strip" id="pondEmpresa"></div>
-</div>
 
-<div class="pop-section" style="margin-top: 16px">
-  <div class="pop-title">Cobertura por Área y Empresa</div>
-  <div class="pop-sub">Porcentaje de colaboradores capacitados respecto al total del Área.</div>
-  <div id="pondAreaTable" style="overflow-x: auto; margin-top: 12px"></div>
-</div>
+
+
 
 </div>
 
@@ -973,14 +951,14 @@ function renderMetrics(f) {
     colabSub = Object.keys(empSet).length + ' empresas con registro';
   }
 
-  var subUF = '<div>Internas: ' + intCount + ' Únicas</div><div>Externas: ' + extCount + ' Únicas</div>';
+  var subUF = '<div>Internas: ' + intCount + '</div><div>Externas: ' + extCount + '</div>';
 
   document.getElementById('metrics').innerHTML =
     mc('Colaboradores Formados', colabVal, colabSub) +
-    mc('Formaciones Únicas', ufCount, subUF) +
-    mc('Horas de Formación', totalH.toLocaleString('es') + ' h', 'En formaciones Únicas') +
-    mc('Cursos Internos', intCount, intH.toLocaleString('es') + ' h Únicas') +
-    mc('Cursos Externos', extCount, extH.toLocaleString('es') + ' h Únicas') +
+    mc('Formaciones', ufCount, subUF) +
+    mc('Horas de Formación', totalH.toLocaleString('es') + ' h', 'En formaciones') +
+    mc('Cursos Internos', intCount, intH.toLocaleString('es') + ' h') +
+    mc('Cursos Externos', extCount, extH.toLocaleString('es') + ' h') +
     mc('Áreas con Formación', Object.keys(areaSet).length, 'Áreas activas');
 }
 
@@ -1031,7 +1009,7 @@ function renderStrips(f) {
 
   var sortedA = Object.entries(areaH).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 8);
   var maxAH = sortedA.length ? sortedA[0][1] : 1;
-  html += '<div class="strip"><div class="strip-title"><span>Horas por Área (Formaciones Únicas)</span><span class="strip-toggle" id="toggleAreaBtn" data-action="toggleAllAreaDetails">Ver detalle</span></div>';
+  html += '<div class="strip"><div class="strip-title"><span>Horas por Área</span><span class="strip-toggle" id="toggleAreaBtn" data-action="toggleAllAreaDetails">Ver detalle</span></div>';
   sortedA.forEach(function(item, idx) {
     var area = item[0], hours = item[1];
     var colabsInArea = areaColabs[area] ? Object.values(areaColabs[area]) : [];
@@ -1062,7 +1040,7 @@ function renderStrips(f) {
   });
   var sortedI = Object.entries(instG).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 8);
   var maxI = sortedI.length ? sortedI[0][1] : 1;
-  html += '<div class="strip"><div class="strip-title">Institutos (Formaciones Únicas)</div>';
+  html += '<div class="strip"><div class="strip-title">Institutos</div>';
   sortedI.forEach(function(item) {
     html += sr(item[0], (item[1] / maxI * 100), item[1]);
   });
@@ -1095,7 +1073,7 @@ function renderStrips(f) {
   });
   var sortedE = Object.entries(empG).sort(function(a, b) { return b[1].count - a[1].count; });
   var maxE = sortedE.length ? sortedE[0][1].count : 1;
-  html += '<div class="strip"><div class="strip-title"><span>Formaciones Únicas por Empresa</span><span class="strip-toggle" id="toggleEmpBtn" data-action="toggleAllEmpDetails">Ver detalle</span></div>';
+  html += '<div class="strip"><div class="strip-title"><span>Formaciones por Empresa</span><span class="strip-toggle" id="toggleEmpBtn" data-action="toggleAllEmpDetails">Ver detalle</span></div>';
   sortedE.forEach(function(item, idx) {
     var emp = item[0], data = item[1];
     html += '<div class="sr" style="cursor:pointer" data-action="toggleEmpDetail" data-arg="empDet' + idx + '"><span class="sr-label" title="' + emp + '">' + emp + '</span><div class="sr-bar"><div class="sr-fill" style="width:' + (data.count / maxE * 100) + '%"></div></div><span class="sr-val">' + data.count + '</span></div>';
@@ -1120,7 +1098,7 @@ function renderStrips(f) {
   });
   var sortedC = Object.entries(colG).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 8);
   var maxC = sortedC.length ? sortedC[0][1] : 1;
-  html += '<div class="strip"><div class="strip-title">MÁs Formaciones por Colaborador</div>';
+  html += '<div class="strip"><div class="strip-title">Más Formaciones por Colaborador</div>';
   sortedC.forEach(function(item) {
     html += sr(item[0], (item[1] / maxC * 100), item[1]);
   });
@@ -1359,3 +1337,4 @@ if (searchInput) searchInput.addEventListener('input', apply);
 </script>
 </body>
 </html>
+

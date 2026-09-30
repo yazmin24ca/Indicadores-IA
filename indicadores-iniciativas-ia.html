@@ -29,7 +29,7 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--g50); font-family: var(--font); color: var(--black); font-size: 14px; line-height: 1.5; }
-.app { max-width: 1260px; margin: 0 auto; padding: 24px; }
+.app { max-width: 1260px; margin: 0 auto; padding: 12px 24px 32px 24px; }
 
 /* NAV SUITE */
 .nav-suite {
@@ -459,21 +459,7 @@ tr:hover td { background: var(--g50); }
 <div class="app">
 
   <!-- SUITE NAVIGATION -->
-  <nav class="nav-suite">
-    <a href="indicadores-capacitacion-ia.html" class="nav-tab">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-      Formaciones IA
-    </a>
-    <a href="indicadores-iniciativas-ia.html" class="nav-tab active">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-      Colaboradores en Iniciativas
-    </a>
-    <a href="indicadores-unificados-ia.html" class="nav-tab">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      Indicador Unificado (IA)
-    </a>
-    <a href="tablero-integral-ia.html" class="nav-tab" style="margin-left:auto; background:var(--g800); color:var(--white)" title="Vista consolidada completa para compartir"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M15 3v18"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>Suite Completa (Todo en Uno)</a>
-</nav>
+  
 
   <!-- HEADER -->
   <div class="hdr">
@@ -506,14 +492,7 @@ tr:hover td { background: var(--g50); }
       <label>Área</label>
       <select id="fArea"><option value="">Todas</option></select>
     </div>
-    <div class="fg">
-      <label>Medición / periodo</label>
-      <select id="fMed">
-        <option value="">Todos</option>
-        <option value="Primer periodo">Primer periodo</option>
-        <option value="Segundo Periodo">Segundo Periodo</option>
-      </select>
-    </div>
+
     <div class="fg" style="flex:1; min-width:200px">
       <label>Búsqueda</label>
       <input type="text" id="fSearch" placeholder="Colaborador o Iniciativa...">
@@ -525,14 +504,14 @@ tr:hover td { background: var(--g50); }
   <div class="strips">
     <div class="strip">
       <div class="strip-title">
-        <span>Iniciativas únicas por empresa</span>
+        <span>Iniciativas por empresa</span>
         <span class="strip-hint">Haz clic para filtrar</span>
       </div>
       <div class="strip-list" id="stripEmpresas"></div>
     </div>
     <div class="strip">
       <div class="strip-title">
-        <span>Iniciativas únicas por área</span>
+        <span>Iniciativas por área</span>
         <span class="strip-hint">Haz clic para filtrar</span>
       </div>
       <div class="strip-list" id="stripAreas"></div>
@@ -551,7 +530,7 @@ tr:hover td { background: var(--g50); }
     <div class="rank-card">
       <h3>
         <span>Colaboradores mas Activos</span>
-        <span class="strip-hint">Mayor numero de iniciativas unicas</span>
+        <span class="strip-hint">Mayor numero de iniciativas</span>
       </h3>
       <div id="rankColaboradores"></div>
     </div>
@@ -561,7 +540,7 @@ tr:hover td { background: var(--g50); }
   <div class="tbl-wrap">
     <div class="tbl-head">
       <div>
-        <span class="tbl-head-title">Colaboradores en iniciativas (participantes únicos)</span>
+        <span class="tbl-head-title">Colaboradores en iniciativas </span>
         <span class="tbl-head-count" id="tblCount"></span>
       </div>
       <div class="tbl-actions">
@@ -611,8 +590,7 @@ var COLS = [
   { key: 'area', label: 'Area', w: '130px' },
   { key: 'colaborador', label: 'Colaborador', w: '170px' },
   { key: 'numIniciativas', label: 'Iniciativas', w: '95px' },
-  { key: 'iniciativas', label: 'Detalle de Iniciativas únicas', w: 'auto' },
-  { key: 'medicion', label: 'Periodo(s)', w: '130px' }
+  { key: 'iniciativas', label: 'Detalle de Iniciativas', w: 'auto' }
 ];
 
 /* ========== PARSE GVIZ RESPONSE ========== */
@@ -758,13 +736,11 @@ function populateFilters() {
 function apply() {
   var empVal = document.getElementById('fEmp').value;
   var areaVal = document.getElementById('fArea').value;
-  var medVal = document.getElementById('fMed').value;
   var searchVal = document.getElementById('fSearch').value.toLowerCase().trim();
 
   filteredData = DATA.filter(function(d) {
     if (empVal && d.empresa !== empVal) return false;
     if (areaVal && d.area !== areaVal) return false;
-    if (medVal && d.medicion !== medVal) return false;
     if (searchVal) {
       var matchCol = d.colaborador && d.colaborador.toLowerCase().indexOf(searchVal) !== -1;
       var matchIni = d.iniciativa && d.iniciativa.toLowerCase().indexOf(searchVal) !== -1;
@@ -804,31 +780,46 @@ function renderMetrics() {
   var p1Inis = Object.keys(p1IniSet).length;
   var p2Inis = Object.keys(p2IniSet).length;
 
+  // % calculations
+  var empFil = document.getElementById('fEmp').value;
+  var TOTAL_EMPRESAS = 6;
+  var TOTAL_INITS_META = empFil ? 50 : 300; // meta 50 por empresa, 300 total
+
+  // Censo de colaboradores por compañía
+  var COLABORADORES_POR_COMPANIA = {
+    'Febeca': 261,
+    'Beval': 98,
+    'Sillaca': 72,
+    'Cofersa': 91,
+    'Mundipartes': 59,
+    'Prisma': 160
+  };
+  var TOTAL_COLABORADORES_COMPANIAS = 741;
+  var totalColabsBase = empFil ? (COLABORADORES_POR_COMPANIA[empFil] || TOTAL_COLABORADORES_COMPANIAS) : TOTAL_COLABORADORES_COMPANIAS;
+  var pctColabsVal = totalColabsBase > 0 ? ((colabs / totalColabsBase) * 100).toFixed(1) : '0';
+  var pctInitsVal = TOTAL_INITS_META > 0 ? ((iniciativas / TOTAL_INITS_META) * 100).toFixed(0) : 0;
+  var pctEmpVal = ((empresas / TOTAL_EMPRESAS) * 100).toFixed(0);
+
   var html = '' +
     '<div class="m m-purple">' +
-      '<div class="m-label">Colaboradores únicos</div>' +
+      '<div class="m-label">Colaboradores</div>' +
       '<div class="m-val">' + colabs + '</div>' +
-      '<div class="m-sub">Talento participante</div>' +
+      '<div class="m-sub">' + pctColabsVal + '% de ' + totalColabsBase + (empFil ? ' en ' + empFil : ' colaboradores') + '</div>' +
     '</div>' +
     '<div class="m m-blue">' +
-      '<div class="m-label">Iniciativas únicas</div>' +
+      '<div class="m-label">Iniciativas</div>' +
       '<div class="m-val">' + iniciativas + '</div>' +
-      '<div class="m-sub">Proyectos de mejora / IA</div>' +
+      '<div class="m-sub">' + pctInitsVal + '% de meta (' + TOTAL_INITS_META + ' esperadas)</div>' +
     '</div>' +
     '<div class="m m-green">' +
-      '<div class="m-label">Empresas activas</div>' +
+      '<div class="m-label">Empresas</div>' +
       '<div class="m-val">' + empresas + '</div>' +
-      '<div class="m-sub">Empresas representadas</div>' +
+      '<div class="m-sub">' + pctEmpVal + '% — empresas con iniciativas</div>' +
     '</div>' +
     '<div class="m m-amber">' +
-      '<div class="m-label">Áreas involucradas</div>' +
+      '<div class="m-label">Areas involucradas</div>' +
       '<div class="m-val">' + areas + '</div>' +
-      '<div class="m-sub">Departamentos activos</div>' +
-    '</div>' +
-    '<div class="m">' +
-      '<div class="m-label">Medición (periodos)</div>' +
-      '<div class="m-val" style="font-size:20px; margin-top:6px;">' + p1Inis + ' <span style="font-size:12px; color:var(--g500); font-weight:normal">P1</span> / ' + p2Inis + ' <span style="font-size:12px; color:var(--g500); font-weight:normal">P2</span></div>' +
-      '<div class="m-sub">Iniciativas unicas por periodo</div>' +
+      '<div class="m-sub">Areas activas</div>' +
     '</div>';
 
   document.getElementById('metrics').innerHTML = html;
@@ -992,7 +983,7 @@ function renderRankings() {
           '<span class="rank-idx">' + (idx + 1) + '</span>' +
           '<div style="min-width:0; flex:1">' +
             '<div class="rank-name" title="' + escapeHtml(item.name) + '">' + escapeHtml(item.name) + '</div>' +
-            '<div class="rank-sub">' + escapeHtml(empStr) + ' &bull; ' + numColabs + ' colaborador(es) unicos</div>' +
+            '<div class="rank-sub">' + escapeHtml(empStr) + ' &bull; ' + numColabs + ' colaborador(es)</div>' +
           '</div>' +
         '</div>' +
         '<span class="rank-pill">' + numColabs + ' pers.</span>' +
@@ -1099,10 +1090,7 @@ function renderTable() {
   var bodyHtml = '';
   for (var i = 0; i < list.length; i++) {
     var row = list[i];
-    var medBadges = row.medicionesList.map(function(m) {
-      var tagClass = m === 'Segundo Periodo' ? 'tag-p2' : 'tag-p1';
-      return '<span class="tag ' + tagClass + '" style="margin-right:4px;">' + escapeHtml(m) + '</span>';
-    }).join('');
+    var medBadges = "";
 
     var iniListHtml = '';
     if (row.iniciativas.length === 1) {
@@ -1121,8 +1109,7 @@ function renderTable() {
       '<td><strong style="cursor:pointer; color:var(--g900);" onclick="showColabByName(\'' + row.colaborador.replace(/'/g, "\\'") + '\')" title="Ver detalle">' + escapeHtml(row.colaborador) + '</strong></td>' +
       '<td><span class="rank-pill" style="background:var(--purple-bg); color:var(--purple); font-weight:700;">' + row.numIniciativas + ' inic.</span></td>' +
       '<td>' + iniListHtml + '</td>' +
-      '<td>' + medBadges + '</td>' +
-    '</tr>';
+      '</tr>';
   }
 
   if (list.length === 0) {
@@ -1131,7 +1118,7 @@ function renderTable() {
 
   var totalUniqueInis = Object.keys(allInis).length;
   document.getElementById('tblBody').innerHTML = bodyHtml;
-  document.getElementById('tblCount').textContent = list.length + ' colaboradores unicos (' + totalUniqueInis + ' iniciativas unicas)';
+  document.getElementById('tblCount').textContent = list.length + ' colaboradores (' + totalUniqueInis + ' iniciativas)';
 }
 
 function toggleSort(colKey) {
@@ -1168,14 +1155,13 @@ function showInitiativeByIndex(idx) {
 
   var html = '<p><strong>Empresa(s):</strong> ' + escapeHtml(emps) + '</p>' +
              '<p><strong>Area(s):</strong> ' + escapeHtml(areas) + '</p>' +
-             '<p style="margin-top:12px"><strong>Equipo participante (' + colabList.length + ' colaboradores unicos):</strong></p>' +
+             '<p style="margin-top:12px"><strong>Equipo participante (' + colabList.length + ' colaboradores):</strong></p>' +
              '<div class="modal-list">';
   colabList.forEach(function(m) {
     var meds = Object.keys(m.mediciones).join(', ');
     html += '<div class="modal-list-item">' +
               '<div><strong>' + escapeHtml(m.name) + '</strong> <span style="font-size:11px; color:var(--g500)">(' + escapeHtml(m.area) + ')</span></div>' +
-              '<span style="font-size:11px; color:var(--g600); font-weight:600">' + escapeHtml(meds) + '</span>' +
-            '</div>';
+              '</div>';
   });
   html += '</div>';
   document.getElementById('modalBody').innerHTML = html;
@@ -1192,7 +1178,7 @@ function showColabByIndex(idx) {
   var iniList = Object.keys(item.iniciativas).sort();
 
   var html = '<p><strong>Empresa:</strong> ' + escapeHtml(emps) + ' &bull; <strong>Area:</strong> ' + escapeHtml(areas) + '</p>' +
-             '<p style="margin-top:12px"><strong>Iniciativas unicas en las que participa (' + iniList.length + '):</strong></p>' +
+             '<p style="margin-top:12px"><strong>Iniciativas en las que participa (' + iniList.length + '):</strong></p>' +
              '<div class="modal-list">';
   iniList.forEach(function(ini) {
     html += '<div class="modal-list-item"><span>&bull; ' + escapeHtml(ini) + '</span></div>';
@@ -1216,7 +1202,7 @@ function showColabByName(colabName) {
   var iniList = Object.keys(inis).sort();
   document.getElementById('modalTitle').textContent = colabName;
   var html = '<p><strong>Empresa:</strong> ' + escapeHtml(Object.keys(emps).join(', ')) + ' &bull; <strong>Area:</strong> ' + escapeHtml(Object.keys(areas).join(', ')) + '</p>' +
-             '<p style="margin-top:12px"><strong>Iniciativas unicas en las que participa (' + iniList.length + '):</strong></p>' +
+             '<p style="margin-top:12px"><strong>Iniciativas en las que participa (' + iniList.length + '):</strong></p>' +
              '<div class="modal-list">';
   iniList.forEach(function(ini) {
     html += '<div class="modal-list-item"><span>&bull; ' + escapeHtml(ini) + '</span></div>';
@@ -1235,7 +1221,7 @@ document.getElementById('modalOverlay').onclick = function(e) {
 
 /* ========== EXPORT CSV ========== */
 document.getElementById('exportBtn').onclick = function() {
-  var csv = '\uFEFF"Empresa","Area","Colaborador","Num_Iniciativas","Iniciativas_Unicas","Periodos"\r\n';
+  var csv = '\uFEFF"Empresa","Area","Colaborador","Num_Iniciativas","Iniciativas","Periodos"\r\n';
   
   // Aggregate current filteredData
   var colabGroup = {};
@@ -1274,7 +1260,7 @@ document.getElementById('exportBtn').onclick = function() {
   var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   var link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = 'colaboradores_iniciativas_unicas_' + new Date().toISOString().slice(0,10) + '.csv';
+  link.download = 'colaboradores_iniciativas_' + new Date().toISOString().slice(0,10) + '.csv';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -1283,12 +1269,10 @@ document.getElementById('exportBtn').onclick = function() {
 /* ========== EVENT LISTENERS ========== */
 document.getElementById('fEmp').onchange = apply;
 document.getElementById('fArea').onchange = apply;
-document.getElementById('fMed').onchange = apply;
 document.getElementById('fSearch').oninput = apply;
 document.getElementById('clearBtn').onclick = function() {
   document.getElementById('fEmp').value = '';
   document.getElementById('fArea').value = '';
-  document.getElementById('fMed').value = '';
   document.getElementById('fSearch').value = '';
   apply();
 };
@@ -1307,3 +1291,4 @@ window.onload = function() {
 </script>
 </body>
 </html>
+

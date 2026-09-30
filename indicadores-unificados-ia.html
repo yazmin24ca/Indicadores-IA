@@ -29,7 +29,7 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--g50); font-family: var(--font); color: var(--black); font-size: 14px; line-height: 1.5; }
-.app { max-width: 1260px; margin: 0 auto; padding: 24px; }
+.app { max-width: 1260px; margin: 0 auto; padding: 12px 24px 32px 24px; }
 
 /* NAV SUITE */
 .nav-suite {
@@ -375,21 +375,7 @@ tr:hover td { background: var(--g50); }
 <div class="app">
 
   <!-- SUITE NAVIGATION -->
-  <nav class="nav-suite">
-    <a href="indicadores-capacitacion-ia.html" class="nav-tab">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-      Formaciones IA
-    </a>
-    <a href="indicadores-iniciativas-ia.html" class="nav-tab">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-      Colaboradores en Iniciativas
-    </a>
-    <a href="indicadores-unificados-ia.html" class="nav-tab active">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      Indicador Unificado (IA)
-    </a>
-    <a href="tablero-integral-ia.html" class="nav-tab" style="margin-left:auto; background:var(--g800); color:var(--white)" title="Vista consolidada completa para compartir"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M15 3v18"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>Suite Completa (Todo en Uno)</a>
-</nav>
+  
 
   <!-- HEADER -->
   <div class="hdr">
@@ -472,7 +458,7 @@ tr:hover td { background: var(--g50); }
   <div class="tbl-wrap">
     <div class="tbl-head">
       <div>
-        <span class="tbl-head-title">Padron Unificado de Colaboradores</span>
+        <span class="tbl-head-title">Participaciones por Colaborador</span>
         <span class="tbl-head-count" id="tblCount"></span>
       </div>
       <div class="tbl-actions">
@@ -915,7 +901,7 @@ function renderSummaryBar() {
     if (d.capacitaciones > 0) capUnicas.add(d.colaborador);
   });
 
-  // ---- Iniciativas unicas desde INICIATIVAS_DATA ("Colaboradores en iniciativas" - GID 433982814) ----
+  // ---- Iniciativas  desde INICIATIVAS_DATA ("Colaboradores en iniciativas" - GID 433982814) ----
   var iniUniqSet = new Set();
   var iniciativasSource = (INICIATIVAS_DATA && INICIATIVAS_DATA.length > 0) ? INICIATIVAS_DATA : INIT_INICIATIVAS_DATA;
 
@@ -931,7 +917,7 @@ function renderSummaryBar() {
 
   var pctAvanzando = ((conIA / totalEmpresaBase) * 100).toFixed(1);
 
-  // ---- Capacitaciones unicas desde FORMACIONES_DATA (Hoja 1) ----
+  // ---- Capacitaciones  desde FORMACIONES_DATA (Hoja 1) ----
   var capUniqTotalSet = new Set();
   var capUniqIntSet   = new Set();
   var capUniqExtSet   = new Set();
@@ -996,9 +982,16 @@ function renderMatrix() {
     item.total++;
     item.sumMej += d.mejoras;
     item.sumCap += d.capacitaciones;
-    if (d.capacitaciones > 0) item.conCap++;
-    if (d.mejoras > 0) item.conMej++;
-    if (d.capacitaciones > 0 && d.mejoras > 0) item.conAmbos++;
+    // Mutually exclusive counts: conAmbos = ambas, conCap = SOLO formacion, conMej = SOLO iniciativa
+    var tieneCap = d.capacitaciones > 0;
+    var tieneMej = d.mejoras > 0;
+    if (tieneCap && tieneMej) {
+      item.conAmbos++;           // Con Capacitaciones E Iniciativas
+    } else if (tieneCap) {
+      item.conCap++;             // Solo formacion (sin ninguna iniciativa)
+    } else if (tieneMej) {
+      item.conMej++;             // Solo iniciativa (sin ninguna formacion)
+    }
   });
 
   var sortedEmp = Object.keys(empMap).sort();
@@ -1014,8 +1007,8 @@ function renderMatrix() {
     tMej += item.conMej;
     tAmb += item.conAmbos;
 
-    // % en IA = quienes tienen al menos formacion O iniciativa / censo total de colaboradores de la compania
-    var conAlgoEmp = item.conCap + item.conMej - item.conAmbos; // union
+    // % en IA = suma de las 3 categorias excluyentes / censo total de la compania
+    var conAlgoEmp = item.conCap + item.conMej + item.conAmbos;
     var totalCensoEmp = COLABORADORES_POR_COMPANIA[emp] || item.total;
     var pctEnIAEmp = ((conAlgoEmp / totalCensoEmp) * 100).toFixed(1);
     var isSel = emp === curEmp;
@@ -1040,8 +1033,8 @@ function renderMatrix() {
     '</tr>';
   });
 
-  // Total footer row
-  var tConAlgo = tCap + tMej - tAmb; // union: quienes tienen al menos uno
+  // Total footer row: suma de las 3 categorias excluyentes
+  var tConAlgo = tCap + tMej + tAmb;
   var tPctEnIA = TOTAL_COLABORADORES_COMPANIAS > 0 ? ((tConAlgo / TOTAL_COLABORADORES_COMPANIAS) * 100).toFixed(1) : '0.0';
   bodyHtml += '<tr style="border-top:2px solid var(--black); font-weight:700; background:var(--g100)">' +
     '<td>Total</td>' +
@@ -1223,3 +1216,4 @@ window.onload = function() {
 </script>
 </body>
 </html>
+
