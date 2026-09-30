@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indicadores de Capacitación en IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --white: #fff;
+  --g50: #f9fafb;
+  --g100: #eee;
+  --g200: #e2e2e2;
+  --g300: #c6c6c6;
+  --g400: #a8a8a8;
+  --g500: #8a8a8a;
+  --g600: #666;
+  --g700: #4a4a4a;
+  --g800: #2b2b2b;
+  --g900: #111;
+  --black: #000;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --r: 8px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.10);
+  --fast: 150ms ease;
+}
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: var(--g50);
+  font-family: var(--font);
+  color: var(--black);
+  font-size: 13.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+.hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.hdr h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--black);
+}
+.hdr-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--g300);
+  color: var(--black);
+  font-size: 11px;
+  font-weight: 600;
+}
+.btn {
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: var(--r);
+  border: 1px solid var(--g300);
+  cursor: pointer;
+  background: var(--white);
+  color: var(--black);
+  transition: all var(--fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover {
+  border-color: var(--black);
+}
+.btn:active {
+  opacity: 0.7;
+}
+.btn-fill {
+  background: var(--g800);
+  color: var(--white);
+  border-color: transparent;
+}
+.btn-fill:hover {
+  background: var(--black);
+  color: var(--white);
+}
+.ts {
+  font-size: 11px;
+  color: var(--g500);
+  margin-top: 2px;
+  text-align: right;
+}
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.fg {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fg label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.04em;
+  color: var(--g600);
+}
+.fg select, .fg input {
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 7px 11px;
+  border-radius: var(--r);
+  border: 1px solid var(--g300);
+  background: var(--white);
+  color: var(--black);
+  min-width: 140px;
+  transition: border-color var(--fast);
+}
+.fg select:focus, .fg input:focus {
+  outline: 2px solid var(--g400);
+  outline-offset: 1px;
+  border-color: var(--g400);
+}
+.clear-btn {
+  font-size: 12px;
+  color: var(--g600);
+  cursor: pointer;
+  text-decoration: underline;
+  align-self: flex-end;
+  padding-bottom: 8px;
+}
+.clear-btn:hover {
+  color: var(--black);
+}
+.metrics {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.m {
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+  min-width: 140px;
+  flex: 1;
+}
+.m-label {
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0.04em;
+  color: var(--g500);
+  font-weight: 600;
+}
+.m-val {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--black);
+  line-height: 1.15;
+  margin-top: 3px;
+}
+.m-sub {
+  font-size: 11px;
+  color: var(--g600);
+  margin-top: 3px;
+  line-height: 1.35;
+}
+.strips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.strip {
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+}
+.strip-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.strip-toggle {
+  font-size: 11.5px;
+  color: var(--g500);
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 500;
+}
+.strip-toggle:hover {
+  color: var(--black);
+}
+.sr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+}
+.sr-label {
+  min-width: 110px;
+  color: var(--g700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+.sr-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--g100);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.sr-fill {
+  height: 100%;
+  background: var(--g700);
+  border-radius: 999px;
+}
+.sr-val {
+  font-weight: 700;
+  min-width: 32px;
+  text-align: right;
+  font-size: 12px;
+}
+.emp-detail, .area-detail {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: var(--g50);
+  border-radius: var(--r);
+  font-size: 12px;
+  display: none;
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid var(--g200);
+}
+.emp-detail.open, .area-detail.open {
+  display: block;
+}
+.emp-detail-title {
+  font-weight: 600;
+  color: var(--g700);
+  margin-bottom: 6px;
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+.emp-form-item {
+  padding: 4px 0;
+  color: var(--g700);
+  border-bottom: 1px solid var(--g200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.emp-form-item:last-child {
+  border-bottom: none;
+}
+.emp-form-name {
+  flex: 1;
+}
+.emp-form-h {
+  color: var(--g500);
+  font-size: 11px;
+  min-width: 50px;
+  text-align: right;
+}
+.emp-form-tipo {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 6px;
+  font-weight: 600;
+}
+.tipo-int {
+  background: var(--g200);
+  color: var(--g700);
+}
+.tipo-ext {
+  background: var(--g700);
+  color: var(--white);
+}
+.tbl-wrap {
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.tbl-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--g200);
+}
+.tbl-head-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+}
+.tbl-head-count {
+  font-size: 12px;
+  color: var(--g500);
+}
+.tbl-scroll {
+  overflow-x: auto;
+  max-height: 480px;
+  overflow-y: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  text-align: left;
+  font-size: 11.5px;
+  text-transform: none;
+  letter-spacing: 0.04em;
+  color: var(--g600);
+  font-weight: 600;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--g300);
+  background: var(--g50);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+th:hover {
+  color: var(--black);
+}
+th .arrow {
+  font-size: 10px;
+  margin-left: 3px;
+  opacity: 0.4;
+}
+th.sorted .arrow {
+  opacity: 1;
+}
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--g200);
+  color: var(--black);
+  vertical-align: top;
+}
+tr:hover td {
+  background: var(--g50);
+}
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--r);
+  font-size: 11px;
+  font-weight: 600;
+}
+.tag-i {
+  border: 1px solid var(--g300);
+  color: var(--g600);
+  background: var(--white);
+}
+.tag-e {
+  background: var(--g700);
+  color: var(--white);
+}
+.tag-a {
+  border: 1px solid var(--black);
+  color: var(--black);
+  background: var(--white);
+}
+.pop-section {
+  margin-top: 20px;
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.pop-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  margin-bottom: 3px;
+  color: var(--black);
+}
+.pop-sub {
+  font-size: 12px;
+  color: var(--g500);
+  margin-bottom: 12px;
+}
+.pond-strip {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.pond-card {
+  background: var(--g50);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  padding: 12px 16px;
+  flex: 1;
+  min-width: 140px;
+}
+.pond-lbl {
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0.04em;
+  color: var(--g500);
+  font-weight: 600;
+}
+.pond-pct {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--black);
+  line-height: 1.15;
+  margin: 3px 0;
+}
+.pond-det {
+  font-size: 11px;
+  color: var(--g500);
+}
+.pond-bar {
+  height: 5px;
+  background: var(--g200);
+  border-radius: 999px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+.pond-fill {
+  height: 100%;
+  background: var(--g700);
+  border-radius: 999px;
+}
+.status-msg {
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: var(--r);
+  margin-bottom: 12px;
+  display: none;
+}
+.status-ok {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid rgba(56, 142, 60, 0.3);
+  display: block;
+}
+.status-err {
+  background: #fce4ec;
+  color: #c62828;
+  border: 1px solid rgba(198, 40, 40, 0.3);
+  display: block;
+}
+.nav-suite {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 4px;
+  background: var(--g200);
+  border-radius: calc(var(--r) + 2px);
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--r);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--g600);
+  transition: all var(--fast);
+  white-space: nowrap;
+}
+.nav-tab:hover {
+  color: var(--black);
+  background: rgba(255, 255, 255, 0.6);
+}
+.nav-tab.active {
+  background: var(--white);
+  color: var(--black);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.nav-tab svg {
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .strips { grid-template-columns: 1fr; }
+  .metrics { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav-suite">
+  <a href="indicadores-capacitacion-ia.html" class="nav-tab active">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+    Formaciones IA
+  </a>
+  <a href="indicadores-iniciativas-ia.html" class="nav-tab">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+    Colaboradores en Iniciativas
+  </a>
+  <a href="indicadores-unificados-ia.html" class="nav-tab">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Indicador Unificado (IA)
+  </a>
+  <a href="tablero-integral-ia.html" class="nav-tab" style="margin-left:auto; background:var(--g800); color:var(--white)" title="Vista consolidada completa para compartir"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M15 3v18"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>Suite Completa (Todo en Uno)</a>
+</nav>
+
+<div class="hdr">
+  <h1>Capacitación en IA</h1>
+  <div class="hdr-right">
+    <span class="badge">Activo</span>
+    <button class="btn btn-fill" id="refreshBtn" data-action="doRefresh">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+      Actualizar
+    </button>
+    <div class="ts" id="ts">Cargando...</div>
+  </div>
+</div>
+
+<div id="statusMsg" class="status-msg"></div>
+
+<div class="filters">
+  <div class="fg">
+    <label>Empresa</label>
+    <select id="fEmp"><option value="">Todas</option></select>
+  </div>
+  <div class="fg">
+    <label>Área</label>
+    <select id="fArea"><option value="">Todas</option></select>
+  </div>
+  <div class="fg">
+    <label>Tipo</label>
+    <select id="fTipo">
+      <option value="">Todos</option>
+      <option value="Interno">Interno</option>
+      <option value="Externo">Externo</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Instituto</label>
+    <select id="fInst"><option value="">Todos</option></select>
+  </div>
+  <div class="fg">
+    <label>Buscar</label>
+    <input type="text" id="fSearch" placeholder="Nombre o formación..." style="min-width: 170px">
+  </div>
+  <span class="clear-btn" data-action="clearFilters">Limpiar filtros</span>
+</div>
+
+<div class="metrics" id="metrics"></div>
+
+<div class="strips" id="strips"></div>
+
+<div class="tbl-wrap">
+  <div class="tbl-head">
+    <span class="tbl-head-title">Detalle de Formaciones</span>
+    <span class="tbl-head-count" id="tblCount"></span>
+  </div>
+  <div class="tbl-scroll">
+    <table>
+      <thead><tr id="tblHead"></tr></thead>
+      <tbody id="tblBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="pop-section" style="margin-top: 20px">
+  <div class="pop-title">Cobertura de Capacitación vs Población Total</div>
+  <div class="pop-sub">Datos automÁticos de la pestaña "Colaboradores por compañía".</div>
+  <div class="pond-strip" id="pondEmpresa"></div>
+</div>
+
+<div class="pop-section" style="margin-top: 16px">
+  <div class="pop-title">Cobertura por Área y Empresa</div>
+  <div class="pop-sub">Porcentaje de colaboradores capacitados respecto al total del Área.</div>
+  <div id="pondAreaTable" style="overflow-x: auto; margin-top: 12px"></div>
+</div>
+
+</div>
+
+<script>
+var SHEET_ID = '1jbN1XJMuHLC0czCH3XX6Zo6RXDQc1QUVXMLRPTmL8Pw';
+var INIT_DATA = [{"nombre":"Edgar Martinez","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Compras"},{"nombre":"Jade Varela","duracion":"1 horas","empresa":"Beval","tipo":"Externo","formacion":"Prompts ChatGPT","instituto":"Youtube","area":"Compras"},{"nombre":"Jade Varela","duracion":"2 horas","empresa":"Beval","tipo":"Externo","formacion":"Claude","instituto":"Youtube","area":"Compras"},{"nombre":"Natasha Briceño","duracion":"1 horas","empresa":"Beval","tipo":"Externo","formacion":"Specialized AI Agents with Amazon Quick","instituto":"Youtube","area":"Compras"},{"nombre":"Ramon Manzol","duracion":"1 horas","empresa":"Beval","tipo":"Externo","formacion":"Prompts ChatGPT","instituto":"Youtube","area":"Compras"},{"nombre":"Ramon Manzol","duracion":"2 horas","empresa":"Beval","tipo":"Externo","formacion":"Claude","instituto":"Youtube","area":"Compras"},{"nombre":"Alejandra Lopez","duracion":"1 horas","empresa":"Beval","tipo":"Externo","formacion":"Prompts ChatGPT","instituto":"Youtube","area":"Compras"},{"nombre":"Alejandra Lopez","duracion":"2 horas","empresa":"Beval","tipo":"Externo","formacion":"Claude","instituto":"Youtube","area":"Compras"},{"nombre":"Natasha Briceño","duracion":"1 horas","empresa":"Beval","tipo":"Externo","formacion":"Specialized AI Agents with Amazon Quick","instituto":"Youtube","area":"Compras"},{"nombre":"Natasha Briceño","duracion":"6 horas","empresa":"Beval","tipo":"Externo","formacion":"Curso Google Apps Script: Acceso e interfaz","instituto":"Youtube","area":"Compras"},{"nombre":"Natasha Briceño","duracion":"1 horas","empresa":"Beval","tipo":"Externo","formacion":"Prompts ChatGPT","instituto":"Youtube","area":"Compras"},{"nombre":"Natasha Briceño","duracion":"2 horas","empresa":"Beval","tipo":"Externo","formacion":"Claude","instituto":"Youtube","area":"Compras"},{"nombre":"Fabiola Bonifacio","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Compras"},{"nombre":"José Seijas","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Gerencia"},{"nombre":"Brayan Veliz","duracion":"46 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Charles Hernández","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Christian Flores","duracion":"46 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Edgar Graterol","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Frank Pérez","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Franyexon Mosquera","duracion":"46 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Jesús Gil","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Juan Cardenas","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Juan Jiménez","duracion":"46 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Juan Jiménez","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Kenny Hernández","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Oneida Sanchez","duracion":"46 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Orianny Villanueva","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Pablo Montaño","duracion":"31 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Renny Noguera","duracion":"46 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Willmer Márquez","duracion":"46 horas","empresa":"Beval","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Alejandro Jimenez","duracion":"40 horas","empresa":"Cofersa","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Compras"},{"nombre":"Freddy Alvarado","duracion":"40 horas","empresa":"Cofersa","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Compras"},{"nombre":"Viviana Arce","duracion":"40 horas","empresa":"Cofersa","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Compras"},{"nombre":"Jorge Figeac","duracion":"40 horas","empresa":"Cofersa","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Control"},{"nombre":"Raul Orellana","duracion":"40 horas","empresa":"Cofersa","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Control"},{"nombre":"Esteban Araya","duracion":"40 horas","empresa":"Cofersa","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Pablo Jimenez","duracion":"40 horas","empresa":"Cofersa","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Pamela Sandoval","duracion":"40 horas","empresa":"Cofersa","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Pamela Sandoval","duracion":"40 horas","empresa":"Cofersa","tipo":"Externo","formacion":"Introducción a la IA","instituto":"Universidad de Costa Rica","area":"Ventas"},{"nombre":"Victor Moreno","duracion":"40 horas","empresa":"Cofersa","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Wilfredo Lopez","duracion":"40 horas","empresa":"Cofersa","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Abreu Jesus","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Acosta Ronad","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Aguilar Robert","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Alejandro Sierra","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Andrés Aguilera","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Carrillo Luis","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Carvallo Jesus","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Castillo Jesus","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Cermeño Jose","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Diaz Javier","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Diaz Pablo","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Fernandez Leonardo","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Freites Maria","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Gamez Baudilio","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Garcia Elier","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Gonzalez Asdrubal","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Guerra Silverio","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Jean Castillos","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Jesús Jiménez","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Jimenez Oswaldo","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"José Pérez","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Leal Erick","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Lopez Leonardo","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Lozada Heber","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Martínez Gabriel","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Mejicano Luis","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Melendez Yonaickel","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Mendez Luis","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Mijares Yolanis","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Milano Alexander","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Morellis Andrés","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Moreno Gregory","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Moreno Jose","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Nieves Gabriel","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Ojeda Miguel","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Orocua José","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Ortega Orlando","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Ortega Sebastián","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Ospino Jacnnier","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Oviedo Jose","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Pacheco Eduardo","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Paez Anyelis","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Palencia Jose","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Pereira Leandro","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Perez Marcos","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Jhons Piñero","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Pugliese Jesus","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Ramirez Juan","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Ramones Cristian","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Ramos Ricardo","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Romero Robert","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Logistica"},{"nombre":"Alejandro Prieto","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Alexander Castillo","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Anand Panday","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Anand Panday","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Anarella Montilla","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Arismar Escalona","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Bernando Duque","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Carlos Dos Santos","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Carlos Guanipa","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Carlos Lagares","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Daniel Almeira","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Daniel Almeira","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Diego Pereda","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Donys Vera","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Edison Carrillo","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Eliabel Aguirre","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Elías Jiménez","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Emerita Ferrer","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Eyber Melendez","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Franny Indriago","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Geraldine Castellano","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Gilberto Mata","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Gustavo Pacheco","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Héctor Fernández","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Henry Yepez","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Humberto Carrizo","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Jean Rojas","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Jesús Aponte","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Jesús Muñoz","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Joel Sanoja","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"José Estrella","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"José Natera","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"José Rincón","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Juan Giménez","duracion":"6 horas","empresa":"Febeca","tipo":"Interno","formacion":"Mejora Continua para Colaboradores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Juliane Cruz","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Lizmar Marrero","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Luis Carmona","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Luis Jaimes","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Luis Landaeta","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Martín Santander","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Natalia Álvarez","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Nehomar Chirinos","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Nelly Patiño","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Orlando Ortegano","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Oscar Sánchez","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Rafael Anato","duracion":"5 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA Generativa en el Logística","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Richard Gómez","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Richard Pineda","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Richard Salazar","duracion":"46 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Rodolfo Briceño","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Tabardo Villasmil","duracion":"31 horas","empresa":"Febeca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Wilfredo González","duracion":"46 horas","empresa":"Cofersa","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Carolina Marín","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Compras"},{"nombre":"Alexander Zuluaga","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Control"},{"nombre":"Andres Jaramillo","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Control"},{"nombre":"Angy Tamayo","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Control"},{"nombre":"Karina Cuberos","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Control"},{"nombre":"Sandra Ortega","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Control"},{"nombre":"Estid Castañeda","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Logistica"},{"nombre":"Jhon Camargo","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Logistica"},{"nombre":"Jhon Echeverry","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Logistica"},{"nombre":"Juan Esteban","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Logistica"},{"nombre":"Kevin Montoya","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Logistica"},{"nombre":"Miguel Hernandez","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Logistica"},{"nombre":"Alexander Zuluaga","duracion":"17 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Claude IA Experto para contadores","instituto":"Ministerio de Tecnologías de la Información","area":"Personal"},{"nombre":"Alexandra Orozco","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Personal"},{"nombre":"Alexandra Orozco","duracion":"1 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"El riesgo invisible detrás de la IA","instituto":"Ministerio de Tecnologías de la Información","area":"Personal"},{"nombre":"Elda Ceballos","duracion":"5 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"IA en RRHH","instituto":"Ministerio de Tecnologías de la Información","area":"Personal"},{"nombre":"Mildrey Correa","duracion":"1 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"El riesgo invisible detrás de la IA","instituto":"Ministerio de Tecnologías de la Información","area":"Personal"},{"nombre":"Mildrey Correa","duracion":"7 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"IA para SST","instituto":"Ministerio de Tecnologías de la Información","area":"Personal"},{"nombre":"Angel Lopez","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Ventas"},{"nombre":"Jorge Restrepo","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Ventas"},{"nombre":"Jose Torres","duracion":"40 horas","empresa":"Mundipartes","tipo":"Externo","formacion":"Bootcamp de Inteligencia Artificial – Nivel Explorador","instituto":"Inwork","area":"Ventas"},{"nombre":"Mario La Veglia","duracion":"6 horas","empresa":"Prisma","tipo":"Interno","formacion":"Mejora Continua para Colaboradores","instituto":"Mejora Continua Mayoreo","area":"Control"},{"nombre":"Alejandro Saavedra","duracion":"31 horas","empresa":"Prisma","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Crédito y cobro"},{"nombre":"Luis Cardozo","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Crédito y cobro"},{"nombre":"Eimy Marquez","duracion":"6 horas","empresa":"Prisma","tipo":"Interno","formacion":"Mejora Continua para Colaboradores","instituto":"Mejora Continua Mayoreo","area":"Mejora Continua"},{"nombre":"Fabián Tovar","duracion":"6 horas","empresa":"Prisma","tipo":"Interno","formacion":"Mejora Continua para Colaboradores","instituto":"Mejora Continua Mayoreo","area":"Mejora Continua"},{"nombre":"Fabián Tovar","duracion":"4 horas","empresa":"Prisma","tipo":"Interno","formacion":"Mejora Continua para Nuevos Pasantes","instituto":"Mejora Continua Mayoreo","area":"Mejora Continua"},{"nombre":"Jesús Redondo","duracion":"6 horas","empresa":"Prisma","tipo":"Interno","formacion":"Mejora Continua para Colaboradores","instituto":"Mejora Continua Mayoreo","area":"Mejora Continua"},{"nombre":"Jesús Redondo","duracion":"4 horas","empresa":"Prisma","tipo":"Interno","formacion":"Mejora Continua para Nuevos Pasantes","instituto":"Mejora Continua Mayoreo","area":"Mejora Continua"},{"nombre":"Miguelangel Vásquez","duracion":"4 horas","empresa":"Prisma","tipo":"Interno","formacion":"Mejora Continua para Nuevos Pasantes","instituto":"Mejora Continua Mayoreo","area":"Mejora Continua"},{"nombre":"Saúl Vargas","duracion":"6 horas","empresa":"Prisma","tipo":"Interno","formacion":"Mejora Continua para Colaboradores","instituto":"Mejora Continua Mayoreo","area":"Mejora Continua"},{"nombre":"Saúl Vargas","duracion":"4 horas","empresa":"Prisma","tipo":"Interno","formacion":"Mejora Continua para Nuevos Pasantes","instituto":"Mejora Continua Mayoreo","area":"Mejora Continua"},{"nombre":"Ali Navarro","duracion":"95 horas","empresa":"Prisma","tipo":"Externo","formacion":"Machine Learning especialization","instituto":"Coursera","area":"Mercadeo"},{"nombre":"Ali Navarro","duracion":"7 horas","empresa":"Prisma","tipo":"Externo","formacion":"curso de openspec + opencode","instituto":"YouTube","area":"Mercadeo"},{"nombre":"Maria Marquez","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Microcredencial en IA para el Análisis de Datos y la Toma de Decisiones Estratégicas","instituto":"Universidad Internacional de La Rioja","area":"Mercadeo"},{"nombre":"Reina Chirinos","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Mercadeo"},{"nombre":"Ruth Martinez","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Mercadeo"},{"nombre":"Ruth Martinez","duracion":"18 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude Code","instituto":"Udemy","area":"Mercadeo"},{"nombre":"Yulitze Querales","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Operaciones"},{"nombre":"Angélica González","duracion":"6 horas","empresa":"Prisma","tipo":"Interno","formacion":"Mejora Continua para Colaboradores","instituto":"Mejora Continua Mayoreo","area":"Personal"},{"nombre":"Daniela Melendez","duracion":"10 horas","empresa":"Prisma","tipo":"Externo","formacion":"Inteligencia Artificial Aplicada a RRHH","instituto":"Intezia","area":"Personal"},{"nombre":"Daniela Melendez","duracion":"3 horas","empresa":"Prisma","tipo":"Externo","formacion":"Inteligencia Artificial para Reclutadores","instituto":"SkillsAcademy","area":"Personal"},{"nombre":"Yazmin Quiceno","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Specialized AI Agents with Amazon Quick","instituto":"Youtube","area":"Personal"},{"nombre":"Jessie Espinoza","duracion":"3 horas","empresa":"Prisma","tipo":"Externo","formacion":"Inteligencia Artificial para Reclutadores","instituto":"SkillsAcademy","area":"Personal"},{"nombre":"Krysmar Oliveros","duracion":"6 horas","empresa":"Prisma","tipo":"Interno","formacion":"Mejora Continua para Colaboradores","instituto":"Mejora Continua Mayoreo","area":"Personal"},{"nombre":"Lourdes Manrique","duracion":"15 horas","empresa":"Prisma","tipo":"Interno","formacion":"Power Automate","instituto":"B-aprendiendo","area":"Personal"},{"nombre":"Lourdes Manrique","duracion":"14 horas","empresa":"Prisma","tipo":"Interno","formacion":"Curso de automatizaciones con N8N","instituto":"Platzi","area":"Personal"},{"nombre":"Luis Millan","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Specialized AI Agents with Amazon Quick","instituto":"Youtube","area":"Personal"},{"nombre":"Luis Millan","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"The Ultimate Guide to AWS Database Services","instituto":"Youtube","area":"Personal"},{"nombre":"Luis Millan","duracion":"3 horas","empresa":"Prisma","tipo":"Externo","formacion":"Introduction | NLP Tutorial For Beginners In Python","instituto":"Youtube","area":"Personal"},{"nombre":"Luis Millan","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Generate Analyses with AI from Natural Language Prompts in Amazon Quick","instituto":"Youtube","area":"Personal"},{"nombre":"Luis Millan","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Your First Automation Step-by-Step with Amazon Quick Automate","instituto":"Youtube","area":"Personal"},{"nombre":"Luis Millan","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Multi Agent Automation with Amazon Quick Automate","instituto":"Youtube","area":"Personal"},{"nombre":"Rosalia Rincones","duracion":"10 horas","empresa":"Prisma","tipo":"Externo","formacion":"Inteligencia Artificial Aplicada a RRHH","instituto":"Intezia","area":"Personal"},{"nombre":"Rosalia Rincones","duracion":"3 horas","empresa":"Prisma","tipo":"Externo","formacion":"Inteligencia Artificial para Reclutadores","instituto":"SkillsAcademy","area":"Personal"},{"nombre":"Yazmin Quiceno","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Personal"},{"nombre":"Yazmin Quiceno","duracion":"8 horas","empresa":"Prisma","tipo":"Externo","formacion":"Domina la IA con prompting responsable","instituto":"Open Academy Santander","area":"Personal"},{"nombre":"Yazmin Quiceno","duracion":"3 horas","empresa":"Prisma","tipo":"Externo","formacion":"Inteligencia Artificial para Reclutadores","instituto":"SkillsAcademy","area":"Personal"},{"nombre":"Yazmin Quiceno","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Specialized AI Agents with Amazon Quick","instituto":"Youtube","area":"Personal"},{"nombre":"Aida Urdaneta","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude","instituto":"Youtube","area":"Procesos"},{"nombre":"Aida Urdaneta","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude Cowork","instituto":"Youtube","area":"Procesos"},{"nombre":"Aida Urdaneta","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude AI 2026","instituto":"Youtube","area":"Procesos"},{"nombre":"Aida Urdaneta","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Prompts ChatGPT","instituto":"Youtube","area":"Procesos"},{"nombre":"Ambar Pulido","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude","instituto":"Youtube","area":"Procesos"},{"nombre":"Ambar Pulido","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude Cowork","instituto":"Youtube","area":"Procesos"},{"nombre":"Ambar Pulido","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude AI 2026","instituto":"Youtube","area":"Procesos"},{"nombre":"Ambar Pulido","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Prompts ChatGPT","instituto":"Youtube","area":"Procesos"},{"nombre":"Ambar Pulido","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Lovable","instituto":"Youtube","area":"Procesos"},{"nombre":"Angely Ojeda","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Specialized AI Agents with Amazon Quick","instituto":"Youtube","area":"Procesos"},{"nombre":"Angely Ojeda","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude code","instituto":"Youtube","area":"Procesos"},{"nombre":"Angely Ojeda","duracion":"4 horas","empresa":"Prisma","tipo":"Externo","formacion":"Antigravity","instituto":"Youtube","area":"Procesos"},{"nombre":"Angely Ojeda","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"NotebookLM de 0 a experto","instituto":"Youtube","area":"Procesos"},{"nombre":"Giovanny Milano","duracion":"8 horas","empresa":"Prisma","tipo":"Externo","formacion":"Experto Zapier. Aprende a Automatizar Procesos sin programar","instituto":"Udemy","area":"Procesos"},{"nombre":"Giovanny Milano","duracion":"11 horas","empresa":"Prisma","tipo":"Externo","formacion":"Curso n8n. Agentes de IA Avanzados: MCP, Whatsapp, Voz y más","instituto":"Udemy","area":"Procesos"},{"nombre":"Giovanny Milano","duracion":"9 horas","empresa":"Prisma","tipo":"Externo","formacion":"Curso n8n. Crea Agentes de IA Sin Programar","instituto":"Udemy","area":"Procesos"},{"nombre":"Giovanny Milano","duracion":"11 horas","empresa":"Prisma","tipo":"Externo","formacion":"Experto en Airtable. Crea Aplicaciones, Bases de Datos, Automatizaciones, Dashboards, Visualización de Datos y mucho más","instituto":"Udemy","area":"Procesos"},{"nombre":"Giovanny Milano","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude Code","instituto":"Youtube","area":"Procesos"},{"nombre":"Giovanny Milano","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude","instituto":"Youtube","area":"Procesos"},{"nombre":"Giovanny Milano","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Prompt Engineering","instituto":"Youtube","area":"Procesos"},{"nombre":"Giovanny Milano","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"ChatGPT","instituto":"Youtube","area":"Procesos"},{"nombre":"Jesús Araujo","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude","instituto":"Youtube","area":"Procesos"},{"nombre":"Jesús Araujo","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude Cowork","instituto":"Youtube","area":"Procesos"},{"nombre":"Jesús Araujo","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude AI 2026","instituto":"Youtube","area":"Procesos"},{"nombre":"Jesús Araujo","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Prompts ChatGPT","instituto":"Youtube","area":"Procesos"},{"nombre":"Jesús Araujo","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Lovable","instituto":"Youtube","area":"Procesos"},{"nombre":"Luis Rivas","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Prompts ChatGPT","instituto":"Youtube","area":"Procesos"},{"nombre":"Luis Rivas","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Lovable","instituto":"Youtube","area":"Procesos"},{"nombre":"Mayte Zarraga","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude","instituto":"Youtube","area":"Procesos"},{"nombre":"Mayte Zarraga","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude Cowork","instituto":"Youtube","area":"Procesos"},{"nombre":"Mayte Zarraga","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude AI 2026","instituto":"Youtube","area":"Procesos"},{"nombre":"Mayte Zarraga","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Prompts ChatGPT","instituto":"Youtube","area":"Procesos"},{"nombre":"Diego Hernandez","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Pronóstico"},{"nombre":"Edgar Montilla","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Pronóstico"},{"nombre":"Hamilkar Sandoval","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Pronóstico"},{"nombre":"Jose Garcia","duracion":"58 horas","empresa":"Prisma","tipo":"Externo","formacion":"Ciberseguridad en la nube","instituto":"Fundación de Carlos Slim","area":"Pronóstico"},{"nombre":"Jose Garcia","duracion":"75 horas","empresa":"Prisma","tipo":"Externo","formacion":"Desarrollador de Aplicaciones en la Nube","instituto":"Fundación de Carlos Slim","area":"Pronóstico"},{"nombre":"Raquel Perozo","duracion":"13 horas","empresa":"Prisma","tipo":"Externo","formacion":"Analisis de negocios para ciencias de datos e IA","instituto":"Platzi","area":"Pronóstico"},{"nombre":"Raquel Perozo","duracion":"8 horas","empresa":"Prisma","tipo":"Externo","formacion":"Data science e inteligencia artificial","instituto":"Platzi","area":"Pronóstico"},{"nombre":"Anixy Guedez","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Reposición"},{"nombre":"Anyimar Perez","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Reposición"},{"nombre":"Arangel Garcia","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Reposición"},{"nombre":"Branfort Monro","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Reposición"},{"nombre":"Daniel Duran","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Reposición"},{"nombre":"Glendys Rodriguez","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Reposición"},{"nombre":"Josshana Tesorero","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Reposición"},{"nombre":"Kevin Escobar","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Reposición"},{"nombre":"Nancy Garcia","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Reposición"},{"nombre":"Wleidy Ramones","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Reposición"},{"nombre":"Oswaldo Silva","duracion":"40 horas","empresa":"Prisma","tipo":"Interno","formacion":"Ecosistema Digital e Inteligencia Artificial","instituto":"Mejora Continua Mayoreo","area":"Servicios Operacionales"},{"nombre":"Cesar Campo","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Cloud 2026 - Despliega tu primera web en la nube desde cero","instituto":"Youtube","area":"Sistemas"},{"nombre":"Flavio Ruiz","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude Code (Skills, MCP, SubAgents)","instituto":"Youtube","area":"Sistemas"},{"nombre":"Flavio Ruiz","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Cómo escoger la IA correcta en la práctica","instituto":"Youtube","area":"Sistemas"},{"nombre":"Flavio Ruiz","duracion":"3 horas","empresa":"Prisma","tipo":"Externo","formacion":"Cursor desde cero","instituto":"Youtube","area":"Sistemas"},{"nombre":"Flavio Ruiz","duracion":"21 horas","empresa":"Prisma","tipo":"Externo","formacion":"Machine Learning","instituto":"w3schools.com","area":"Sistemas"},{"nombre":"Flavio Ruiz","duracion":"5 horas","empresa":"Prisma","tipo":"Externo","formacion":"Make.com para Principiantes","instituto":"https://www.make.com","area":"Sistemas"},{"nombre":"Flavio Ruiz","duracion":"4 horas","empresa":"Prisma","tipo":"Externo","formacion":"N8N Beginner","instituto":"Youtube","area":"Sistemas"},{"nombre":"Flavio Ruiz","duracion":"6 horas","empresa":"Prisma","tipo":"Externo","formacion":"N8N desde cero","instituto":"Youtube","area":"Sistemas"},{"nombre":"Flavio Ruiz","duracion":"3 horas","empresa":"Prisma","tipo":"Externo","formacion":"Spec Driven Development: El flujo real para crear apps con IA","instituto":"Youtube","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"15 horas","empresa":"Prisma","tipo":"Externo","formacion":"Automatizaciones con n8n","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"16 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude AI","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"8 horas","empresa":"Prisma","tipo":"Externo","formacion":"Claude Code","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"19 horas","empresa":"Prisma","tipo":"Externo","formacion":"FastAPI","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"16 horas","empresa":"Prisma","tipo":"Externo","formacion":"Fundamentos de PythonPlatzi","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"11 horas","empresa":"Prisma","tipo":"Externo","formacion":"Introducción a AWS: Cómputo, Almacenamiento y Bases de Datos","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"14 horas","empresa":"Prisma","tipo":"Externo","formacion":"Introducción a AWS: Fundamentos de Cloud Computing","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"19 horas","empresa":"Prisma","tipo":"Externo","formacion":"OpenAI API","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"14 horas","empresa":"Prisma","tipo":"Externo","formacion":"PostgreSQL","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"14 horas","empresa":"Prisma","tipo":"Externo","formacion":"Python Intermedio para Entornos virtuales y PEP8","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"12 horas","empresa":"Prisma","tipo":"Externo","formacion":"Python Orientado a Objetos","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"10 horas","empresa":"Prisma","tipo":"Externo","formacion":"SupabaseCurso de Unit Testing en Python","instituto":"Platzi","area":"Sistemas"},{"nombre":"Gabriel Arcila","duracion":"15 horas","empresa":"Prisma","tipo":"Externo","formacion":"Unit Testing en Python","instituto":"Platzi","area":"Sistemas"},{"nombre":"Luis Rivas","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Curso de AWS Desde Cero (Amazon Web Services)","instituto":"Youtube","area":"Sistemas"},{"nombre":"Luis Rivas","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"AI-Driven Development Lifecycle (AI-DLC): A Free and Complete","instituto":"Youtube","area":"Sistemas"},{"nombre":"Luis Rivas","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Cloud 2026 - Despliega tu primera web en la nube desde cero","instituto":"Youtube","area":"Sistemas"},{"nombre":"Luis Rivas","duracion":"2 horas","empresa":"Prisma","tipo":"Externo","formacion":"Gemini 3.8 Flash + Antigravity","instituto":"Youtube","area":"Sistemas"},{"nombre":"Daniel Salas","duracion":"31 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Compras"},{"nombre":"Luis Hidalgo","duracion":"31 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Crédito y cobro"},{"nombre":"Luis Hidalgo","duracion":"6 horas","empresa":"Sillaca","tipo":"Interno","formacion":"Mejora Continua para Colaboradores","instituto":"Mejora Continua Mayoreo","area":"Crédito y cobro"},{"nombre":"Alfonso Escalante","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Andrés Guzman","duracion":"31 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Andy Saldivia","duracion":"31 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Argenis Araque","duracion":"31 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Argenis Ontiveros","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Christina Gómez","duracion":"31 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"David Cala","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Francisco Zambrano","duracion":"31 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Hector Villalón","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"José Revette","duracion":"31 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Supervisores","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Joselys Ventura","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"María Meza","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Mariana Palacio","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Mayra Leon","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Ronald Acosta","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Ruthsby Salcedo","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Saulo Bravo","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Yoleida Pérez","duracion":"46 horas","empresa":"Sillaca","tipo":"Interno","formacion":"IA para Asesores de Ventas","instituto":"Mejora Continua Mayoreo","area":"Ventas"},{"nombre":"Paola Rodriguez","duracion":"1 horas","empresa":"Prisma","tipo":"Externo","formacion":"Specialized AI Agents with Amazon Quick","instituto":"Youtube","area":"Control"}];
+
+var DATA = (typeof INIT_DATA !== 'undefined' && INIT_DATA.length > 0) ? INIT_DATA.slice() : [];
+
+var POP_TOTAL = {
+  "Febeca": 261,
+  "Beval": 98,
+  "Sillaca": 72,
+  "Cofersa": 91,
+  "Mundipartes": 59,
+  "Prisma": 160
+};
+var POP_GLOBAL = 741;
+
+var POP_AREA = {
+  "Febeca|Logística": 76,
+  "Beval|Logística": 17,
+  "Sillaca|Logística": 12,
+  "Cofersa|Logística": 5,
+  "Mundipartes|Logística": 19,
+  "Febeca|Compras": 13,
+  "Beval|Compras": 6,
+  "Sillaca|Compras": 3,
+  "Cofersa|Compras": 17,
+  "Mundipartes|Compras": 5,
+  "Febeca|Ventas": 171,
+  "Beval|Ventas": 73,
+  "Sillaca|Ventas": 57,
+  "Cofersa|Ventas": 48,
+  "Mundipartes|Ventas": 24,
+  "Cofersa|Operaciones": 4,
+  "Prisma|Operaciones": 1,
+  "Beval|Control": 1,
+  "Cofersa|Control": 12,
+  "Mundipartes|Control": 6,
+  "Prisma|Control": 74,
+  "Prisma|Mercadeo": 12,
+  "Cofersa|Personal": 3,
+  "Mundipartes|Personal": 4,
+  "Prisma|Personal": 17,
+  "Prisma|Pronóstico": 4,
+  "Prisma|Reposición": 12,
+  "Prisma|Servicios Operacionales": 19,
+  "Cofersa|Sistemas": 2,
+  "Prisma|Sistemas": 14,
+  "Prisma|Procesos": 7,
+  "Febeca|Gerencia": 1,
+  "Beval|Gerencia": 1,
+  "Mundipartes|Gerencia": 1
+};
+
+var POP_AREA_TOTAL = {};
+Object.keys(POP_AREA).forEach(function(k) {
+  var a = k.split('|')[1];
+  POP_AREA_TOTAL[a] = (POP_AREA_TOTAL[a] || 0) + POP_AREA[k];
+});
+
+var sortCol = -1;
+var sortDir = 1;
+
+var COLS = [
+  {key: 'empresa', label: 'Empresa', w: '110px'},
+  {key: 'area', label: 'Área', w: '130px'},
+  {key: 'nombre', label: 'Colaborador', w: '160px'},
+  {key: 'tipo', label: 'Tipo', w: '80px'},
+  {key: 'formacion', label: 'Formación', w: '220px'},
+  {key: 'instituto', label: 'Instituto', w: '140px'},
+  {key: 'duracion', label: 'Duración', w: '90px'}
+];
+
+/* Helper para tarjetas de ponderacin */
+function pc(name, cap, pop) {
+  var pct = pop > 0 ? ((cap / pop) * 100).toFixed(1) : '0.0';
+  return '<div class="pond-card">' +
+    '<div class="pond-lbl">' + name + '</div>' +
+    '<div class="pond-pct">' + pct + '%</div>' +
+    '<div class="pond-det">' + cap + ' de ' + pop + ' colaboradores</div>' +
+    '<div class="pond-bar"><div class="pond-fill" style="width:' + Math.min(100, parseFloat(pct)) + '%"></div></div>' +
+    '</div>';
+}
+
+/* ========== PARSE GVIZ RESPONSE ========== */
+function parseGviz(resp) {
+  var recs = [];
+  if (!resp || !resp.table || !resp.table.rows) return recs;
+  var rows = resp.table.rows;
+  for (var i = 0; i < rows.length; i++) {
+    var c = rows[i].c;
+    if (!c) continue;
+    var g = function(idx) { return c[idx] && c[idx].v != null ? String(c[idx].v).trim() : ''; };
+    var gFmt = function(idx) { return c[idx] && c[idx].f != null ? String(c[idx].f).trim() : (c[idx] && c[idx].v != null ? String(c[idx].v).trim() : ''); };
+
+    var col = g(2);
+    if (!col || col.toLowerCase() === 'colaborador') continue;
+
+    var durRaw = gFmt(4);
+    var durStr = durRaw;
+    if (!durStr) {
+      durStr = 'N/A';
+    } else if (/^\d+([.,]\d+)?$/.test(durStr)) {
+      var num = parseFloat(durStr.replace(',', '.'));
+      durStr = (num % 1 === 0 ? num.toFixed(0) : num) + ' horas';
+    }
+
+    recs.push({
+      empresa: g(0) || 'Sin asignar',
+      area: g(1) || 'Sin asignar',
+      nombre: col,
+      tipo: g(3) || 'Interno',
+      numFormaciones: 1,
+      duracion: durStr,
+      formacion: g(5) || 'Sin título',
+      instituto: g(6) || ''
+    });
+  }
+  return recs;
+}
+
+/* ========== FETCH DATA VIA JSONP (BACKGROUND) ========== */
+function fetchData() {
+  return new Promise(function(resolve) {
+    var resolved = false;
+    var cb = '__gviz' + Date.now();
+    window[cb] = function(resp) {
+      if (resolved) return;
+      resolved = true;
+      var recs = parseGviz(resp);
+      if (recs.length > 0) {
+        DATA = recs;
+        showStatus('Datos sincronizados: ' + recs.length + ' registros desde Google Sheets', 'ok');
+        resolve(true);
+      } else {
+        showStatus('No se obtuvieron nuevos datos de la hoja', 'err');
+        resolve(false);
+      }
+      try { delete window[cb]; } catch(e) {}
+    };
+    var s = document.createElement('script');
+    s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=responseHandler:' + cb + '&tq=select%20*&gid=0';
+    s.onerror = function() {
+      if (resolved) return;
+      resolved = true;
+      resolve(false);
+    };
+    document.head.appendChild(s);
+    setTimeout(function() {
+      if (resolved) return;
+      resolved = true;
+      resolve(false);
+    }, 8000);
+  });
+}
+
+function fetchSheet2() {
+  return new Promise(function(resolve) {
+    var dn = false;
+    var cb = '__gv2_' + Date.now();
+    window[cb] = function(resp) {
+      if (dn) return;
+      dn = true;
+      try {
+        if (resp && resp.table && resp.table.rows) {
+          var rows = resp.table.rows;
+          var nPA = {}, nPT = {};
+          var hdr = rows[0].c;
+          var en = [];
+          for (var j = 2; j < hdr.length; j++) {
+            if (hdr[j] && hdr[j].v) en.push(String(hdr[j].v).trim());
+          }
+          for (var i = 1; i < rows.length; i++) {
+            var c = rows[i].c;
+            if (!c || !c[1] || !c[1].v) continue;
+            var area = String(c[1].v).trim();
+            if (area === 'Total') {
+              for (var j2 = 0; j2 < en.length; j2++) {
+                if (c[j2+2] && c[j2+2].v != null) nPT[en[j2]] = parseInt(c[j2+2].v) || 0;
+              }
+            } else {
+              for (var j3 = 0; j3 < en.length; j3++) {
+                if (c[j3+2] && c[j3+2].v != null) {
+                  var v = parseInt(c[j3+2].v);
+                  if (v > 0) nPA[en[j3] + '|' + area] = v;
+                }
+              }
+            }
+          }
+          if (Object.keys(nPA).length > 0) {
+            POP_AREA = nPA;
+            POP_TOTAL = nPT;
+            resolve(true);
+            return;
+          }
+        }
+      } catch(e) {}
+      resolve(false);
+    };
+    var s = document.createElement('script');
+    s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=responseHandler:' + cb + '&tq=select%20*&gid=496508915';
+    s.onerror = function() { if (!dn) { dn = true; resolve(false); } };
+    document.head.appendChild(s);
+    setTimeout(function() { if (!dn) { dn = true; resolve(false); } }, 8000);
+  });
+}
+
+function showStatus(msg, type) {
+  var el = document.getElementById('statusMsg');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'status-msg ' + (type === 'ok' ? 'status-ok' : 'status-err');
+  if (type === 'ok') {
+    setTimeout(function() { el.style.display = 'none'; }, 4000);
+  }
+}
+
+/* ========== FILTERS ========== */
+function populateFilters() {
+  var emps = [], areas = [], insts = [];
+  DATA.forEach(function(d) {
+    if (d.empresa && emps.indexOf(d.empresa) < 0) emps.push(d.empresa);
+    if (d.area && areas.indexOf(d.area) < 0) areas.push(d.area);
+    if (d.instituto && insts.indexOf(d.instituto) < 0) insts.push(d.instituto);
+  });
+  emps.sort();
+  areas.sort();
+  insts.sort();
+  fillSel('fEmp', emps, 'Todas');
+  fillSel('fArea', areas, 'Todas');
+  fillSel('fInst', insts, 'Todos');
+}
+
+function fillSel(id, opts, allLabel) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var cur = el.value;
+  var h = '<option value="">' + allLabel + '</option>';
+  opts.forEach(function(o) {
+    h += '<option value="' + o + '"' + (o === cur ? ' selected' : '') + '>' + o + '</option>';
+  });
+  el.innerHTML = h;
+}
+
+function clearFilters() {
+  ['fEmp', 'fArea', 'fTipo', 'fInst'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  var searchEl = document.getElementById('fSearch');
+  if (searchEl) searchEl.value = '';
+  apply();
+}
+
+function getFiltered() {
+  var e = document.getElementById('fEmp') ? document.getElementById('fEmp').value : '';
+  var a = document.getElementById('fArea') ? document.getElementById('fArea').value : '';
+  var t = document.getElementById('fTipo') ? document.getElementById('fTipo').value : '';
+  var inst = document.getElementById('fInst') ? document.getElementById('fInst').value : '';
+  var s = document.getElementById('fSearch') ? document.getElementById('fSearch').value.toLowerCase().trim() : '';
+
+  return DATA.filter(function(d) {
+    return (!e || d.empresa === e) &&
+      (!a || d.area === a) &&
+      (!t || d.tipo === t) &&
+      (!inst || d.instituto === inst) &&
+      (!s || (d.nombre && d.nombre.toLowerCase().indexOf(s) >= 0) || (d.formacion && d.formacion.toLowerCase().indexOf(s) >= 0));
+  });
+}
+
+/* ========== METRICS ========== */
+function renderMetrics(f) {
+  var uniqColabs = {};
+  f.forEach(function(d) {
+    uniqColabs[d.empresa + '|' + d.nombre] = d;
+  });
+  var colabs = Object.keys(uniqColabs).length;
+
+  // Formaciones nicas y Horas nicas deduplicadas por formacin
+  var uf = {};
+  var intUF = {};
+  var extUF = {};
+
+  f.forEach(function(d) {
+    var formName = (d.formacion || '').trim();
+    if (!formName) return;
+    var key = formName.toLowerCase();
+
+    var m = (d.duracion || '').match(/(\d+)/);
+    var h = m ? parseInt(m[1]) : 0;
+    var tipo = (d.tipo || '').toLowerCase().trim();
+
+    if (!uf[key]) {
+      uf[key] = { h: h, tipo: d.tipo, name: formName };
+    }
+
+    if (tipo === 'interno') {
+      if (!intUF[key]) intUF[key] = h;
+    } else if (tipo === 'externo') {
+      if (!extUF[key]) extUF[key] = h;
+    } else {
+      if (!intUF[key]) intUF[key] = h;
+      if (!extUF[key]) extUF[key] = h;
+    }
+  });
+
+  var ufCount = Object.keys(uf).length;
+  var totalH = 0;
+  Object.keys(uf).forEach(function(k) { totalH += uf[k].h; });
+
+  var intCount = Object.keys(intUF).length;
+  var intH = 0;
+  Object.keys(intUF).forEach(function(k) { intH += intUF[k]; });
+
+  var extCount = Object.keys(extUF).length;
+  var extH = 0;
+  Object.keys(extUF).forEach(function(k) { extH += extUF[k]; });
+
+  var empSet = {}, areaSet = {};
+  f.forEach(function(d) {
+    if (d.empresa) empSet[d.empresa] = 1;
+    if (d.area) areaSet[d.area] = 1;
+  });
+
+  var selEmp = document.getElementById('fEmp') ? document.getElementById('fEmp').value : '';
+  var selArea = document.getElementById('fArea') ? document.getElementById('fArea').value : '';
+
+  var refPop = 0;
+  var refContext = '';
+
+  if (selEmp && selArea) {
+    refPop = (POP_AREA && POP_AREA[selEmp + '|' + selArea]) || 0;
+    refContext = selEmp + ' · ' + selArea;
+  } else if (selEmp && !selArea) {
+    refPop = (POP_TOTAL && POP_TOTAL[selEmp]) || 0;
+    refContext = selEmp;
+  } else if (!selEmp && selArea) {
+    refPop = (POP_AREA_TOTAL && POP_AREA_TOTAL[selArea]) || 0;
+    refContext = selArea + ' (Todas)';
+  } else {
+    refPop = POP_GLOBAL || 741;
+    refContext = 'Plantilla total global';
+  }
+
+  var colabVal = '';
+  var colabSub = '';
+
+  if (refPop > 0) {
+    var pctVal = (colabs / refPop) * 100;
+    var pctStr = (pctVal % 1 === 0 ? pctVal.toFixed(0) : pctVal.toFixed(1)) + '%';
+    colabVal = colabs + ' <span style="font-size:15px;font-weight:500;color:var(--g500)">/ ' + refPop + '</span> <span class="badge" style="font-size:11px;padding:2px 7px;vertical-align:middle;margin-left:4px;background:var(--g200);color:var(--g800)">' + pctStr + '</span>';
+    colabSub = pctStr + ' de cobertura<br><span style="color:var(--g500)">' + refContext + '</span>';
+  } else {
+    colabVal = colabs;
+    colabSub = Object.keys(empSet).length + ' empresas con registro';
+  }
+
+  var subUF = '<div>Internas: ' + intCount + ' Únicas</div><div>Externas: ' + extCount + ' Únicas</div>';
+
+  document.getElementById('metrics').innerHTML =
+    mc('Colaboradores Formados', colabVal, colabSub) +
+    mc('Formaciones Únicas', ufCount, subUF) +
+    mc('Horas de Formación', totalH.toLocaleString('es') + ' h', 'En formaciones Únicas') +
+    mc('Cursos Internos', intCount, intH.toLocaleString('es') + ' h Únicas') +
+    mc('Cursos Externos', extCount, extH.toLocaleString('es') + ' h Únicas') +
+    mc('Áreas con Formación', Object.keys(areaSet).length, 'Áreas activas');
+}
+
+function mc(l, v, s) {
+  return '<div class="m">' +
+    '<div class="m-label">' + l + '</div>' +
+    '<div class="m-val">' + v + '</div>' +
+    (s ? '<div class="m-sub">' + s + '</div>' : '') +
+    '</div>';
+}
+
+/* ========== STRIPS ========== */
+function renderStrips(f) {
+  var html = '';
+
+  // 1. Horas por rea (formaciones nicas)
+  var areaUF = {};
+  f.forEach(function(d) {
+    var key = d.empresa + '|' + d.area + '|' + d.formacion;
+    if (!areaUF[key]) {
+      var m = (d.duracion || '').match(/(\d+)/);
+      areaUF[key] = { area: d.area, h: m ? parseInt(m[1]) : 0 };
+    }
+  });
+  var areaH = {};
+  Object.keys(areaUF).forEach(function(k) {
+    var a = areaUF[k].area;
+    areaH[a] = (areaH[a] || 0) + areaUF[k].h;
+  });
+
+  var areaColabs = {};
+  var seenColabForm = {};
+  f.forEach(function(d) {
+    if (!d.area || !d.nombre) return;
+    var area = d.area;
+    var colab = d.nombre;
+    var cfKey = area + '|' + colab + '|' + d.formacion;
+    if (!seenColabForm[cfKey]) {
+      seenColabForm[cfKey] = true;
+      var m = (d.duracion || '').match(/(\d+)/);
+      var h = m ? parseInt(m[1]) : 0;
+      if (!areaColabs[area]) areaColabs[area] = {};
+      if (!areaColabs[area][colab]) areaColabs[area][colab] = { nombre: colab, hours: 0, forms: 0, empresa: d.empresa };
+      areaColabs[area][colab].hours += h;
+      areaColabs[area][colab].forms += 1;
+    }
+  });
+
+  var sortedA = Object.entries(areaH).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 8);
+  var maxAH = sortedA.length ? sortedA[0][1] : 1;
+  html += '<div class="strip"><div class="strip-title"><span>Horas por Área (Formaciones Únicas)</span><span class="strip-toggle" id="toggleAreaBtn" data-action="toggleAllAreaDetails">Ver detalle</span></div>';
+  sortedA.forEach(function(item, idx) {
+    var area = item[0], hours = item[1];
+    var colabsInArea = areaColabs[area] ? Object.values(areaColabs[area]) : [];
+    colabsInArea.sort(function(a, b) { return b.hours - a.hours || a.nombre.localeCompare(b.nombre); });
+
+    html += '<div class="sr" style="cursor:pointer" data-action="toggleAreaDetail" data-arg="areaDet' + idx + '"><span class="sr-label" title="' + area + '">' + area + '</span><div class="sr-bar"><div class="sr-fill" style="width:' + (hours / maxAH * 100) + '%"></div></div><span class="sr-val">' + hours + ' h</span></div>';
+
+    html += '<div class="area-detail" id="areaDet' + idx + '">';
+    html += '<div class="emp-detail-title">Colaboradores de ' + area + ' (' + colabsInArea.length + ' personas)</div>';
+    colabsInArea.forEach(function(c) {
+      html += '<div class="emp-form-item"><span class="emp-form-name">' + c.nombre + ' <span style="font-size:10px; color:var(--g500)">(' + c.empresa + ')</span></span><span class="emp-form-tipo tipo-int">' + c.forms + ' form.</span><span class="emp-form-h">' + c.hours + ' h</span></div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // 2. Institutos
+  var instUF = {};
+  f.forEach(function(d) {
+    if (!d.instituto) return;
+    var key = d.instituto + '|' + d.formacion;
+    if (!instUF[key]) instUF[key] = d.instituto;
+  });
+  var instG = {};
+  Object.keys(instUF).forEach(function(k) {
+    var ins = instUF[k];
+    instG[ins] = (instG[ins] || 0) + 1;
+  });
+  var sortedI = Object.entries(instG).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 8);
+  var maxI = sortedI.length ? sortedI[0][1] : 1;
+  html += '<div class="strip"><div class="strip-title">Institutos (Formaciones Únicas)</div>';
+  sortedI.forEach(function(item) {
+    html += sr(item[0], (item[1] / maxI * 100), item[1]);
+  });
+  html += '</div>';
+
+  // 3. Formaciones nicas por empresa
+  var empUFcount = {};
+  f.forEach(function(d) {
+    var key = d.empresa + '|' + d.area + '|' + d.formacion;
+    if (!empUFcount[key]) empUFcount[key] = d.empresa;
+  });
+  var empCounts = {};
+  Object.keys(empUFcount).forEach(function(k) {
+    var e = empUFcount[k];
+    empCounts[e] = (empCounts[e] || 0) + 1;
+  });
+
+  var empUFdetail = {};
+  f.forEach(function(d) {
+    var key = d.empresa + '|' + d.formacion;
+    if (!empUFdetail[key]) empUFdetail[key] = { empresa: d.empresa, formacion: d.formacion, tipo: d.tipo, duracion: d.duracion };
+  });
+  var empG = {};
+  Object.keys(empCounts).forEach(function(e) {
+    empG[e] = { count: empCounts[e], forms: [] };
+  });
+  Object.keys(empUFdetail).forEach(function(k) {
+    var v = empUFdetail[k];
+    if (empG[v.empresa]) empG[v.empresa].forms.push(v);
+  });
+  var sortedE = Object.entries(empG).sort(function(a, b) { return b[1].count - a[1].count; });
+  var maxE = sortedE.length ? sortedE[0][1].count : 1;
+  html += '<div class="strip"><div class="strip-title"><span>Formaciones Únicas por Empresa</span><span class="strip-toggle" id="toggleEmpBtn" data-action="toggleAllEmpDetails">Ver detalle</span></div>';
+  sortedE.forEach(function(item, idx) {
+    var emp = item[0], data = item[1];
+    html += '<div class="sr" style="cursor:pointer" data-action="toggleEmpDetail" data-arg="empDet' + idx + '"><span class="sr-label" title="' + emp + '">' + emp + '</span><div class="sr-bar"><div class="sr-fill" style="width:' + (data.count / maxE * 100) + '%"></div></div><span class="sr-val">' + data.count + '</span></div>';
+
+    html += '<div class="emp-detail" id="empDet' + idx + '">';
+    html += '<div class="emp-detail-title">Formaciones de ' + emp + '</div>';
+    data.forms.sort(function(a, b) { return a.formacion.localeCompare(b.formacion); });
+    data.forms.forEach(function(fm) {
+      var m = (fm.duracion || '').match(/(\d+)/);
+      var h = m ? m[1] + ' h' : '';
+      var tipoClass = fm.tipo === 'Interno' ? 'tipo-int' : 'tipo-ext';
+      html += '<div class="emp-form-item"><span class="emp-form-name">' + fm.formacion + '</span><span class="emp-form-tipo ' + tipoClass + '">' + fm.tipo + '</span><span class="emp-form-h">' + h + '</span></div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // 4. Colaboradores con ms formaciones
+  var colG = {};
+  f.forEach(function(d) {
+    if (d.nombre) colG[d.nombre] = (colG[d.nombre] || 0) + 1;
+  });
+  var sortedC = Object.entries(colG).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 8);
+  var maxC = sortedC.length ? sortedC[0][1] : 1;
+  html += '<div class="strip"><div class="strip-title">MÁs Formaciones por Colaborador</div>';
+  sortedC.forEach(function(item) {
+    html += sr(item[0], (item[1] / maxC * 100), item[1]);
+  });
+  html += '</div>';
+
+  document.getElementById('strips').innerHTML = html;
+}
+
+function sr(l, pct, txt) {
+  return '<div class="sr"><span class="sr-label" title="' + l + '">' + l + '</span><div class="sr-bar"><div class="sr-fill" style="width:' + pct + '%"></div></div><span class="sr-val">' + txt + '</span></div>';
+}
+
+function toggleAreaDetail(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+function toggleAllAreaDetails() {
+  var all = document.querySelectorAll('.area-detail');
+  var anyOpen = false;
+  all.forEach(function(el) { if (el.classList.contains('open')) anyOpen = true; });
+  all.forEach(function(el) {
+    if (anyOpen) el.classList.remove('open');
+    else el.classList.add('open');
+  });
+  var btn = document.getElementById('toggleAreaBtn');
+  if (btn) btn.textContent = anyOpen ? 'Ver detalle' : 'Ocultar detalle';
+}
+
+function toggleEmpDetail(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+function toggleAllEmpDetails() {
+  var all = document.querySelectorAll('.emp-detail');
+  var anyOpen = false;
+  all.forEach(function(el) { if (el.classList.contains('open')) anyOpen = true; });
+  all.forEach(function(el) {
+    if (anyOpen) el.classList.remove('open');
+    else el.classList.add('open');
+  });
+  var btn = document.getElementById('toggleEmpBtn');
+  if (btn) btn.textContent = anyOpen ? 'Ver detalle' : 'Ocultar detalle';
+}
+
+/* ========== TABLE ========== */
+function renderTableHead() {
+  var html = '';
+  COLS.forEach(function(c, i) {
+    var cls = sortCol === i ? 'sorted' : '';
+    var arrow = sortCol === i ? (sortDir === 1 ? '&#9650;' : '&#9660;') : '&#9650;';
+    html += '<th class="' + cls + '" style="min-width:' + c.w + '" data-action="doSort" data-arg="' + i + '">' + c.label + '<span class="arrow">' + arrow + '</span></th>';
+  });
+  document.getElementById('tblHead').innerHTML = html;
+}
+
+function renderTable(f) {
+  if (sortCol >= 0) {
+    var k = COLS[sortCol].key;
+    f.sort(function(a, b) {
+      var va = (a[k] || '').toString().toLowerCase(), vb = (b[k] || '').toString().toLowerCase();
+      return va < vb ? -sortDir : va > vb ? sortDir : 0;
+    });
+  }
+  var tc = {'Interno': 'tag-i', 'Externo': 'tag-e', 'Ambas': 'tag-a'};
+  document.getElementById('tblBody').innerHTML = f.map(function(d) {
+    return '<tr><td>' + (d.empresa || '') + '</td><td>' + (d.area || '') + '</td><td><strong>' + (d.nombre || '') + '</strong></td><td><span class="tag ' + (tc[d.tipo] || '') + '">' + (d.tipo || '') + '</span></td><td style="font-size:12.5px;max-width:220px">' + (d.formacion || '') + '</td><td style="font-size:12.5px">' + (d.instituto || '') + '</td><td style="text-align:center">' + (d.duracion || '') + '</td></tr>';
+  }).join('');
+  document.getElementById('tblCount').textContent = f.length + ' de ' + DATA.length + ' registros';
+}
+
+function doSort(i) {
+  i = parseInt(i);
+  if (sortCol === i) sortDir *= -1; else { sortCol = i; sortDir = 1; }
+  renderTableHead();
+  apply();
+}
+
+/* ========== POPULATION ========== */
+function renderPond() {
+  var f = getFiltered();
+  var empList = Object.keys(POP_TOTAL).sort();
+  var h = '';
+  var gC = 0, gP = 0;
+  empList.forEach(function(e) {
+    var pop = POP_TOTAL[e] || 0;
+    if (!pop) return;
+    var u = {};
+    DATA.forEach(function(d) { if (d.empresa === e) u[d.nombre] = 1; });
+    var cap = Object.keys(u).length;
+    gC += cap;
+    gP += pop;
+    h += pc(e, cap, pop);
+  });
+  if (gP > 0) h = pc('Total General', gC, gP) + h;
+  var pondEl = document.getElementById('pondEmpresa');
+  if (pondEl) pondEl.innerHTML = h;
+
+  var allA = {};
+  Object.keys(POP_AREA).forEach(function(k) { allA[k.split('|')[1]] = 1; });
+  f.forEach(function(d) { if (d.area) allA[d.area] = 1; });
+  var aL = Object.keys(allA).sort();
+
+  var t = '<table><thead><tr><th>Área</th>';
+  empList.forEach(function(e) { t += '<th style="text-align:center">' + e + '</th>'; });
+  t += '</tr></thead><tbody>';
+
+  aL.forEach(function(area) {
+    var row = '<tr><td><strong>' + area + '</strong></td>';
+    empList.forEach(function(emp) {
+      var pop = POP_AREA[emp + '|' + area] || 0;
+      var u = {};
+      f.forEach(function(d) { if (d.empresa === emp && d.area === area) u[d.nombre] = 1; });
+      var cap = Object.keys(u).length;
+      if (pop > 0) {
+        var pct = ((cap / pop) * 100).toFixed(0);
+        var cl = pct >= 50 ? '#2e7d32' : pct >= 20 ? '#b26a00' : pct > 0 ? '#c62828' : '#8a8a8a';
+        row += '<td style="text-align:center"><strong style="color:' + cl + '">' + pct + '%</strong><div style="font-size:10.5px;color:#8a8a8a">' + cap + '/' + pop + '</div></td>';
+      } else if (cap > 0) {
+        row += '<td style="text-align:center"><strong>' + cap + '</strong><div style="font-size:10.5px;color:#8a8a8a">sin ref.</div></td>';
+      } else {
+        row += '<td style="text-align:center;color:#c6c6c6">-</td>';
+      }
+    });
+    row += '</tr>';
+    t += row;
+  });
+
+  t += '<tr style="border-top:2px solid #000"><td><strong>Total General</strong></td>';
+  empList.forEach(function(emp) {
+    var pop = POP_TOTAL[emp] || 0;
+    var u = {};
+    DATA.forEach(function(d) { if (d.empresa === emp) u[d.nombre] = 1; });
+    var cap = Object.keys(u).length;
+    if (pop > 0) {
+      t += '<td style="text-align:center"><strong>' + ((cap / pop) * 100).toFixed(0) + '%</strong><div style="font-size:10.5px;color:#8a8a8a">' + cap + '/' + pop + '</div></td>';
+    } else {
+      t += '<td style="text-align:center">' + cap + '</td>';
+    }
+  });
+  t += '</tr></tbody></table>';
+  var areaTblEl = document.getElementById('pondAreaTable');
+  if (areaTblEl) areaTblEl.innerHTML = t;
+}
+
+/* ========== APPLY / REFRESH ========== */
+function apply() {
+  var f = getFiltered();
+  renderMetrics(f);
+  renderStrips(f);
+  renderTableHead();
+  renderTable(f);
+}
+
+function doRefresh() {
+  var btn = document.getElementById('refreshBtn');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+  var st = document.getElementById('statusMsg');
+  if (st) { st.className = 'status-msg'; st.style.display = 'none'; }
+  try {
+    fetchData().then(function(ok) {
+      if (ok) {
+        try {
+          fetchSheet2().then(function() { renderPond(); }).catch(function() { renderPond(); });
+        } catch(e2) {
+          renderPond();
+        }
+        populateFilters();
+        apply();
+        stamp();
+      } else {
+        var tsEl = document.getElementById('ts');
+        if (tsEl) tsEl.textContent = 'Usando datos locales';
+      }
+      if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    }).catch(function() {
+      if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+      var tsEl = document.getElementById('ts');
+      if (tsEl) tsEl.textContent = 'Error de conexión';
+    });
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    var tsEl = document.getElementById('ts');
+    if (tsEl) tsEl.textContent = 'Error de conexión';
+  }
+}
+
+function stamp() {
+  var tsEl = document.getElementById('ts');
+  if (tsEl) tsEl.textContent = 'Actualizado: ' + new Date().toLocaleString('es-VE');
+}
+
+/* ========== INIT (SYNCHRONOUS IMMEDIATE RENDERING) ========== */
+DATA = (typeof INIT_DATA !== 'undefined' && INIT_DATA.length > 0) ? INIT_DATA.slice() : [];
+populateFilters();
+apply();
+try { renderPond(); } catch(e) { console.error('Pond render error:', e); }
+stamp();
+
+// Fetch background update if available
+fetchData().then(function(ok) {
+  if (ok) {
+    populateFilters();
+    apply();
+    try {
+      fetchSheet2().then(function() { renderPond(); }).catch(function() { renderPond(); });
+    } catch(e2) {
+      renderPond();
+    }
+    stamp();
+  }
+}).catch(function(e) {
+  console.log('Modo local activo:', e);
+});
+
+/* ========== EVENT DELEGATION ========== */
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('[data-action]');
+  if (!el) return;
+  var action = el.getAttribute('data-action');
+  var arg = el.getAttribute('data-arg');
+  if (typeof window[action] === 'function') {
+    if (arg !== null && arg !== undefined) window[action](arg);
+    else window[action]();
+  }
+});
+
+['fEmp', 'fArea', 'fTipo', 'fInst'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('change', apply);
+});
+
+var searchInput = document.getElementById('fSearch');
+if (searchInput) searchInput.addEventListener('input', apply);
+</script>
+</body>
+</html>

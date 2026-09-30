@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colaboradores en Iniciativas IA</title>
+<style>
+:root {
+  --white:#fff;--g50:#f9fafb;--g100:#eee;--g200:#e2e2e2;--g300:#c6c6c6;--g400:#a8a8a8;
+  --g500:#8a8a8a;--g600:#666;--g700:#4a4a4a;--g800:#2b2b2b;--g900:#111;--black:#000;
+  --primary: #4a4a4a;
+  --primary-bg: #f0f0f0;
+  --primary-border: #c6c6c6;
+  --purple: #4a4a4a;
+  --purple-bg: #f0f0f0;
+  --purple-border: #c6c6c6;
+  --green: #2b2b2b;
+  --green-bg: #efefef;
+  --green-border: #c6c6c6;
+  --amber: #4a4a4a;
+  --amber-bg: #f5f5f5;
+  --amber-border: #c6c6c6;
+  --font: Arial, sans-serif;
+  --r: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.10);
+  --fast: 150ms ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--g50); font-family: var(--font); color: var(--black); font-size: 14px; line-height: 1.5; }
+.app { max-width: 1260px; margin: 0 auto; padding: 24px; }
+
+/* NAV SUITE */
+.nav-suite {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 4px;
+  background: var(--g200);
+  border-radius: calc(var(--r) + 2px);
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--r);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--g600);
+  transition: all var(--fast);
+  white-space: nowrap;
+}
+.nav-tab:hover { color: var(--g900); background: rgba(255,255,255,0.6); }
+.nav-tab.active {
+  background: var(--white);
+  color: var(--g900);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.nav-tab svg { flex-shrink: 0; }
+
+/* HEADER */
+.hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid var(--g200);
+  padding-bottom: 16px;
+}
+.hdr-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--g900);
+}
+.hdr-left p {
+  font-size: 12px;
+  color: var(--g500);
+  margin-top: 2px;
+}
+.hdr-right { display: flex; align-items: center; gap: 10px; }
+.badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--g300);
+  border: 1px solid var(--g400);
+  color: var(--black);
+  font-size: 11px;
+  font-weight: 600;
+}
+.btn {
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: var(--r);
+  border: 1px solid var(--g300);
+  cursor: pointer;
+  background: var(--white);
+  color: var(--g800);
+  transition: all var(--fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover { border-color: var(--g800); color: var(--black); }
+.btn:active { transform: scale(0.98); }
+.btn-fill { background: var(--g300); color: var(--black); border-color: transparent; }
+.btn-fill:hover { background: var(--black); color: var(--white); }
+.btn-outline { background: var(--white); border-color: var(--g300); }
+.btn-outline:hover { background: var(--g50); }
+.btn.loading svg { animation: spin 1s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.ts { font-size: 11px; color: var(--g500); text-align: right; }
+
+/* STATUS MESSAGE */
+.status-msg {
+  font-size: 12px;
+  padding: 9px 14px;
+  border-radius: var(--r);
+  margin-bottom: 16px;
+  display: none;
+  font-weight: 500;
+}
+.status-ok { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); display: block; }
+.status-err { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; display: block; }
+
+/* METRICS */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.m {
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--fast), box-shadow var(--fast);
+}
+.m:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.m::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: var(--g300);
+}
+.m.m-purple::before { background: var(--g700); }
+.m.m-blue::before { background: var(--g600); }
+.m.m-green::before { background: var(--g800); }
+.m.m-amber::before { background: var(--g500); }
+
+.m-label { font-size: 11px; text-transform: none; letter-spacing: 0.06em; color: var(--g500); font-weight: 600; }
+.m-val { font-size: 26px; font-weight: 800; color: var(--g900); line-height: 1.1; margin-top: 4px; }
+.m-sub { font-size: 11px; color: var(--g500); margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+
+/* FILTERS */
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  background: var(--white);
+  padding: 14px 16px;
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+}
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.fg label { font-size: 11px; font-weight: 600; text-transform: none; letter-spacing: 0.05em; color: var(--g500); }
+.fg select, .fg input {
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: var(--r);
+  border: 1px solid var(--g300);
+  background: var(--white);
+  color: var(--g800);
+  min-width: 140px;
+  transition: border-color var(--fast), box-shadow var(--fast);
+}
+.fg select:focus, .fg input:focus {
+  outline: none;
+  border-color: var(--g800);
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.06);
+}
+.clear-btn {
+  font-size: 12px;
+  color: var(--g500);
+  cursor: pointer;
+  text-decoration: underline;
+  padding-bottom: 8px;
+  margin-left: auto;
+  font-weight: 500;
+  transition: color var(--fast);
+}
+.clear-btn:hover { color: var(--black); }
+
+/* STRIPS SECTION */
+.strips {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.strip {
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.strip-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--g900);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.strip-hint { font-size: 11px; color: var(--g500); font-weight: 400; }
+.strip-list { display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; padding-right: 4px; }
+.sr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background var(--fast);
+}
+.sr:hover { background: var(--g50); }
+.sr.selected { background: var(--g200); font-weight: 600; }
+.sr-label {
+  min-width: 130px;
+  max-width: 180px;
+  color: var(--g700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sr-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--g100);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.sr-fill {
+  height: 100%;
+  background: var(--g700);
+  border-radius: 999px;
+  transition: width 300ms ease;
+}
+.sr-val {
+  font-weight: 700;
+  min-width: 38px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--g800);
+}
+.sr-pct {
+  font-size: 10px;
+  color: var(--g500);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* TOP RANKINGS */
+.rankings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.rank-card {
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.rank-card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--g900);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rank-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--g100);
+  font-size: 12px;
+}
+.rank-item:last-child { border-bottom: none; }
+.rank-idx {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--g100);
+  color: var(--g600);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.rank-item:nth-child(1) .rank-idx { background: var(--g300); color: var(--black); }
+.rank-item:nth-child(2) .rank-idx { background: var(--g200); color: var(--g700); }
+.rank-item:nth-child(3) .rank-idx { background: var(--g100); color: var(--g600); }
+.rank-name { flex: 1; font-weight: 600; color: var(--g800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px; }
+.rank-sub { font-size: 11px; color: var(--g500); }
+.rank-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--g100);
+  color: var(--g800);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* DATA TABLE */
+.tbl-wrap {
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.tbl-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--g200);
+  background: var(--g50);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tbl-head-title { font-size: 14px; font-weight: 700; color: var(--g900); }
+.tbl-actions { display: flex; align-items: center; gap: 8px; }
+.tbl-head-count { font-size: 12px; color: var(--g500); font-weight: 500; }
+.tbl-scroll { overflow-x: auto; max-height: 520px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0.05em;
+  color: var(--g500);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--g300);
+  background: var(--g100);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+th:hover { color: var(--black); background: var(--g200); }
+th .arrow { font-size: 10px; margin-left: 4px; opacity: 0.3; }
+th.sorted .arrow { opacity: 1; color: var(--black); }
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--g200);
+  color: var(--g800);
+  vertical-align: middle;
+}
+tr:hover td { background: var(--g50); }
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tag-p1 { background: var(--g200); color: var(--g800); border: 1px solid var(--g300); }
+.tag-p2 { background: var(--g100); color: var(--g700); border: 1px solid var(--g200); }
+.tag-emp { background: var(--g100); color: var(--g700); font-weight: 600; }
+.ini-pill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 480px;
+}
+.ini-item {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--g800);
+}
+.ini-bullet {
+  color: var(--g500);
+  font-weight: 700;
+  margin-right: 5px;
+}
+
+/* MODAL / DETAILS */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 99;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--white);
+  border-radius: calc(var(--r) + 4px);
+  max-width: 520px;
+  width: 90%;
+  padding: 20px;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+}
+.modal-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.modal-title { font-size: 16px; font-weight: 700; color: var(--g900); }
+.modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--g500); }
+.modal-close:hover { color: var(--black); }
+.modal-body { font-size: 13px; color: var(--g700); line-height: 1.6; }
+.modal-list { margin-top: 10px; max-height: 240px; overflow-y: auto; }
+.modal-list-item { padding: 6px 0; border-bottom: 1px solid var(--g100); display: flex; justify-content: space-between; }
+
+@media (max-width: 860px) {
+  .strips, .rankings-grid { grid-template-columns: 1fr; }
+  .filters { flex-direction: column; align-items: stretch; }
+  .fg select, .fg input { min-width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SUITE NAVIGATION -->
+  <nav class="nav-suite">
+    <a href="indicadores-capacitacion-ia.html" class="nav-tab">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      Formaciones IA
+    </a>
+    <a href="indicadores-iniciativas-ia.html" class="nav-tab active">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+      Colaboradores en Iniciativas
+    </a>
+    <a href="indicadores-unificados-ia.html" class="nav-tab">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Indicador Unificado (IA)
+    </a>
+    <a href="tablero-integral-ia.html" class="nav-tab" style="margin-left:auto; background:var(--g800); color:var(--white)" title="Vista consolidada completa para compartir"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M15 3v18"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>Suite Completa (Todo en Uno)</a>
+</nav>
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-left">
+      <h1>Colaboradores en Iniciativas</h1>
+      <p>Registro de proyectos, automatizaciones e iniciativas de mejora con Inteligencia Artificial.</p>
+    </div>
+    <div class="hdr-right">
+      <span class="badge" id="liveBadge">En vivo</span>
+      <button class="btn btn-fill" id="refreshBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        Actualizar
+      </button>
+      <div class="ts" id="ts">Sincronizando...</div>
+    </div>
+  </div>
+
+  <div id="statusMsg" class="status-msg"></div>
+
+  <!-- KPI METRICS -->
+  <div class="metrics" id="metrics"></div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <div class="fg">
+      <label>Empresa</label>
+      <select id="fEmp"><option value="">Todas</option></select>
+    </div>
+    <div class="fg">
+      <label>Área</label>
+      <select id="fArea"><option value="">Todas</option></select>
+    </div>
+    <div class="fg">
+      <label>Medición / periodo</label>
+      <select id="fMed">
+        <option value="">Todos</option>
+        <option value="Primer periodo">Primer periodo</option>
+        <option value="Segundo Periodo">Segundo Periodo</option>
+      </select>
+    </div>
+    <div class="fg" style="flex:1; min-width:200px">
+      <label>Búsqueda</label>
+      <input type="text" id="fSearch" placeholder="Colaborador o Iniciativa...">
+    </div>
+    <span class="clear-btn" id="clearBtn">Limpiar filtros</span>
+  </div>
+
+  <!-- STRIPS (DISTRIBUCION) -->
+  <div class="strips">
+    <div class="strip">
+      <div class="strip-title">
+        <span>Iniciativas únicas por empresa</span>
+        <span class="strip-hint">Haz clic para filtrar</span>
+      </div>
+      <div class="strip-list" id="stripEmpresas"></div>
+    </div>
+    <div class="strip">
+      <div class="strip-title">
+        <span>Iniciativas únicas por área</span>
+        <span class="strip-hint">Haz clic para filtrar</span>
+      </div>
+      <div class="strip-list" id="stripAreas"></div>
+    </div>
+  </div>
+
+  <!-- RANKINGS -->
+  <div class="rankings-grid">
+    <div class="rank-card">
+      <h3>
+        <span>Iniciativas más colaborativas</span>
+        <span class="strip-hint">Mayor numero de colaboradores</span>
+      </h3>
+      <div id="rankIniciativas"></div>
+    </div>
+    <div class="rank-card">
+      <h3>
+        <span>Colaboradores mas Activos</span>
+        <span class="strip-hint">Mayor numero de iniciativas unicas</span>
+      </h3>
+      <div id="rankColaboradores"></div>
+    </div>
+  </div>
+
+  <!-- TABLA DETALLADA -->
+  <div class="tbl-wrap">
+    <div class="tbl-head">
+      <div>
+        <span class="tbl-head-title">Colaboradores en iniciativas (participantes únicos)</span>
+        <span class="tbl-head-count" id="tblCount"></span>
+      </div>
+      <div class="tbl-actions">
+        <button class="btn btn-outline" id="exportBtn" style="font-size:12px; padding:5px 10px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar CSV
+        </button>
+      </div>
+    </div>
+    <div class="tbl-scroll">
+      <table>
+        <thead>
+          <tr id="tblHead"></tr>
+        </thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- DETALLE MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+var SHEET_ID = '1jbN1XJMuHLC0czCH3XX6Zo6RXDQc1QUVXMLRPTmL8Pw';
+var GID = '433982814';
+
+// Initial dataset loaded offline
+var INIT_DATA = [{"empresa":"Prisma","area":"Sistemas","colaborador":"Cesar Campo","participacion":"Participación en mejoras","iniciativa":"Ordenes de Compras","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Cesar Campo","participacion":"Participación en mejoras","iniciativa":"Visualizador de Normas y Documentos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Cesar Campo","participacion":"Participación en mejoras","iniciativa":"Lectura de Viaticos de Cofersa","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Cesar Campo","participacion":"Participación en mejoras","iniciativa":"Portal de proveedores - Modelo de pago Post Venta (MPPV)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Cesar Campo","participacion":"Participación en mejoras","iniciativa":"AIDA (Agente Inteligente de Ayuda)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Editson Noriega","participacion":"Participación en mejoras","iniciativa":"Clasificador de Cambio de Precios - Gmail","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Editson Noriega","participacion":"Participación en mejoras","iniciativa":"Consulta de Precios","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Editson Noriega","participacion":"Participación en mejoras","iniciativa":"AIDA (Agente Inteligente de Ayuda)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Maikel Gutierrez","participacion":"Participación en mejoras","iniciativa":"Script - Conciliación de Cuenta de Auxiliar VS Contabilidad (VE)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Editson Noriega","participacion":"Participación en mejoras","iniciativa":"Ordenes de Compras","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Cesar Campo","participacion":"Participación en mejoras","iniciativa":"Facturas de PushMoney","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Editson Noriega","participacion":"Participación en mejoras","iniciativa":"Facturas de PushMoney","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Cesar Campo","participacion":"Participación en mejoras","iniciativa":"Glosario de Términos Mayoreo","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Nelson Lucena","participacion":"Participación en mejoras","iniciativa":"Portal de proveedores - Modelo de pago Post Venta (MPPV)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Maikel Gutierrez","participacion":"Participación en mejoras","iniciativa":"Conciliación de Cuenta de Auxiliar VS Contabilidad (VE)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"María Gabriela Franco","participacion":"Participación en mejoras","iniciativa":"Script - Correo electrónico automático para seguimiento de cierre de Anticipos y antigüedad de Facturas (Venezuela)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Stephany De Sousa","participacion":"Participación en mejoras","iniciativa":"Script - Programación de pagos de gastos de importaciones","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Alejandro Bordones","participacion":"Participación en mejoras","iniciativa":"Script - Programación de pagos semanal (VE)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Roselyn Henríquez","participacion":"Participación en mejoras","iniciativa":"Script - Programación de pagos semanal (CR)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Roselyn Henríquez","participacion":"Participación en mejoras","iniciativa":"Script - Flujo de Tareas y aprobaciones para solicitudes de: Viáticos y Creación de Proveedores","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Giovanny Milano","participacion":"Participación en mejoras","iniciativa":"Macros en Excel (VBA) para la generación de estados de cuenta personalizados","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Giovanny Milano","participacion":"Participación en mejoras","iniciativa":"Semiautomatización del envío de estados de cuenta por correo electrónico","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Stephany De Sousa","participacion":"Participación en mejoras","iniciativa":"Automatizacion de envío masivo de correos para solicitudes de retiros de taquilla en USD","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Stephany De Sousa","participacion":"Participación en mejoras","iniciativa":"Generación de Reporte de Vencimientos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Stephany De Sousa","participacion":"Participación en mejoras","iniciativa":"Generar  reporte Semanal de la Matriz de Préstamos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Crédito y cobro","colaborador":"Alejandro Saavedra","participacion":"Participación en mejoras","iniciativa":"Script para la solicitud de retenciones pendientes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Crédito y cobro","colaborador":"Alejandro Saavedra","participacion":"Participación en mejoras","iniciativa":"Script para alertar sobre efectivo en tránsito fuera de política","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Crédito y cobro","colaborador":"Alejandro Saavedra","participacion":"Participación en mejoras","iniciativa":"Seguimiento del proceso de creación de clientes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Crédito y cobro","colaborador":"Alejandro Saavedra","participacion":"Participación en mejoras","iniciativa":"Gems para consultas de Crédito y cobro y para generar Normas y procedimientos de Crédito y Cobro","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Alejandro Bordones","participacion":"Participación en mejoras","iniciativa":"Optimizacion del análisis de Cuentas por Pagar","medicion":"Primer periodo"},{"empresa":"Cofersa","area":"Control","colaborador":"Jeffrey Díaz","participacion":"Participación en mejoras","iniciativa":"Script para la generación y envio de reportes de clientes bloqueados con saldos vencidos","medicion":"Primer periodo"},{"empresa":"Cofersa","area":"Control","colaborador":"Frank Trujillo","participacion":"Participación en mejoras","iniciativa":"Web App de proyecciones financieras para nuevos proyectos comerciales","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Stephany De Sousa","participacion":"Participación en mejoras","iniciativa":"Script - Correos electrónicos automatizados para gestión de citas con Bancos","medicion":"Primer periodo"},{"empresa":"Cofersa","area":"Compras","colaborador":"Luis  Vega","participacion":"Participación en mejoras","iniciativa":"Llenado de boletas de recibido de tarjetas de regalo","medicion":"Primer periodo"},{"empresa":"Cofersa","area":"Compras","colaborador":"Luis  Vega","participacion":"Participación en mejoras","iniciativa":"Guia de diagnostico de fallas en compresores dañados en el taller","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Nelson Lucena","participacion":"Participación en mejoras","iniciativa":"Agente de TFI","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Pronóstico","colaborador":"Hamilkar Sandoval","participacion":"Participación en mejoras","iniciativa":"Gestión de Ordenes de compras","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Pronóstico","colaborador":"Hamilkar Sandoval","participacion":"Participación en mejoras","iniciativa":"Workflow de Bitacora","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Pronóstico","colaborador":"Hamilkar Sandoval","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Servicios Operacionales","colaborador":"Oswaldo Silva","participacion":"Participación en mejoras","iniciativa":"Creación de un prompt para automatizar la generación de  reporte de los principales avances del mes.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Pronóstico","colaborador":"Edgar Montilla","participacion":"Participación en mejoras","iniciativa":"Gestión de Ordenes de compras","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Pronóstico","colaborador":"Hamilkar Sandoval","participacion":"Participación en mejoras","iniciativa":"Workflow de Bitacora","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Pronóstico","colaborador":"Edgar Montilla","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Pronóstico","colaborador":"Edgar Montilla","participacion":"Participación en mejoras","iniciativa":"Gestión de Ordenes de compras","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Pronóstico","colaborador":"Edgar Montilla","participacion":"Participación en mejoras","iniciativa":"Workflow de Bitacora","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Pronóstico","colaborador":"Edgar Montilla","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ali Navarro","participacion":"Participación en mejoras","iniciativa":"Categorización de líneas importadas para Colombia y Costa Rica","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ricardo Adarmes","participacion":"Participación en mejoras","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Reina Chirinos","participacion":"Participación en mejoras","iniciativa":"Investigaciones de Mercadeo","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ruth Martinez","participacion":"Participación en mejoras","iniciativa":"Automatización de tareas en Excel con macros","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Patricia Rey","participacion":"Participación en mejoras","iniciativa":"Uso de IA para Manejo de redes sociales de todas las casas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Uso de IA para Manejo de redes sociales de todas las casas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Herramienta para reconocer productos a través de una foto que se toma o se sube, identificarlos dentro del catálogo y devolver una búsqueda idéntica o muy cercana a lo que el cliente busca (Amazon lens)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Adriana Navas","participacion":"Participación en mejoras","iniciativa":"Revisión de redacción y contenido de publicaciones","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Buscador automatizado de Talento (Personal)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Generador de guiones de entrevistas (Personal)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Comparador de candidatos (Personal)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Análisis de entrevistas de candidatos (Personal)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"OLOBOT: Agente Virtual de Personal","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Tu Voz Cuenta: Canal comunicación confidencial","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Mary Montanes","participacion":"Participación en mejoras","iniciativa":"OLO-Docs: Todo listo para firmar (Acceso exclusivo para el Dpto. de Personal)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Mariangela Fonseca","participacion":"Participación en mejoras","iniciativa":"Generación de una herramienta para el control de la gestión mensual de la gerencia basada en inteligencia artificial.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Yazmin Quiceno","participacion":"Participación en mejoras","iniciativa":"Automatización de requisición de personal","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Mariangela Fonseca","participacion":"Participación en mejoras","iniciativa":"Tracking automatico de fases del proceso de captación","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Mariangela Fonseca","participacion":"Participación en mejoras","iniciativa":"Script del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Mariangela Fonseca","participacion":"Participación en mejoras","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Mariangela Fonseca","participacion":"Participación en mejoras","iniciativa":"Automatización del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Mariangela Fonseca","participacion":"Participación en mejoras","iniciativa":"Automatizador de organigramas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Mariangela Fonseca","participacion":"Participación en mejoras","iniciativa":"Pront desarrollador de ejercicio practicos de selección","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Generación de una herramienta para el control de la gestión mensual de la gerencia basada en inteligencia artificial.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Jessie Espinoza","participacion":"Participación en mejoras","iniciativa":"Automatización de requisición de personal","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Yazmin Quiceno","participacion":"Participación en mejoras","iniciativa":"Tracking automatico de fases del proceso de captación","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Yazmin Quiceno","participacion":"Participación en mejoras","iniciativa":"Script del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Yazmin Quiceno","participacion":"Participación en mejoras","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Yazmin Quiceno","participacion":"Participación en mejoras","iniciativa":"Automatización del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Yazmin Quiceno","participacion":"Participación en mejoras","iniciativa":"Automatizador de organigramas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Yazmin Quiceno","participacion":"Participación en mejoras","iniciativa":"Pront desarrollador de ejercicio practicos de selección","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Jessie Espinoza","participacion":"Participación en mejoras","iniciativa":"Tracking automatico de fases del proceso de captación","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Jessie Espinoza","participacion":"Participación en mejoras","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Jessie Espinoza","participacion":"Participación en mejoras","iniciativa":"Automatización del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Automatizador de organigramas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Jessie Espinoza","participacion":"Participación en mejoras","iniciativa":"Pront desarrollador de ejercicio practicos de selección","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Jessie Espinoza","participacion":"Participación en mejoras","iniciativa":"Automatizador de organigramas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Cesar Campo","participacion":"Participación en mejoras","iniciativa":"Visualizador de Normas y Documentos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Nelson Lucena","participacion":"Participación en mejoras","iniciativa":"Flujo de aprobación de documentos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Nelson Lucena","participacion":"Participación en mejoras","iniciativa":"DM de proyectos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Cesar Campo","participacion":"Participación en mejoras","iniciativa":"Lectura de Viaticos de Cofersa","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Giovanni Pérez","participacion":"Participación en mejoras","iniciativa":"Agente imprenta digital","medicion":"Primer periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Diseño de un script con IA para generar automáticamente una base de datos de los reclamos asociados a ventas.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Alejandro Bordones","participacion":"Participación en mejoras","iniciativa":"Optimizar el análisis de Cuentas por Pagar","medicion":"Primer periodo"},{"empresa":"Cofersa","area":"Compras","colaborador":"Luis  Vega","participacion":"Participación en mejoras","iniciativa":"prompt analizador de datos comerciales","medicion":"Primer periodo"},{"empresa":"Cofersa","area":"Compras","colaborador":"Luis  Vega","participacion":"Participación en mejoras","iniciativa":"Pront diagnósticador en video de fallas técnicas en compresores","medicion":"Primer periodo"},{"empresa":"Cofersa","area":"Control","colaborador":"Jeffrey Díaz","participacion":"Participación en mejoras","iniciativa":"Script de generación  y envío de reportes automaticos de clientes bloqueados con saldos vencidos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Stephany De Sousa","participacion":"Participación en mejoras","iniciativa":"Script para efectivo en tránsito fuera de política","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Crédito y cobro","colaborador":"Alejandro Saavedra","participacion":"Participación en mejoras","iniciativa":"Script para efectivo en tránsito fuera de política","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Crédito y cobro","colaborador":"Alejandro Saavedra","participacion":"Participación en mejoras","iniciativa":"Gems para consultas de CC y para generar Normas y procedimientos de CC","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Stephany De Sousa","participacion":"Participación en mejoras","iniciativa":"Script generador de reporte Semanal de la Matriz de Préstamos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Stephany De Sousa","participacion":"Participación en mejoras","iniciativa":"Automatización de envío masivo de correos para solicitudes de retiros de taquilla en USD","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Script de correos automáticos a clientes y proveedores notificando cobro o pago de facturas","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Script de notificación automática por correo ante fallos en la carga del aplicativo FR","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Script de reintento automático de carga del aplicativo FR usando IA","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Automatización de reportes en tiempo real a través de pantallas internas","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Automatización contable para la causación de facturas con IA","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"División automática de pedidos entre bodegas con IA","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Automatización de guías con transportadora","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Chat de WhatsApp inteligente para ventas y cartera con IA","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Alerta inteligente de rotación de inventario con IA","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Predicción de demanda por cliente y artículo con IA","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Sugerencia automática de combos o productos complementarios","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Control","colaborador":"Karina Cuberos","participacion":"Participación en mejoras","iniciativa":"Automatización de cobro vía correo electrónico a los clientes","medicion":"Primer periodo"},{"empresa":"Beval","area":"Logistica","colaborador":"Jose Aponte","participacion":"Participación en mejoras","iniciativa":"Habladores automaticos a traves del ingreso del n° de palet  del aereo","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Angely Ojeda","participacion":"Participación en mejoras","iniciativa":"Tracking automatico de fases del proceso de captación","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Angely Ojeda","participacion":"Participación en mejoras","iniciativa":"Script del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Angely Ojeda","participacion":"Participación en mejoras","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Angely Ojeda","participacion":"Participación en mejoras","iniciativa":"Automatización del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Angely Ojeda","participacion":"Participación en mejoras","iniciativa":"Automatizador de organigramas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Angely Ojeda","participacion":"Participación en mejoras","iniciativa":"Pront desarrollador de ejercicio practicos de selección","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Giovanni Pérez","participacion":"Participación en mejoras","iniciativa":"Tracking automatico de fases del proceso de captación","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Giovanni Pérez","participacion":"Participación en mejoras","iniciativa":"Script del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Giovanni Pérez","participacion":"Participación en mejoras","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Giovanni Pérez","participacion":"Participación en mejoras","iniciativa":"Automatización del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Giovanni Pérez","participacion":"Participación en mejoras","iniciativa":"Automatizador de organigramas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Giovanni Pérez","participacion":"Participación en mejoras","iniciativa":"Pront desarrollador de ejercicio practicos de selección","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Aida Urdaneta","participacion":"Participación en mejoras","iniciativa":"Tracking automatico de fases del proceso de captación","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Aida Urdaneta","participacion":"Participación en mejoras","iniciativa":"Script del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Aida Urdaneta","participacion":"Participación en mejoras","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Aida Urdaneta","participacion":"Participación en mejoras","iniciativa":"Automatización del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Aida Urdaneta","participacion":"Participación en mejoras","iniciativa":"Automatizador de organigramas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Aida Urdaneta","participacion":"Participación en mejoras","iniciativa":"Pront desarrollador de ejercicio practicos de selección","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Editson Noriega","participacion":"Participación en mejoras","iniciativa":"Tracking automatico de fases del proceso de captación","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Editson Noriega","participacion":"Participación en mejoras","iniciativa":"Script del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Editson Noriega","participacion":"Participación en mejoras","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Editson Noriega","participacion":"Participación en mejoras","iniciativa":"Automatización del repositorio de vacantes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Editson Noriega","participacion":"Participación en mejoras","iniciativa":"Automatizador de organigramas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Sistemas","colaborador":"Editson Noriega","participacion":"Participación en mejoras","iniciativa":"Pront desarrollador de ejercicio practicos de selección","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Anixy Guedez","participacion":"Participación en mejoras","iniciativa":"Gestion de Ordenes en reposición","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Operaciones","colaborador":"Yulitze Querales","participacion":"Participación en mejoras","iniciativa":"Gestion de Ordenes en reposición","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Branfort Monro","participacion":"Participación en mejoras","iniciativa":"Gestion de Ordenes en reposición","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Josshana Tesorero","participacion":"Participación en mejoras","iniciativa":"Gestion de Ordenes en reposición","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Glendys Rodriguez","participacion":"Participación en mejoras","iniciativa":"Gestion de Ordenes en reposición","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Stephany Guadarrama","participacion":"Participación en mejoras","iniciativa":"Gestion de Ordenes en reposición","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Daniel Duran","participacion":"Participación en mejoras","iniciativa":"Gestion de Ordenes en reposición","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Kevin Escobar","participacion":"Participación en mejoras","iniciativa":"Gestion de Ordenes en reposición","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Wleidy Ramones","participacion":"Participación en mejoras","iniciativa":"Gestion de Ordenes en reposición","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Anixy Guedez","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Operaciones","colaborador":"Yulitze Querales","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Branfort Monro","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Josshana Tesorero","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Glendys Rodriguez","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Stephany Guadarrama","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Daniel Duran","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Kevin Escobar","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Wleidy Ramones","participacion":"Participación en mejoras","iniciativa":"Plataforma de comunicaciones de avances","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Gianella Álvarez","participacion":"Participación en mejoras","iniciativa":"Automatización con Pyton los cargadores dínamicos de comisiones bancarias e igtf","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Fernando Linares","participacion":"Participación en mejoras","iniciativa":"Scrip automatizó el cálculo de diferencial cambiario de pagos a proveedores y envió automático del cálculo a los proveedores","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Julien Barroeta","participacion":"Participación en mejoras","iniciativa":"Automatizó con script el cálculo del 25% de IVA de todas las facturas para hacer la Orden de pago de forma más rápida","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Alvaro Rivera","participacion":"Participación en mejoras","iniciativa":"Automatización de analizador de información en el tracking de personal","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Daniela Melendez","participacion":"Participación en mejoras","iniciativa":"Automatización de analizador de información en el tracking de personal","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Rosalia Rincones","participacion":"Participación en mejoras","iniciativa":"Automatización de analizador de información en el tracking de personal","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Angela Leon","participacion":"Participación en mejoras","iniciativa":"Automatización de analizador de información en el tracking de personal","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Logística","colaborador":"Jhons Piñero","participacion":"Participación en mejoras","iniciativa":"Automatización de logistica proactiva: aplicativo de recepción e proveedores","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Logística","colaborador":"Jhons Piñero","participacion":"Participación en mejoras","iniciativa":"Reposición automatica de picking","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Logística","colaborador":"Marcos Perez","participacion":"Participación en mejoras","iniciativa":"Automatización de rotación de articulos (FIFO/FEFO)","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Logística","colaborador":"Angel Moreno","participacion":"Participación en mejoras","iniciativa":"Automatización de doble posición de almacenaje","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Logística","colaborador":"Jose Aponte","participacion":"Participación en mejoras","iniciativa":"Aumento de frecuencia de despacho en plaza","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Logística","colaborador":"Leonardo Rodríguez","participacion":"Participación en mejoras","iniciativa":"Script de logistica proactiva para recepción de proveedores","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Logística","colaborador":"Yolanis Mijares","participacion":"Participación en mejoras","iniciativa":"Aplicativo de reporte conciliador de inventario","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Logística","colaborador":"José Oviedo","participacion":"Participación en mejoras","iniciativa":"Aplicativo para mesas de chequeo movil","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Transporte","colaborador":"Hermes Villamizar","participacion":"Participación en mejoras","iniciativa":"Automatización de R4 de control de inventario","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Transporte","colaborador":"Jorge Rodriguez","participacion":"Participación en mejoras","iniciativa":"Script para activación de expediciones de estibas completas","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Logística","colaborador":"José Uzcategui","participacion":"Participación en mejoras","iniciativa":"Script de logistica postventas","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Amilcar Bellais","participacion":"Participación en mejoras","iniciativa":"Aplicativo de Como vamos (diario)","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Amilcar Bellais","participacion":"Participación en mejoras","iniciativa":"Script de mensaje automatico  de clientes con oportunidad de activación (semanal)","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Amilcar Bellais","participacion":"Participación en mejoras","iniciativa":"Script de avaluo general (quincenal)","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Amilcar Bellais","participacion":"Participación en mejoras","iniciativa":"Script  notificativo de Top deudas (quincenal)","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Amilcar Bellais","participacion":"Participación en mejoras","iniciativa":"Script notificativo diario de artículos por clientes que históricamente han comprado y no llevan activación de ese surtido en los últimos 2 meses teniendo inventario","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Amilcar Bellais","participacion":"Participación en mejoras","iniciativa":"Script de validación de pedidos transmitidos","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Franz Pérez","participacion":"Participación en mejoras","iniciativa":"Script de logistica postventas","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Franz Pérez","participacion":"Participación en mejoras","iniciativa":"Aplicativo de Como vamos (diario)","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Franz Pérez","participacion":"Participación en mejoras","iniciativa":"Script de mensaje automatico  de clientes con oportunidad de activación (semanal)","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Franz Pérez","participacion":"Participación en mejoras","iniciativa":"Script de avaluo general (quincenal)","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Franz Pérez","participacion":"Participación en mejoras","iniciativa":"Script  notificativo de Top deudas (quincenal)","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Franz Pérez","participacion":"Participación en mejoras","iniciativa":"Script notificativo diario de artículos por clientes que históricamente han comprado y no llevan activación de ese surtido en los últimos 2 meses teniendo inventario","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Franz Pérez","participacion":"Participación en mejoras","iniciativa":"Script de validación de pedidos transmitidos","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Christina Gómez","participacion":"Participación en mejoras","iniciativa":"Script de validación de pedidos transmitidos","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Compras","colaborador":"Gerardo Salas","participacion":"Participación en mejoras","iniciativa":"Script de logistica postventas","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Compras","colaborador":"Andrea Osio","participacion":"Participación en mejoras","iniciativa":"Aplicativo de Como vamos (diario)","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Compras","colaborador":"Maiguelangel Zauzich","participacion":"Participación en mejoras","iniciativa":"Script de mensaje automatico  de clientes con oportunidad de activación (semanal)","medicion":"Primer periodo"},{"empresa":"Sillaca","area":"Compras","colaborador":"Maria Rodriguez","participacion":"Participación en mejoras","iniciativa":"Script de mensaje automatico  de clientes con oportunidad de activación (semanal)","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Edgar Monagas","participacion":"Participación en mejoras","iniciativa":"Automatización del envío solicitud de soportes de retenciones pre-cargadas pendientes por procesar a correos de  ventas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Crédito y cobro","colaborador":"Lolimar Oropeza","participacion":"Participación en mejoras","iniciativa":"Automatización del envío solicitud de soportes de retenciones pre-cargadas pendientes por procesar a correos de  ventas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Crédito y cobro","colaborador":"Luis Cardozo","participacion":"Participación en mejoras","iniciativa":"Automatización del envío solicitud de soportes de retenciones pre-cargadas pendientes por procesar a correos de  ventas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Crédito y cobro","colaborador":"Francy Zabaleta","participacion":"Participación en mejoras","iniciativa":"Automatización del envío solicitud de soportes de retenciones pre-cargadas pendientes por procesar a correos de  ventas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Crédito y cobro","colaborador":"Carolina Ache","participacion":"Participación en mejoras","iniciativa":"Automatización del envío solicitud de soportes de retenciones pre-cargadas pendientes por procesar a correos de  ventas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Servicios Operacionales","colaborador":"Oswaldo Silva","participacion":"Participación en mejoras","iniciativa":"Script comparador de ordenes de compras contra factura, evidenciando diferencia","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Jesús Araujo","participacion":"Participación en mejoras","iniciativa":"Script comparador de ordenes de compras contra factura, evidenciando diferencia","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Importaciones","colaborador":"Adrian Saad","participacion":"Participación en mejoras","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano","medicion":"Primer periodo"},{"empresa":"Beval","area":"Compras","colaborador":"Jade Varela","participacion":"Participación en mejoras","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano","medicion":"Primer periodo"},{"empresa":"Beval","area":"Gerencia","colaborador":"José Seijas","participacion":"Participación en mejoras","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano","medicion":"Primer periodo"},{"empresa":"Beval","area":"Compras","colaborador":"Ramon Manzol","participacion":"Participación en mejoras","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano","medicion":"Primer periodo"},{"empresa":"Beval","area":"Compras","colaborador":"Edgar Martinez","participacion":"Participación en mejoras","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano","medicion":"Primer periodo"},{"empresa":"Beval","area":"Compras","colaborador":"Norian Duran","participacion":"Participación en mejoras","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano","medicion":"Primer periodo"},{"empresa":"Beval","area":"Compras","colaborador":"Fabiola Bonifacio","participacion":"Participación en mejoras","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Francisco Rueda","participacion":"Participación en mejoras","iniciativa":"Script de promociones y activaciones","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Francisco Rueda","participacion":"Participación en mejoras","iniciativa":"Automatización de Modelo de campaña publicitarias","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Francisco Rueda","participacion":"Participación en mejoras","iniciativa":"Matriz de inventario idela","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Francisco Rueda","participacion":"Participación en mejoras","iniciativa":"modelo de fijación de precios","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Francisco Rueda","participacion":"Participación en mejoras","iniciativa":"Comparativo con IA del surtido que se convirtio en BCG para generar clasificaciones de productos","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Diego Henao","participacion":"Participación en mejoras","iniciativa":"Comparativo con IA del surtido que se convirtio en BCG para generar clasificaciones de productos","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Jonathan Restrepo","participacion":"Participación en mejoras","iniciativa":"Comparativo con IA del surtido que se convirtio en BCG para generar clasificaciones de productos","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Diego Otalora","participacion":"Participación en mejoras","iniciativa":"Comparativo con IA del surtido que se convirtio en BCG para generar clasificaciones de productos","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Carolina Marin","participacion":"Participación en mejoras","iniciativa":"Elasticidades de demanda que le permitieron sacar la optimización del precio","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Diego Henao","participacion":"Participación en mejoras","iniciativa":"Elasticidades de demanda que le permitieron sacar la optimización del precio","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Jonathan Restrepo","participacion":"Participación en mejoras","iniciativa":"Elasticidades de demanda que le permitieron sacar la optimización del precio","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Giovanny Milano","participacion":"Participación en mejoras","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Jesús Araujo","participacion":"Participación en mejoras","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Servicios Operacionales","colaborador":"Gabriel Segura","participacion":"Participación en mejoras","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Servicios Operacionales","colaborador":"Omar Armas","participacion":"Participación en mejoras","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Servicios Operacionales","colaborador":"Karla Siderex","participacion":"Participación en mejoras","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Giovanny Milano","participacion":"Participación en mejoras","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Giovanny Milano","participacion":"Participación en mejoras","iniciativa":"Script de automatización de estados de cuenta para Cofersa","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Jesús Araujo","participacion":"Participación en mejoras","iniciativa":"Script de automatización de estados de cuenta para Cofersa","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Servicios Operacionales","colaborador":"Gabriel Segura","participacion":"Participación en mejoras","iniciativa":"Script de automatización de estados de cuenta para Cofersa","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Servicios Operacionales","colaborador":"Omar Armas","participacion":"Participación en mejoras","iniciativa":"Script de automatización de estados de cuenta para Cofersa","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Servicios Operacionales","colaborador":"Karla Siderex","participacion":"Participación en mejoras","iniciativa":"Script de automatización de estados de cuenta para Cofersa","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ruth Martinez","participacion":"Participación en mejoras","iniciativa":"Automatización de procesos con Python","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Reina Chirinos","participacion":"Participación en mejoras","iniciativa":"Pront de investigación, analisis y comparación del mercado","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ali Navarro","participacion":"Participación en mejoras","iniciativa":"Integración de la inteligencia artificial en entornos de desarrollo para acelerar la creación de esquemas, empaquetado de funciones y formateo de salidas de datos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ali Navarro","participacion":"Participación en mejoras","iniciativa":"IA para la gestión y repositorio documentado de proyectos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ricardo Adarmes","participacion":"Participación en mejoras","iniciativa":"IA para la gestión y repositorio documentado de proyectos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Reina Chirinos","participacion":"Participación en mejoras","iniciativa":"Aplicación de modelo de inteligencia artificial para generar etiquetas en grandes volúmenes de datos y obtener clasificaciones más significativas.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Jessica Gonzalez","participacion":"Participación en mejoras","iniciativa":"Aplicación de modelo de inteligencia artificial para generar etiquetas en grandes volúmenes de datos y obtener clasificaciones más significativas.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Simon Linares","participacion":"Participación en mejoras","iniciativa":"Aplicación de modelo de inteligencia artificial para generar etiquetas en grandes volúmenes de datos y obtener clasificaciones más significativas.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Irina Moghelbay","participacion":"Participación en mejoras","iniciativa":"Aplicación de modelo de inteligencia artificial para generar etiquetas en grandes volúmenes de datos y obtener clasificaciones más significativas.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Wilmary Soto","participacion":"Participación en mejoras","iniciativa":"Aplicación de modelo de inteligencia artificial para generar etiquetas en grandes volúmenes de datos y obtener clasificaciones más significativas.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ali Navarro","participacion":"Participación en mejoras","iniciativa":"Bot de extracción y clasificación de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ricardo Adarmes","participacion":"Participación en mejoras","iniciativa":"Bot de extracción y clasificación de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Reina Chirinos","participacion":"Participación en mejoras","iniciativa":"Bot de extracción y clasificación de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Jessica Gonzalez","participacion":"Participación en mejoras","iniciativa":"Bot de extracción y clasificación de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Simon Linares","participacion":"Participación en mejoras","iniciativa":"Bot de extracción y clasificación de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Irina Moghelbay","participacion":"Participación en mejoras","iniciativa":"Bot de extracción y clasificación de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Wilmary Soto","participacion":"Participación en mejoras","iniciativa":"Bot de extracción y clasificación de información","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Jhossett Vela","participacion":"Participación en mejoras","iniciativa":"Automatización de los recibos de pago","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Ruannys Aguiar","participacion":"Participación en mejoras","iniciativa":"Automatización de los recibos de pago","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ali Navarro","participacion":"Participación en mejoras","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ricardo Adarmes","participacion":"Participación en mejoras","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Reina Chirinos","participacion":"Participación en mejoras","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Jessica Gonzalez","participacion":"Participación en mejoras","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Simon Linares","participacion":"Participación en mejoras","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Irina Moghelbay","participacion":"Participación en mejoras","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Wilmary Soto","participacion":"Participación en mejoras","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado.","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ricardo Adarmes","participacion":"Participación en mejoras","iniciativa":"Optimización Automatizada de Imágenes de productos","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Adriana Navas","participacion":"Participación en mejoras","iniciativa":"GPT entrenado para corregir y redactar textos claros, directos, positivos y minimalistas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Adriana Navas","participacion":"Participación en mejoras","iniciativa":"GPT entrenado y configurado para crear grillas de contenido mensuales con 8 publicaciones diseñadas especialmente para empresas mayoristas B2B del sector ferretero, construcción, autopartes y quincallería","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Adriana Navas","participacion":"Participación en mejoras","iniciativa":"GPT entrenado para transformar contenidos estratégicos obtenidos del GPT de desarrollo de contenido en piezas gráficas hiperrealistas con estilo fotográfico profesional, alineadas con la identidad visual de las marcas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Adriana Navas","participacion":"Participación en mejoras","iniciativa":"Generación de imágenes hiperrealistas para contenido corporativo","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Adriana Navas","participacion":"Participación en mejoras","iniciativa":"Creación de copys persuasivos, formales o emocionales según el canal y objetivo, aplicando tono minimalista y profesional, con foco en claridad y recordación","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Paola Macho","participacion":"Participación en mejoras","iniciativa":"Creación de copys persuasivos, formales o emocionales según el canal y objetivo, aplicando tono minimalista y profesional, con foco en claridad y recordación","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Reina Chirinos","participacion":"Participación en mejoras","iniciativa":"GPT desarrollador de guiones de voz en off y storyboards detallados para videos internos, comerciales y de campañas, incluyendo recomendaciones técnicas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Paola Macho","participacion":"Participación en mejoras","iniciativa":"Estandarización de datos de clientes y correos para campañas de marketing, con metodologías para depuración y segmentación automática","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Reina Chirinos","participacion":"Participación en mejoras","iniciativa":"Estandarización de datos de clientes y correos para campañas de marketing, con metodologías para depuración y segmentación automática","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Adriana Navas","participacion":"Participación en mejoras","iniciativa":"Generación de ideas para campañas, activaciones, promociones y materiales internos, incluyendo análisis de variables y recomendaciones estratégicas","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Logística","colaborador":"Jhon Echeverry","participacion":"Participación en mejoras","iniciativa":"Consulta de fallas técnicas y creación de guía practica de uso del montacargas","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Logística","colaborador":"Hector Mosquera","participacion":"Participación en mejoras","iniciativa":"Consulta de fallas técnicas y creación de guía practica de uso del montacargas","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Logística","colaborador":"Yovan Agudedo","participacion":"Participación en mejoras","iniciativa":"Consulta de fallas técnicas y creación de guía practica de uso del montacargas","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Logística","colaborador":"Jhon Echeverry","participacion":"Participación en mejoras","iniciativa":"GTP para la generación de reportes y comparativos","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Logística","colaborador":"Hector Mosquera","participacion":"Participación en mejoras","iniciativa":"GTP para la generación de reportes y comparativos","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Logística","colaborador":"Yovan Agudedo","participacion":"Participación en mejoras","iniciativa":"GTP para la generación de reportes y comparativos","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Logística","colaborador":"Cesar Acevedo","participacion":"Participación en mejoras","iniciativa":"GTP para la generación de reportes y comparativos","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Logística","colaborador":"Junior Zapata","participacion":"Participación en mejoras","iniciativa":"GTP para la generación de reportes y comparativos","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Ventas","colaborador":"Geraldine Castellano","participacion":"Participación en mejoras","iniciativa":"GPT para mejorar imagenes, extraer información acerca de productos de los catálogos y fichas técnicas de los proveedores","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Ventas","colaborador":"Geraldine Castellano","participacion":"Participación en mejoras","iniciativa":"GPT para estandarizar las descripciones para la creación de los códigos de artículos","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Ventas","colaborador":"Geraldine Castellano","participacion":"Participación en mejoras","iniciativa":"Pront para realizar la estructura de presentaciones con marcas estratégicas para reuniones comerciales y solicitudes a los proveedores","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Ventas","colaborador":"Geraldine Castellano","participacion":"Participación en mejoras","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Ventas","colaborador":"Geraldine Castellano","participacion":"Participación en mejoras","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Compras","colaborador":"Wilfred","participacion":"Participación en mejoras","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Compras","colaborador":"Daniel Velasquez","participacion":"Participación en mejoras","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Compras","colaborador":"Adriana Sierra","participacion":"Participación en mejoras","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Compras","colaborador":"Miguelangel Zauschi","participacion":"Participación en mejoras","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Servicios Operacionales","colaborador":"Karla Siderex","participacion":"Participación en mejoras","iniciativa":"GPT para cargar en sistema cotizaciones hechas pdf para homologar los precios","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Servicios Operacionales","colaborador":"Verona Salas","participacion":"Participación en mejoras","iniciativa":"GPT para cargar en sistema cotizaciones hechas pdf para homologar los precios","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Servicios Operacionales","colaborador":"Omar Armas","participacion":"Participación en mejoras","iniciativa":"GPT para perfeccionar la formulación del calculo de los reportes de ventas","medicion":"Primer periodo"},{"empresa":"Beval","area":"Ventas","colaborador":"Carmela Caramagno","participacion":"Participación en mejoras","iniciativa":"GPT para perfeccionar la formulación del calculo de los reportes de ventas","medicion":"Primer periodo"},{"empresa":"Beval","area":"Ventas","colaborador":"Orianny Villanueva","participacion":"Participación en mejoras","iniciativa":"GPT para perfeccionar la formulación del calculo de los reportes de ventas","medicion":"Primer periodo"},{"empresa":"Beval","area":"Ventas","colaborador":"Maria Montes de oca","participacion":"Participación en mejoras","iniciativa":"GPT para perfeccionar la formulación del calculo de los reportes de ventas","medicion":"Primer periodo"},{"empresa":"Beval","area":"Ventas","colaborador":"Carmela Caramagno","participacion":"Participación en mejoras","iniciativa":"Pront de personalización de plantilla de información de promociones a vendedores y supervisores","medicion":"Primer periodo"},{"empresa":"Beval","area":"Ventas","colaborador":"Orianny Villanueva","participacion":"Participación en mejoras","iniciativa":"Pront de personalización de plantilla de información de promociones a vendedores y supervisores","medicion":"Primer periodo"},{"empresa":"Beval","area":"Ventas","colaborador":"Maria Montes de oca","participacion":"Participación en mejoras","iniciativa":"Pront de personalización de plantilla de información de promociones a vendedores y supervisores","medicion":"Primer periodo"},{"empresa":"Febeca","area":"Ventas","colaborador":"Carlos Lagares","participacion":"Participación en mejoras","iniciativa":"Pront de personalización de plantilla de información de promociones a vendedores y supervisores","medicion":"Primer periodo"},{"empresa":"Cofersa","area":"Gerencia","colaborador":"Ignacio Vietto","participacion":"Participación en mejoras","iniciativa":"Globales","medicion":"Primer periodo"},{"empresa":"Prisma","area":"Gerencia","colaborador":"Jose Palencia","participacion":"Participación en mejoras","iniciativa":"Globales","medicion":"Primer periodo"},{"empresa":"Mundipartes","area":"Personal","colaborador":"Mildrey Correa","participacion":"Participación en mejoras","iniciativa":"Base de datos autogestionable de datos socio económicos y seguridad vial","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Personal","colaborador":"Elda Ceballos","participacion":"Participación en mejoras","iniciativa":"Mapeo de gestión de tiempos","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Jonathan Restrepo","participacion":"Participación en mejoras","iniciativa":"Programación Acompañamiento en Calle","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Liquidaciones","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Auditor de Margenes en Listas de Precio","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Optimizador de Rutas de Visita","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Jhossett Vela","participacion":"Participación en mejoras","iniciativa":"Portal gestión de vendedores - Febeca, Sillaca y Beval","medicion":"Segundo Periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Christina Gomez","participacion":"Participación en mejoras","iniciativa":"Como Vamos","medicion":"Segundo Periodo"},{"empresa":"Sillaca","area":"Ventas","colaborador":"Andy Saldivia","participacion":"Participación en mejoras","iniciativa":"SUGERIDO DE VENTA","medicion":"Segundo Periodo"},{"empresa":"Febeca","area":"Ventas","colaborador":"Juan Gimenez","participacion":"Participación en mejoras","iniciativa":"Cálculo de Metas","medicion":"Segundo Periodo"},{"empresa":"Beval","area":"Compras","colaborador":"Natasha Briceño","participacion":"Participación en mejoras","iniciativa":"Estandarización de Descripciones Comerciales","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Ali Navarro","participacion":"Participación en mejoras","iniciativa":"AIPEX","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Ventas","colaborador":"Juan Gimenez","participacion":"Participación en mejoras","iniciativa":"Boletas de Gestión de Asesores y Supervisores","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Ventas","colaborador":"Juan Gimenez","participacion":"Participación en mejoras","iniciativa":"Cotizador Mayoreo","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Krysmar Oliveros","participacion":"Participación en mejoras","iniciativa":"Herramienta Para la Gestión de Nuevos Ingresos","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Yazmin Quiceno","participacion":"Participación en mejoras","iniciativa":"Entrevista de Salida","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jonathan Tarazon","participacion":"Participación en mejoras","iniciativa":"Gestión Ordenes de Compras","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Luis Millan","participacion":"Participación en mejoras","iniciativa":"Vision Gerencial de candidatos","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"César Campo","participacion":"Participación en mejoras","iniciativa":"Centro de Formación de Fuerza de Ventas","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"César Campo","participacion":"Participación en mejoras","iniciativa":"Portal de Condiciones Comerciales","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Krysmar Oliveros","participacion":"Participación en mejoras","iniciativa":"Herramienta de Gestión de Archivos de Personal","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Rosalia Rincones","participacion":"Participación en mejoras","iniciativa":"Auto-Respuesta y Captación Automatizada de CVs","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Paola Rodríguez","participacion":"Participación en mejoras","iniciativa":"Portal Auditoria de Retenciones de Compras","medicion":"Segundo Periodo"},{"empresa":"Sillaca","area":"Compras","colaborador":"Daniel Salas","participacion":"Participación en mejoras","iniciativa":"AIPEX (Versión Beta)","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Aida Urdaneta","participacion":"Participación en mejoras","iniciativa":"Alertas de seguimiento tareas de proyectos","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Logística","colaborador":"Kevin Montoya","participacion":"Participación en mejoras","iniciativa":"Clasificación arancelaria","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Aida Urdaneta","participacion":"Participación en mejoras","iniciativa":"Índice dinámico","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Jesús Araujo","participacion":"Participación en mejoras","iniciativa":"Bot aviso próximo ingreso artículos","medicion":"Segundo Periodo"},{"empresa":"Sillaca","area":"Compras","colaborador":"Daniel Salas","participacion":"Participación en mejoras","iniciativa":"Cargador TADIA","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Mercadeo","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Solicitudes de mercadeo (Tickets)","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Carolina Marin","participacion":"Participación en mejoras","iniciativa":"Investigación de Mercado para Artículos nuevos y actuales","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Carolina Marin","participacion":"Participación en mejoras","iniciativa":"Modelo de Predicción y Análisis del Comportamiento Comercial","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Alerta de Clientes Caidos por Marca","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Gerencia","colaborador":"Oswaldo Silva","participacion":"Participación en mejoras","iniciativa":"Automatización presentaciones en formato","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Kevin Escobar","participacion":"Participación en mejoras","iniciativa":"Análisis de inventario y fallas","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Yazmin Quiceno","participacion":"Participación en mejoras","iniciativa":"Test de Medición del Ingles","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Generador de organigramas","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Yazmin Quiceno","participacion":"Participación en mejoras","iniciativa":"Agente Entrevistador Mayoreo","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Yazmin Quiceno","participacion":"Participación en mejoras","iniciativa":"Generador de organigramas","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Generador de recursos de formación (Videos)","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Personal","colaborador":"Alexandra Orozco","participacion":"Participación en mejoras","iniciativa":"Estándar de comunicación viajes personal","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Personal","colaborador":"Elda Ceballos","participacion":"Participación en mejoras","iniciativa":"Estrategia de comunicación","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Jesús Araujo","participacion":"Participación en mejoras","iniciativa":"Sistema Gestión de Tickets","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Juan Guanipa","participacion":"Participación en mejoras","iniciativa":"Creador de archivos excel para Ordenes de compra","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Hanilkar Sandoval","participacion":"Participación en mejoras","iniciativa":"Radar III - Doppler -  RPA - Documentación de Oportunidades Plan de demanda","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Hanilkar Sandoval","participacion":"Participación en mejoras","iniciativa":"Radar II - Doppler - RPA - Revisión de Portafolio y Ejecución","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Josshana Tesorero","participacion":"Participación en mejoras","iniciativa":"Seguimiento de Pedidos de Importación","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Lusibely Gonzalez","participacion":"Participación en mejoras","iniciativa":"Automatizacion reserva contingencia de gastos","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Lusibely Gonzalez","participacion":"Participación en mejoras","iniciativa":"Cuadre auxiliar FA","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Ambar Pulido","participacion":"Participación en mejoras","iniciativa":"BPA Mayoreo","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Compras","colaborador":"Alejandro Jimenez","participacion":"Participación en mejoras","iniciativa":"Automatización de envío de dinámias","medicion":"Segundo Periodo"},{"empresa":"Febeca","area":"Ventas","colaborador":"Juan Gimenez","participacion":"Participación en mejoras","iniciativa":"Portal de Supervisores","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Anyimar Perez","participacion":"Participación en mejoras","iniciativa":"Análisis de Data de Reposición IA","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Sistemas","colaborador":"Jose Araya","participacion":"Participación en mejoras","iniciativa":"BPA Mayoreo","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Kevin Escobar","participacion":"Participación en mejoras","iniciativa":"Análisis de venta normal","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Kevin Escobar","participacion":"Participación en mejoras","iniciativa":"Identificador de órdenes","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Seguimiento Diario","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Kevin Escobar","participacion":"Participación en mejoras","iniciativa":"Separador de archivos","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Kevin Escobar","participacion":"Participación en mejoras","iniciativa":"Facilitador de relaciones entre archivos","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Giovanny Milano","participacion":"Participación en mejoras","iniciativa":"Bot de estados de cuenta","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Jesús Araujo","participacion":"Participación en mejoras","iniciativa":"Automatización de transformación de datos","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Jesús Araujo","participacion":"Participación en mejoras","iniciativa":"Data Completer","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Angely Ojeda","participacion":"Participación en mejoras","iniciativa":"Procesos Mayoreo","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Hamilkar Sandoval","participacion":"Participación en mejoras","iniciativa":"Forecast Flow (v1.0.4) - Herramienta Operativa de Gestión por Procesos","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Reposición","colaborador":"Hamilkar Sandoval","participacion":"Participación en mejoras","iniciativa":"Radar I - Doppler - Auditoría Gaps (Plan to Forecast)","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Control","colaborador":"Jeffrey Díaz","participacion":"Participación en mejoras","iniciativa":"CYC Cofersa — Sistema de Gestión de Cartera","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Control","colaborador":"Jeffrey Díaz","participacion":"Participación en mejoras","iniciativa":"Sistema de Seguimiento Semanal — Facturas Pendientes Clientes Espejo","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Control","colaborador":"Jeffrey Díaz","participacion":"Participación en mejoras","iniciativa":"Sistema Automatizado de Reporte Semanal — Clientes Bloqueados","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Control","colaborador":"Jeffrey Díaz","participacion":"Participación en mejoras","iniciativa":"Automatización de Reportes CxC – Facturas Plazos Especiales","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Control","colaborador":"Jeffrey Díaz","participacion":"Participación en mejoras","iniciativa":"Control de Facturas CxC - COFERSA","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Control","colaborador":"Jeffrey Díaz","participacion":"Participación en mejoras","iniciativa":"Cliente Digital Cofersa","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Talento Mayoreo","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Alejandro Barrios","participacion":"Participación en mejoras","iniciativa":"App de negociaciones especiales","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Generador de Metas de Ventas Trimestrales","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Sistema de cálculo de comisiones","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Inteligencia Comercial","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Luis Rivas","participacion":"Participación en mejoras","iniciativa":"Sistema de acompañamiento de fuerza ventas","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Causacion automatica facturas","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Notificacion Egreso Factura","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Sistemas","colaborador":"Alexander Gomez","participacion":"Participación en mejoras","iniciativa":"Notificacion Facturas cliente","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"José Alberto Torres","participacion":"Participación en mejoras","iniciativa":"SmartFeedback AI – Mundipartes","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"José Alberto Torres","participacion":"Participación en mejoras","iniciativa":"Mundi SmartSales","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Jonathan Restrepo","participacion":"Participación en mejoras","iniciativa":"Análisis de precios","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Jonathan Restrepo","participacion":"Participación en mejoras","iniciativa":"Segmentación de productos según aplicación","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Logística","colaborador":"Jose Sanchez","participacion":"Participación en mejoras","iniciativa":"Asistente Virtual Mayoreo","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Stephany De Sousa","participacion":"Participación en mejoras","iniciativa":"Cargador de Movimientos Bancarios","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Jhossett Vela","participacion":"Participación en mejoras","iniciativa":"Automatización indicadores de Beconsult para VE, COL, CR.","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Jhossett Vela","participacion":"Participación en mejoras","iniciativa":"Implementación de detalles de pago a vendedores (Nómina y Outsourcing) y/o supervisores y automatización en envío de órdenes de pago.","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Personal","colaborador":"Jhossett Vela","participacion":"Participación en mejoras","iniciativa":"Optimización y automatización del proceso de prestaciones sociales","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Luis Cardozo","participacion":"Participación en mejoras","iniciativa":"Inteligencia Operativa: Automatización y Centro de Control Beval (Crédito y Cobranza).","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Paola Guerra","participacion":"Participación en mejoras","iniciativa":"Cargador facturas de suministros","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Alejandro Prado","participacion":"Participación en mejoras","iniciativa":"APP para vacacionista","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Cotizador Multi-SKU con Ingreso Masivo y Cálculo por Volumen","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Aida Urdaneta","participacion":"Participación en mejoras","iniciativa":"Arquitecto de Procesos Inteligentes ( API)","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Andrea Ramirez","participacion":"Participación en mejoras","iniciativa":"Laboratorio de Innovación Contable","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Control","colaborador":"Andrea Ramirez","participacion":"Participación en mejoras","iniciativa":"Portal Central de Herramientas Contables Inteligentes.","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Upscaler de Imagenes","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Automatizacion de Envio de Correos Masivos","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Alejandro Mora","participacion":"Participación en mejoras","iniciativa":"Saldos a favor","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"APP Feria Bosch","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Alejandro Mora","participacion":"Participación en mejoras","iniciativa":"Calculadora de Diferencial Cambiario","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Alejandro Mora","participacion":"Participación en mejoras","iniciativa":"Automatización de Control Fiscal","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Recopilacion de Datos de Clientes","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Calculadora de Incentivos - Pedidos PL","medicion":"Segundo Periodo"},{"empresa":"Cofersa","area":"Ventas","colaborador":"Jorge Garcia","participacion":"Participación en mejoras","iniciativa":"Gestion de Reclamos","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Logística","colaborador":"Miguel Hernandez","participacion":"Participación en mejoras","iniciativa":"Simulación de repuestos en 3D","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Jesús Araujo","participacion":"Participación en mejoras","iniciativa":"Herramienta para Gestión de Solicitudes de Compras","medicion":"Segundo Periodo"},{"empresa":"Prisma","area":"Procesos","colaborador":"Angely Ojeda","participacion":"Participación en mejoras","iniciativa":"App Inciativas IA Mayoreo","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Personal","colaborador":"Elda Ceballos","participacion":"Participación en mejoras","iniciativa":"Escuela Partes y Mentes","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Personal","colaborador":"Alexandra Orozco","participacion":"Participación en mejoras","iniciativa":"Escuela Partes y Mentes","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Personal","colaborador":"Mildrey Correa","participacion":"Participación en mejoras","iniciativa":"Escuela Partes y Mentes","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Ventas","colaborador":"Jose Torres","participacion":"Participación en mejoras","iniciativa":"Escuela Partes y Mentes","medicion":"Segundo Periodo"},{"empresa":"Mundipartes","area":"Compras","colaborador":"Yuliana Dominguez","participacion":"Participación en mejoras","iniciativa":"Escuela Partes y Mentes","medicion":"Segundo Periodo"}];
+
+var DATA = INIT_DATA.slice();
+var filteredData = [];
+var sortCol = 'numIniciativas';
+var sortDir = -1;
+
+var COLS = [
+  { key: 'empresa', label: 'Empresa', w: '110px' },
+  { key: 'area', label: 'Area', w: '130px' },
+  { key: 'colaborador', label: 'Colaborador', w: '170px' },
+  { key: 'numIniciativas', label: 'Iniciativas', w: '95px' },
+  { key: 'iniciativas', label: 'Detalle de Iniciativas únicas', w: 'auto' },
+  { key: 'medicion', label: 'Periodo(s)', w: '130px' }
+];
+
+/* ========== PARSE GVIZ RESPONSE ========== */
+function parseGviz(resp) {
+  var recs = [];
+  if (!resp || !resp.table || !resp.table.rows) return recs;
+  var rows = resp.table.rows;
+  for (var i = 0; i < rows.length; i++) {
+    var c = rows[i].c;
+    if (!c) continue;
+    var g = function(idx) {
+      return c[idx] && c[idx].v != null ? String(c[idx].v).trim() : '';
+    };
+    var emp = g(0);
+    var area = g(1);
+    var col = g(2);
+    var part = g(3);
+    var ini = g(4);
+    var med = g(5);
+    
+    // Skip header row if present
+    if (emp === 'Empresa' || !col || !ini) continue;
+    
+    recs.push({
+      empresa: emp,
+      area: area || 'Sin asignar',
+      colaborador: col,
+      participacion: part || 'Participacion en mejoras',
+      iniciativa: ini,
+      medicion: med || 'Primer periodo'
+    });
+  }
+  return recs;
+}
+
+/* ========== FETCH DATA VIA JSONP ========== */
+function fetchData() {
+  var btn = document.getElementById('refreshBtn');
+  btn.classList.add('loading');
+  
+  return new Promise(function(resolve) {
+    var resolved = false;
+    var cb = '__gviz_ini_' + Date.now();
+    
+    window[cb] = function(resp) {
+      if (resolved) return;
+      resolved = true;
+      btn.classList.remove('loading');
+      var recs = parseGviz(resp);
+      if (recs.length > 0) {
+        DATA = recs;
+        showStatus('Datos sincronizados: ' + recs.length + ' registros en tiempo real desde Google Sheets', 'ok');
+        stamp();
+        populateFilters();
+        apply();
+        resolve(true);
+      } else {
+        showStatus('Se mantuvieron los datos locales (sin registros nuevos)', 'err');
+        resolve(false);
+      }
+      try { delete window[cb]; } catch(e) {}
+    };
+
+    var s = document.createElement('script');
+    s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=responseHandler:' + cb + '&tq=select%20*&gid=' + GID;
+    s.onerror = function() {
+      if (resolved) return;
+      resolved = true;
+      btn.classList.remove('loading');
+      showStatus('Modo sin conexion: visualizando datos almacenados de iniciativas', 'err');
+      resolve(false);
+    };
+    document.head.appendChild(s);
+
+    setTimeout(function() {
+      if (resolved) return;
+      resolved = true;
+      btn.classList.remove('loading');
+      showStatus('Tiempo de espera agotado, usando datos precargados', 'err');
+      resolve(false);
+    }, 12000);
+  });
+}
+
+function showStatus(msg, type) {
+  var el = document.getElementById('statusMsg');
+  el.textContent = msg;
+  el.className = 'status-msg ' + (type === 'ok' ? 'status-ok' : 'status-err');
+  if (type === 'ok') setTimeout(function() { el.style.display = 'none'; }, 4500);
+}
+
+function stamp() {
+  var d = new Date();
+  var pad = function(n) { return n < 10 ? '0' + n : n; };
+  document.getElementById('ts').textContent = 'Act.: ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+}
+
+/* ========== FILTERS & APPLICATION ========== */
+function populateFilters() {
+  var empSel = document.getElementById('fEmp');
+  var areaSel = document.getElementById('fArea');
+  var curEmp = empSel.value;
+  var curArea = areaSel.value;
+
+  var emps = {}, areas = {};
+  var allInis = {};
+  DATA.forEach(function(d) {
+    var ini = (d.iniciativa || '').trim();
+    if (ini) {
+      allInis[ini] = true;
+      if (d.empresa) {
+        var emp = d.empresa.trim();
+        if (!emps[emp]) emps[emp] = {};
+        emps[emp][ini] = true;
+      }
+      if (d.area) {
+        var a = d.area.trim();
+        if (!areas[a]) areas[a] = {};
+        areas[a][ini] = true;
+      }
+    }
+  });
+
+  empSel.innerHTML = '<option value="">Todas (' + Object.keys(allInis).length + ' iniciativas)</option>';
+  Object.keys(emps).sort().forEach(function(e) {
+    var opt = document.createElement('option');
+    opt.value = e;
+    opt.textContent = e + ' (' + Object.keys(emps[e]).length + ')';
+    if (e === curEmp) opt.selected = true;
+    empSel.appendChild(opt);
+  });
+
+  areaSel.innerHTML = '<option value="">Todas</option>';
+  Object.keys(areas).sort().forEach(function(a) {
+    var opt = document.createElement('option');
+    opt.value = a;
+    opt.textContent = a + ' (' + Object.keys(areas[a]).length + ')';
+    if (a === curArea) opt.selected = true;
+    areaSel.appendChild(opt);
+  });
+}
+
+function apply() {
+  var empVal = document.getElementById('fEmp').value;
+  var areaVal = document.getElementById('fArea').value;
+  var medVal = document.getElementById('fMed').value;
+  var searchVal = document.getElementById('fSearch').value.toLowerCase().trim();
+
+  filteredData = DATA.filter(function(d) {
+    if (empVal && d.empresa !== empVal) return false;
+    if (areaVal && d.area !== areaVal) return false;
+    if (medVal && d.medicion !== medVal) return false;
+    if (searchVal) {
+      var matchCol = d.colaborador && d.colaborador.toLowerCase().indexOf(searchVal) !== -1;
+      var matchIni = d.iniciativa && d.iniciativa.toLowerCase().indexOf(searchVal) !== -1;
+      var matchArea = d.area && d.area.toLowerCase().indexOf(searchVal) !== -1;
+      if (!matchCol && !matchIni && !matchArea) return false;
+    }
+    return true;
+  });
+
+  renderMetrics();
+  renderStrips();
+  renderRankings();
+  renderTable();
+}
+
+/* ========== RENDER METRICS ========== */
+function renderMetrics() {
+  var colabSet = {}, iniSet = {}, empSet = {}, areaSet = {};
+  var p1IniSet = {}, p2IniSet = {};
+
+  filteredData.forEach(function(d) {
+    if (d.colaborador) colabSet[d.colaborador.trim()] = true;
+    if (d.iniciativa) {
+      var ini = d.iniciativa.trim();
+      iniSet[ini] = true;
+      if (d.medicion === 'Primer periodo') p1IniSet[ini] = true;
+      else if (d.medicion === 'Segundo Periodo') p2IniSet[ini] = true;
+    }
+    if (d.empresa) empSet[d.empresa.trim()] = true;
+    if (d.area) areaSet[d.area.trim()] = true;
+  });
+
+  var colabs = Object.keys(colabSet).length;
+  var iniciativas = Object.keys(iniSet).length;
+  var empresas = Object.keys(empSet).length;
+  var areas = Object.keys(areaSet).length;
+  var p1Inis = Object.keys(p1IniSet).length;
+  var p2Inis = Object.keys(p2IniSet).length;
+
+  var html = '' +
+    '<div class="m m-purple">' +
+      '<div class="m-label">Colaboradores únicos</div>' +
+      '<div class="m-val">' + colabs + '</div>' +
+      '<div class="m-sub">Talento participante</div>' +
+    '</div>' +
+    '<div class="m m-blue">' +
+      '<div class="m-label">Iniciativas únicas</div>' +
+      '<div class="m-val">' + iniciativas + '</div>' +
+      '<div class="m-sub">Proyectos de mejora / IA</div>' +
+    '</div>' +
+    '<div class="m m-green">' +
+      '<div class="m-label">Empresas activas</div>' +
+      '<div class="m-val">' + empresas + '</div>' +
+      '<div class="m-sub">Empresas representadas</div>' +
+    '</div>' +
+    '<div class="m m-amber">' +
+      '<div class="m-label">Áreas involucradas</div>' +
+      '<div class="m-val">' + areas + '</div>' +
+      '<div class="m-sub">Departamentos activos</div>' +
+    '</div>' +
+    '<div class="m">' +
+      '<div class="m-label">Medición (periodos)</div>' +
+      '<div class="m-val" style="font-size:20px; margin-top:6px;">' + p1Inis + ' <span style="font-size:12px; color:var(--g500); font-weight:normal">P1</span> / ' + p2Inis + ' <span style="font-size:12px; color:var(--g500); font-weight:normal">P2</span></div>' +
+      '<div class="m-sub">Iniciativas unicas por periodo</div>' +
+    '</div>';
+
+  document.getElementById('metrics').innerHTML = html;
+}
+
+/* ========== RENDER STRIPS ========== */
+function renderStrips() {
+  var empIniMap = {}, areaIniMap = {};
+  var allInis = {};
+
+  filteredData.forEach(function(d) {
+    var ini = (d.iniciativa || '').trim();
+    if (ini) {
+      allInis[ini] = true;
+      if (d.empresa) {
+        var emp = d.empresa.trim();
+        if (!empIniMap[emp]) empIniMap[emp] = {};
+        empIniMap[emp][ini] = true;
+      }
+      if (d.area) {
+        var a = d.area.trim();
+        if (!areaIniMap[a]) areaIniMap[a] = {};
+        areaIniMap[a][ini] = true;
+      }
+    }
+  });
+
+  var totalUnique = Object.keys(allInis).length || 1;
+
+  // Empresas Strip
+  var empCounts = {};
+  Object.keys(empIniMap).forEach(function(e) {
+    empCounts[e] = Object.keys(empIniMap[e]).length;
+  });
+  var sortedEmp = Object.keys(empCounts).sort(function(a, b) { return empCounts[b] - empCounts[a]; });
+  var maxEmp = sortedEmp.length > 0 ? empCounts[sortedEmp[0]] : 1;
+  var curEmp = document.getElementById('fEmp').value;
+
+  var empHtml = '';
+  sortedEmp.forEach(function(e) {
+    var count = empCounts[e];
+    var pctOfTotal = ((count / totalUnique) * 100).toFixed(1);
+    var barWidth = ((count / maxEmp) * 100).toFixed(0);
+    var isSel = e === curEmp;
+    empHtml += '' +
+      '<div class="sr ' + (isSel ? 'selected' : '') + '" onclick="filterByEmp(\'' + e.replace(/'/g, "\\'") + '\')">' +
+        '<span class="sr-label" title="' + e + '">' + e + '</span>' +
+        '<div class="sr-bar"><div class="sr-fill" style="width:' + barWidth + '%"></div></div>' +
+        '<span class="sr-val">' + count + '</span>' +
+        '<span class="sr-pct">' + pctOfTotal + '%</span>' +
+      '</div>';
+  });
+  document.getElementById('stripEmpresas').innerHTML = empHtml || '<div style="font-size:12px; color:var(--g500); padding:8px 0">Sin registros</div>';
+
+  // Areas Strip
+  var areaCounts = {};
+  Object.keys(areaIniMap).forEach(function(a) {
+    areaCounts[a] = Object.keys(areaIniMap[a]).length;
+  });
+  var sortedAreas = Object.keys(areaCounts).sort(function(a, b) { return areaCounts[b] - areaCounts[a]; });
+  var maxArea = sortedAreas.length > 0 ? areaCounts[sortedAreas[0]] : 1;
+  var curArea = document.getElementById('fArea').value;
+
+  var areaHtml = '';
+  sortedAreas.slice(0, 10).forEach(function(a) {
+    var count = areaCounts[a];
+    var pctOfTotal = ((count / totalUnique) * 100).toFixed(1);
+    var barWidth = ((count / maxArea) * 100).toFixed(0);
+    var isSel = a === curArea;
+    areaHtml += '' +
+      '<div class="sr ' + (isSel ? 'selected' : '') + '" onclick="filterByArea(\'' + a.replace(/'/g, "\\'") + '\')">' +
+        '<span class="sr-label" title="' + a + '">' + a + '</span>' +
+        '<div class="sr-bar"><div class="sr-fill" style="width:' + barWidth + '%; background:var(--primary)"></div></div>' +
+        '<span class="sr-val">' + count + '</span>' +
+        '<span class="sr-pct">' + pctOfTotal + '%</span>' +
+      '</div>';
+  });
+  document.getElementById('stripAreas').innerHTML = areaHtml || '<div style="font-size:12px; color:var(--g500); padding:8px 0">Sin registros</div>';
+}
+
+function filterByEmp(emp) {
+  var el = document.getElementById('fEmp');
+  el.value = el.value === emp ? '' : emp;
+  apply();
+}
+
+function filterByArea(area) {
+  var el = document.getElementById('fArea');
+  el.value = el.value === area ? '' : area;
+  apply();
+}
+
+/* ========== RENDER RANKINGS ========== */
+window.TOP_INIS = [];
+window.TOP_COLABS = [];
+
+function renderRankings() {
+  var iniMap = {}, colabMap = {};
+
+  filteredData.forEach(function(d) {
+    var ini = (d.iniciativa || '').trim();
+    var col = (d.colaborador || '').trim();
+    if (ini) {
+      if (!iniMap[ini]) {
+        iniMap[ini] = {
+          name: ini,
+          empresas: {},
+          areas: {},
+          colaboradores: {}
+        };
+      }
+      if (d.empresa) iniMap[ini].empresas[d.empresa.trim()] = true;
+      if (d.area) iniMap[ini].areas[d.area.trim()] = true;
+      if (col) {
+        if (!iniMap[ini].colaboradores[col]) {
+          iniMap[ini].colaboradores[col] = {
+            name: col,
+            empresa: d.empresa || '',
+            area: d.area || '',
+            mediciones: {}
+          };
+        }
+        if (d.medicion) iniMap[ini].colaboradores[col].mediciones[d.medicion] = true;
+      }
+    }
+
+    if (col) {
+      if (!colabMap[col]) {
+        colabMap[col] = {
+          name: col,
+          empresas: {},
+          areas: {},
+          iniciativas: {},
+          mediciones: {}
+        };
+      }
+      if (d.empresa) colabMap[col].empresas[d.empresa.trim()] = true;
+      if (d.area) colabMap[col].areas[d.area.trim()] = true;
+      if (d.medicion) colabMap[col].mediciones[d.medicion] = true;
+      if (ini) colabMap[col].iniciativas[ini] = true;
+    }
+  });
+
+  // Top Iniciativas (sorted strictly by number of unique collaborators)
+  var sortedIniNames = Object.keys(iniMap).sort(function(a, b) {
+    var countA = Object.keys(iniMap[a].colaboradores).length;
+    var countB = Object.keys(iniMap[b].colaboradores).length;
+    if (countB !== countA) return countB - countA;
+    return a.localeCompare(b);
+  });
+
+  window.TOP_INIS = sortedIniNames.slice(0, 5).map(function(name) { return iniMap[name]; });
+
+  var iniHtml = '';
+  window.TOP_INIS.forEach(function(item, idx) {
+    var numColabs = Object.keys(item.colaboradores).length;
+    var empStr = Object.keys(item.empresas).join(', ');
+    iniHtml += '' +
+      '<div class="rank-item" style="cursor:pointer" onclick="showInitiativeByIndex(' + idx + ')">' +
+        '<div style="display:flex; align-items:center; min-width:0; flex:1">' +
+          '<span class="rank-idx">' + (idx + 1) + '</span>' +
+          '<div style="min-width:0; flex:1">' +
+            '<div class="rank-name" title="' + escapeHtml(item.name) + '">' + escapeHtml(item.name) + '</div>' +
+            '<div class="rank-sub">' + escapeHtml(empStr) + ' &bull; ' + numColabs + ' colaborador(es) unicos</div>' +
+          '</div>' +
+        '</div>' +
+        '<span class="rank-pill">' + numColabs + ' pers.</span>' +
+      '</div>';
+  });
+  document.getElementById('rankIniciativas').innerHTML = iniHtml || '<div style="font-size:12px; color:var(--g500); padding:8px 0">Sin datos</div>';
+
+  // Top Colaboradores (sorted strictly by number of unique initiatives)
+  var sortedColNames = Object.keys(colabMap).sort(function(a, b) {
+    var countA = Object.keys(colabMap[a].iniciativas).length;
+    var countB = Object.keys(colabMap[b].iniciativas).length;
+    if (countB !== countA) return countB - countA;
+    return a.localeCompare(b);
+  });
+
+  window.TOP_COLABS = sortedColNames.slice(0, 5).map(function(name) { return colabMap[name]; });
+
+  var colHtml = '';
+  window.TOP_COLABS.forEach(function(item, idx) {
+    var numInis = Object.keys(item.iniciativas).length;
+    var empStr = Object.keys(item.empresas).join(', ');
+    var areaStr = Object.keys(item.areas).join(', ');
+    colHtml += '' +
+      '<div class="rank-item" style="cursor:pointer" onclick="showColabByIndex(' + idx + ')">' +
+        '<div style="display:flex; align-items:center; min-width:0; flex:1">' +
+          '<span class="rank-idx">' + (idx + 1) + '</span>' +
+          '<div style="min-width:0; flex:1">' +
+            '<div class="rank-name" title="' + escapeHtml(item.name) + '">' + escapeHtml(item.name) + '</div>' +
+            '<div class="rank-sub">' + escapeHtml(empStr) + ' &bull; ' + escapeHtml(areaStr) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<span class="rank-pill" style="background:var(--purple-bg); color:var(--purple)">' + numInis + ' inic.</span>' +
+      '</div>';
+  });
+  document.getElementById('rankColaboradores').innerHTML = colHtml || '<div style="font-size:12px; color:var(--g500); padding:8px 0">Sin datos</div>';
+}
+
+/* ========== TABLE & SORTING ========== */
+function renderTable() {
+  // Aggregate by unique collaborator
+  var colabGroup = {};
+  var allInis = {};
+
+  filteredData.forEach(function(d) {
+    var col = (d.colaborador || '').trim();
+    if (!col) return;
+    if (!colabGroup[col]) {
+      colabGroup[col] = {
+        colaborador: col,
+        empresas: {},
+        areas: {},
+        iniciativas: {},
+        mediciones: {}
+      };
+    }
+    if (d.empresa) colabGroup[col].empresas[d.empresa.trim()] = true;
+    if (d.area) colabGroup[col].areas[d.area.trim()] = true;
+    if (d.iniciativa) {
+      var ini = d.iniciativa.trim();
+      colabGroup[col].iniciativas[ini] = true;
+      allInis[ini] = true;
+    }
+    if (d.medicion) colabGroup[col].mediciones[d.medicion.trim()] = true;
+  });
+
+  var list = Object.keys(colabGroup).map(function(col) {
+    var g = colabGroup[col];
+    var inis = Object.keys(g.iniciativas).sort();
+    return {
+      colaborador: col,
+      empresa: Object.keys(g.empresas).join(', '),
+      area: Object.keys(g.areas).join(', '),
+      numIniciativas: inis.length,
+      iniciativas: inis,
+      medicion: Object.keys(g.mediciones).sort().join(', '),
+      medicionesList: Object.keys(g.mediciones).sort()
+    };
+  });
+
+  // Sort
+  list.sort(function(a, b) {
+    if (sortCol === 'numIniciativas') {
+      var diff = a.numIniciativas - b.numIniciativas;
+      return diff * sortDir;
+    }
+    var va = (a[sortCol] || '').toLowerCase();
+    var vb = (b[sortCol] || '').toLowerCase();
+    if (va < vb) return -1 * sortDir;
+    if (va > vb) return 1 * sortDir;
+    return 0;
+  });
+
+  // Headers
+  var headHtml = '';
+  COLS.forEach(function(col) {
+    var isSorted = sortCol === col.key;
+    var arrow = isSorted ? (sortDir === 1 ? '▲' : '▼') : '▲';
+    headHtml += '<th class="' + (isSorted ? 'sorted' : '') + '" onclick="toggleSort(\'' + col.key + '\')" style="width:' + col.w + '">' +
+      col.label + '<span class="arrow">' + arrow + '</span></th>';
+  });
+  document.getElementById('tblHead').innerHTML = headHtml;
+
+  // Body
+  var bodyHtml = '';
+  for (var i = 0; i < list.length; i++) {
+    var row = list[i];
+    var medBadges = row.medicionesList.map(function(m) {
+      var tagClass = m === 'Segundo Periodo' ? 'tag-p2' : 'tag-p1';
+      return '<span class="tag ' + tagClass + '" style="margin-right:4px;">' + escapeHtml(m) + '</span>';
+    }).join('');
+
+    var iniListHtml = '';
+    if (row.iniciativas.length === 1) {
+      iniListHtml = '<span class="ini-item">' + escapeHtml(row.iniciativas[0]) + '</span>';
+    } else {
+      iniListHtml = '<div class="ini-pill-list">' +
+        row.iniciativas.map(function(ini) {
+          return '<div class="ini-item"><span class="ini-bullet">&bull;</span>' + escapeHtml(ini) + '</div>';
+        }).join('') +
+        '</div>';
+    }
+
+    bodyHtml += '<tr>' +
+      '<td><span class="tag tag-emp">' + escapeHtml(row.empresa) + '</span></td>' +
+      '<td>' + escapeHtml(row.area) + '</td>' +
+      '<td><strong style="cursor:pointer; color:var(--g900);" onclick="showColabByName(\'' + row.colaborador.replace(/'/g, "\\'") + '\')" title="Ver detalle">' + escapeHtml(row.colaborador) + '</strong></td>' +
+      '<td><span class="rank-pill" style="background:var(--purple-bg); color:var(--purple); font-weight:700;">' + row.numIniciativas + ' inic.</span></td>' +
+      '<td>' + iniListHtml + '</td>' +
+      '<td>' + medBadges + '</td>' +
+    '</tr>';
+  }
+
+  if (list.length === 0) {
+    bodyHtml = '<tr><td colspan="' + COLS.length + '" style="text-align:center; padding:24px; color:var(--g500)">No se encontraron coincidencias con los filtros aplicados.</td></tr>';
+  }
+
+  var totalUniqueInis = Object.keys(allInis).length;
+  document.getElementById('tblBody').innerHTML = bodyHtml;
+  document.getElementById('tblCount').textContent = list.length + ' colaboradores unicos (' + totalUniqueInis + ' iniciativas unicas)';
+}
+
+function toggleSort(colKey) {
+  if (sortCol === colKey) {
+    sortDir = -sortDir;
+  } else {
+    sortCol = colKey;
+    sortDir = colKey === 'numIniciativas' ? -1 : 1;
+  }
+  renderTable();
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* ========== MODAL DETAILS ========== */
+function showInitiativeByIndex(idx) {
+  var item = window.TOP_INIS[idx];
+  if (!item) return;
+
+  document.getElementById('modalTitle').textContent = item.name;
+  var emps = Object.keys(item.empresas).join(', ') || 'N/A';
+  var areas = Object.keys(item.areas).join(', ') || 'N/A';
+  var colabList = Object.keys(item.colaboradores).map(function(k) { return item.colaboradores[k]; });
+
+  // Sort collaborators alphabetically
+  colabList.sort(function(a, b) { return a.name.localeCompare(b.name); });
+
+  var html = '<p><strong>Empresa(s):</strong> ' + escapeHtml(emps) + '</p>' +
+             '<p><strong>Area(s):</strong> ' + escapeHtml(areas) + '</p>' +
+             '<p style="margin-top:12px"><strong>Equipo participante (' + colabList.length + ' colaboradores unicos):</strong></p>' +
+             '<div class="modal-list">';
+  colabList.forEach(function(m) {
+    var meds = Object.keys(m.mediciones).join(', ');
+    html += '<div class="modal-list-item">' +
+              '<div><strong>' + escapeHtml(m.name) + '</strong> <span style="font-size:11px; color:var(--g500)">(' + escapeHtml(m.area) + ')</span></div>' +
+              '<span style="font-size:11px; color:var(--g600); font-weight:600">' + escapeHtml(meds) + '</span>' +
+            '</div>';
+  });
+  html += '</div>';
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function showColabByIndex(idx) {
+  var item = window.TOP_COLABS[idx];
+  if (!item) return;
+
+  document.getElementById('modalTitle').textContent = item.name;
+  var emps = Object.keys(item.empresas).join(', ') || 'N/A';
+  var areas = Object.keys(item.areas).join(', ') || 'N/A';
+  var iniList = Object.keys(item.iniciativas).sort();
+
+  var html = '<p><strong>Empresa:</strong> ' + escapeHtml(emps) + ' &bull; <strong>Area:</strong> ' + escapeHtml(areas) + '</p>' +
+             '<p style="margin-top:12px"><strong>Iniciativas unicas en las que participa (' + iniList.length + '):</strong></p>' +
+             '<div class="modal-list">';
+  iniList.forEach(function(ini) {
+    html += '<div class="modal-list-item"><span>&bull; ' + escapeHtml(ini) + '</span></div>';
+  });
+  html += '</div>';
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function showColabByName(colabName) {
+  var matches = DATA.filter(function(d) { return (d.colaborador || '').trim() === colabName.trim(); });
+  if (matches.length === 0) return;
+
+  var emps = {}, areas = {}, inis = {};
+  matches.forEach(function(d) {
+    if (d.empresa) emps[d.empresa.trim()] = true;
+    if (d.area) areas[d.area.trim()] = true;
+    if (d.iniciativa) inis[d.iniciativa.trim()] = true;
+  });
+
+  var iniList = Object.keys(inis).sort();
+  document.getElementById('modalTitle').textContent = colabName;
+  var html = '<p><strong>Empresa:</strong> ' + escapeHtml(Object.keys(emps).join(', ')) + ' &bull; <strong>Area:</strong> ' + escapeHtml(Object.keys(areas).join(', ')) + '</p>' +
+             '<p style="margin-top:12px"><strong>Iniciativas unicas en las que participa (' + iniList.length + '):</strong></p>' +
+             '<div class="modal-list">';
+  iniList.forEach(function(ini) {
+    html += '<div class="modal-list-item"><span>&bull; ' + escapeHtml(ini) + '</span></div>';
+  });
+  html += '</div>';
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+document.getElementById('modalClose').onclick = function() {
+  document.getElementById('modalOverlay').classList.remove('open');
+};
+document.getElementById('modalOverlay').onclick = function(e) {
+  if (e.target === this) this.classList.remove('open');
+};
+
+/* ========== EXPORT CSV ========== */
+document.getElementById('exportBtn').onclick = function() {
+  var csv = '\uFEFF"Empresa","Area","Colaborador","Num_Iniciativas","Iniciativas_Unicas","Periodos"\r\n';
+  
+  // Aggregate current filteredData
+  var colabGroup = {};
+  filteredData.forEach(function(d) {
+    var col = (d.colaborador || '').trim();
+    if (!col) return;
+    if (!colabGroup[col]) {
+      colabGroup[col] = {
+        colaborador: col,
+        empresas: {},
+        areas: {},
+        iniciativas: {},
+        mediciones: {}
+      };
+    }
+    if (d.empresa) colabGroup[col].empresas[d.empresa.trim()] = true;
+    if (d.area) colabGroup[col].areas[d.area.trim()] = true;
+    if (d.iniciativa) colabGroup[col].iniciativas[d.iniciativa.trim()] = true;
+    if (d.medicion) colabGroup[col].mediciones[d.medicion.trim()] = true;
+  });
+
+  Object.keys(colabGroup).sort().forEach(function(col) {
+    var g = colabGroup[col];
+    var emp = Object.keys(g.empresas).join(' / ');
+    var area = Object.keys(g.areas).join(' / ');
+    var inis = Object.keys(g.iniciativas).sort();
+    var meds = Object.keys(g.mediciones).sort().join(' / ');
+    csv += '"' + emp.replace(/"/g, '""') + '",' +
+           '"' + area.replace(/"/g, '""') + '",' +
+           '"' + col.replace(/"/g, '""') + '",' +
+           '"' + inis.length + '",' +
+           '"' + inis.join(' | ').replace(/"/g, '""') + '",' +
+           '"' + meds.replace(/"/g, '""') + '"\r\n';
+  });
+
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'colaboradores_iniciativas_unicas_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+/* ========== EVENT LISTENERS ========== */
+document.getElementById('fEmp').onchange = apply;
+document.getElementById('fArea').onchange = apply;
+document.getElementById('fMed').onchange = apply;
+document.getElementById('fSearch').oninput = apply;
+document.getElementById('clearBtn').onclick = function() {
+  document.getElementById('fEmp').value = '';
+  document.getElementById('fArea').value = '';
+  document.getElementById('fMed').value = '';
+  document.getElementById('fSearch').value = '';
+  apply();
+};
+document.getElementById('refreshBtn').onclick = function() {
+  fetchData();
+};
+
+/* ========== INITIALIZATION ========== */
+window.onload = function() {
+  stamp();
+  populateFilters();
+  apply();
+  // Fetch live updates silently in background
+  fetchData();
+};
+</script>
+</body>
+</html>

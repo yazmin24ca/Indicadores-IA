@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indicador Unificado: Formaciones e Iniciativas IA</title>
+<style>
+:root {
+  --white:#fff;--g50:#f9fafb;--g100:#eee;--g200:#e2e2e2;--g300:#c6c6c6;--g400:#a8a8a8;
+  --g500:#8a8a8a;--g600:#666;--g700:#4a4a4a;--g800:#2b2b2b;--g900:#111;--black:#000;
+  --primary: #4a4a4a;
+  --primary-bg: #f0f0f0;
+  --primary-border: #c6c6c6;
+  --purple: #4a4a4a;
+  --purple-bg: #f0f0f0;
+  --purple-border: #c6c6c6;
+  --green: #2b2b2b;
+  --green-bg: #efefef;
+  --green-border: #c6c6c6;
+  --amber: #4a4a4a;
+  --amber-bg: #f5f5f5;
+  --amber-border: #c6c6c6;
+  --font: Arial, sans-serif;
+  --r: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.10);
+  --fast: 150ms ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--g50); font-family: var(--font); color: var(--black); font-size: 14px; line-height: 1.5; }
+.app { max-width: 1260px; margin: 0 auto; padding: 24px; }
+
+/* NAV SUITE */
+.nav-suite {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 4px;
+  background: var(--g200);
+  border-radius: calc(var(--r) + 2px);
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--r);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--g600);
+  transition: all var(--fast);
+  white-space: nowrap;
+}
+.nav-tab:hover { color: var(--g900); background: rgba(255,255,255,0.6); }
+.nav-tab.active {
+  background: var(--white);
+  color: var(--g900);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.nav-tab svg { flex-shrink: 0; }
+
+/* HEADER */
+.hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid var(--g200);
+  padding-bottom: 16px;
+}
+.hdr-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--g900);
+}
+.hdr-left p {
+  font-size: 12px;
+  color: var(--g500);
+  margin-top: 2px;
+}
+.hdr-right { display: flex; align-items: center; gap: 10px; }
+.badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--g300);
+  border: 1px solid var(--g400);
+  color: var(--black);
+  font-size: 11px;
+  font-weight: 600;
+}
+.btn {
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: var(--r);
+  border: 1px solid var(--g300);
+  cursor: pointer;
+  background: var(--white);
+  color: var(--g800);
+  transition: all var(--fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover { border-color: var(--g800); color: var(--black); }
+.btn:active { transform: scale(0.98); }
+.btn-fill { background: var(--g300); color: var(--black); border-color: transparent; }
+.btn-fill:hover { background: var(--black); color: var(--white); }
+.btn-outline { background: var(--white); border-color: var(--g300); }
+.btn-outline:hover { background: var(--g50); }
+.btn.loading svg { animation: spin 1s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.ts { font-size: 11px; color: var(--g500); text-align: right; }
+
+/* STATUS MESSAGE */
+.status-msg {
+  font-size: 12px;
+  padding: 9px 14px;
+  border-radius: var(--r);
+  margin-bottom: 16px;
+  display: none;
+  font-weight: 500;
+}
+.status-ok { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); display: block; }
+.status-err { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; display: block; }
+
+/* QUADRANT / STRATEGIC KPI CARDS */
+.quadrants-title {
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 700;
+  color: var(--g500);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.quadrants-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.q-card {
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  cursor: pointer;
+  transition: all var(--fast);
+  position: relative;
+  overflow: hidden;
+}
+.q-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.q-card.selected {
+  outline: 2px solid var(--black);
+  outline-offset: -1px;
+}
+.q-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+}
+.q-card.q-green::before { background: var(--g800); }
+.q-card.q-blue::before { background: var(--g700); }
+.q-card.q-amber::before { background: var(--g600); }
+.q-card.q-gray::before { background: var(--g400); }
+
+.q-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+.q-card.q-green .q-badge { background: var(--g200); color: var(--g800); }
+.q-card.q-blue .q-badge { background: var(--g100); color: var(--g700); }
+.q-card.q-amber .q-badge { background: var(--g200); color: var(--g600); }
+.q-card.q-gray .q-badge { background: var(--g100); color: var(--g600); }
+
+.q-val { font-size: 28px; font-weight: 800; color: var(--g900); line-height: 1.1; margin-bottom: 2px; }
+.q-title { font-size: 13px; font-weight: 700; color: var(--g800); text-transform: none; }
+.q-desc { font-size: 11px; color: var(--g500); margin-top: 4px; line-height: 1.4; }
+
+/* SUMMARY BAR (TOTALS) */
+.summary-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.sb-item {
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  padding: 12px 16px;
+  box-shadow: var(--shadow);
+}
+.sb-lbl { font-size: 11px; text-transform: none; letter-spacing: 0.02em; color: var(--g500); font-weight: 600; }
+.sb-val { font-size: 22px; font-weight: 800; color: var(--g900); margin-top: 2px; }
+.sb-sub { font-size: 11px; color: var(--g500); }
+
+/* FILTERS */
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  background: var(--white);
+  padding: 14px 16px;
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+}
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.fg label { font-size: 11px; font-weight: 600; text-transform: none; letter-spacing: 0.02em; color: var(--g500); }
+.fg select, .fg input {
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: var(--r);
+  border: 1px solid var(--g300);
+  background: var(--white);
+  color: var(--g800);
+  min-width: 140px;
+  transition: border-color var(--fast), box-shadow var(--fast);
+}
+.fg select:focus, .fg input:focus {
+  outline: none;
+  border-color: var(--g800);
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.06);
+}
+.clear-btn {
+  font-size: 12px;
+  color: var(--g500);
+  cursor: pointer;
+  text-decoration: underline;
+  padding-bottom: 8px;
+  margin-left: auto;
+  font-weight: 500;
+  transition: color var(--fast);
+}
+.clear-btn:hover { color: var(--black); }
+
+/* MATRICES & SECTION BOXES */
+.matrix-section {
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.matrix-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.matrix-title { font-size: 14px; font-weight: 700; color: var(--g900); }
+.matrix-sub { font-size: 12px; color: var(--g500); margin-top: 1px; }
+
+/* DATA TABLE */
+.tbl-wrap {
+  background: var(--white);
+  border: 1px solid var(--g200);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.tbl-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--g200);
+  background: var(--g50);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tbl-head-title { font-size: 14px; font-weight: 700; color: var(--g900); text-transform: none; }
+.tbl-actions { display: flex; align-items: center; gap: 8px; }
+.tbl-head-count { font-size: 12px; color: var(--g500); font-weight: 500; }
+.tbl-scroll { overflow-x: auto; max-height: 540px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  color: var(--g500);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--g300);
+  background: var(--g100);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+th:hover { color: var(--black); background: var(--g200); }
+th .arrow { font-size: 10px; margin-left: 4px; opacity: 0.3; }
+th.sorted .arrow { opacity: 1; color: var(--black); }
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--g200);
+  color: var(--g800);
+  vertical-align: middle;
+}
+tr:hover td { background: var(--g50); }
+
+/* BADGES & PILLS */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tag-ambos { background: var(--g300); color: var(--black); border: 1px solid var(--g400); }
+.tag-mejora { background: var(--g200); color: var(--g800); border: 1px solid var(--g300); }
+.tag-cap { background: var(--g100); color: var(--g700); border: 1px solid var(--g200); }
+.tag-base { background: var(--g100); color: var(--g600); border: 1px solid var(--g200); }
+.tag-emp { background: var(--g100); color: var(--g700); font-weight: 600; }
+
+
+.val-bar-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.val-num { font-weight: 700; min-width: 20px; }
+.mini-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--g100);
+  border-radius: 999px;
+  overflow: hidden;
+  max-width: 80px;
+}
+.mini-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+@media (max-width: 960px) {
+  .quadrants-grid { grid-template-columns: repeat(2, 1fr); }
+  .filters { flex-direction: column; align-items: stretch; }
+  .fg select, .fg input { min-width: 100%; }
+}
+@media (max-width: 580px) {
+  .quadrants-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SUITE NAVIGATION -->
+  <nav class="nav-suite">
+    <a href="indicadores-capacitacion-ia.html" class="nav-tab">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      Formaciones IA
+    </a>
+    <a href="indicadores-iniciativas-ia.html" class="nav-tab">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+      Colaboradores en Iniciativas
+    </a>
+    <a href="indicadores-unificados-ia.html" class="nav-tab active">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Indicador Unificado (IA)
+    </a>
+    <a href="tablero-integral-ia.html" class="nav-tab" style="margin-left:auto; background:var(--g800); color:var(--white)" title="Vista consolidada completa para compartir"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M15 3v18"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>Suite Completa (Todo en Uno)</a>
+</nav>
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-left">
+      <h1>Colaboradores en Formaciones e Iniciativas IA</h1>
+      <p>Indicador unificado de correlacion y adopcion entre colaboradores formados y los que han trabajado en mejoras.</p>
+    </div>
+    <div class="hdr-right">
+      <span class="badge" id="liveBadge">En vivo</span>
+      <button class="btn btn-fill" id="refreshBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        Actualizar
+      </button>
+      <div class="ts" id="ts">Sincronizando...</div>
+    </div>
+  </div>
+
+  <div id="statusMsg" class="status-msg"></div>
+
+  <!-- QUADRANTS SECTION -->
+  <div style="font-size:11px; color:var(--g500); margin-bottom:8px; text-align:right">Haz clic en un cuadrante para filtrar</div>
+  <div class="quadrants-grid" id="quadrantsGrid"></div>
+
+  <!-- SUMMARY STATS -->
+  <div class="summary-bar" id="summaryBar"></div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <div class="fg">
+      <label>Empresa</label>
+      <select id="fEmp"><option value="">Todas</option></select>
+    </div>
+    <div class="fg">
+      <label>Area</label>
+      <select id="fArea"><option value="">Todas</option></select>
+    </div>
+    <div class="fg">
+      <label>Estado / Cuadrante</label>
+      <select id="fState">
+        <option value="">Todos los Estados</option>
+        <option value="ambos">Con Capacitaciones e Iniciativas</option>
+        <option value="solo_mejora">Solo Iniciativas</option>
+        <option value="solo_cap">Solo Formacion</option>
+      </select>
+    </div>
+    <div class="fg" style="flex:1; min-width:200px">
+      <label>Buscar Colaborador</label>
+      <input type="text" id="fSearch" placeholder="Nombre del colaborador...">
+    </div>
+    <span class="clear-btn" id="clearBtn">Limpiar filtros</span>
+  </div>
+
+  <!-- CROSS MATRIX BY COMPANY -->
+  <div class="matrix-section">
+    <div class="matrix-hdr">
+      <div>
+        <div class="matrix-title">Matriz de Participacion por Empresa</div>
+        <div class="matrix-sub">Analisis cruzado de participacion en IA por compania.</div>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table id="matrixTable">
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th style="text-align:center">Colaboradores</th>
+            <th style="text-align:center">Con Formacion</th>
+            <th style="text-align:center">Con Iniciativas</th>
+            <th style="text-align:center">Con Ambos</th>
+            <th style="text-align:center">% en IA</th>
+            <th style="min-width:140px">Cobertura</th>
+          </tr>
+        </thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DATA TABLE -->
+  <div class="tbl-wrap">
+    <div class="tbl-head">
+      <div>
+        <span class="tbl-head-title">Padron Unificado de Colaboradores</span>
+        <span class="tbl-head-count" id="tblCount"></span>
+      </div>
+      <div class="tbl-actions">
+        <button class="btn btn-outline" id="exportBtn" style="font-size:12px; padding:5px 10px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar CSV
+        </button>
+      </div>
+    </div>
+    <div class="tbl-scroll">
+      <table>
+        <thead>
+          <tr id="tblHead"></tr>
+        </thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var SHEET_ID = '1jbN1XJMuHLC0czCH3XX6Zo6RXDQc1QUVXMLRPTmL8Pw';
+var GID = '1023385026';
+var GID_FORMACIONES = '0'; // Hoja 1: detalle de capacitaciones
+var GID_INICIATIVAS = '433982814'; // Colaboradores en iniciativas
+
+// Dataset de formaciones cargado desde Hoja 1
+var FORMACIONES_DATA = []; // Array de {empresa, tipo, formacion}
+
+// Dataset embebido inicial de iniciativas para carga instantanea / offline
+var INIT_INICIATIVAS_DATA = [{"empresa":"Prisma","iniciativa":"Ordenes de Compras"},{"empresa":"Prisma","iniciativa":"Visualizador de Normas y Documentos"},{"empresa":"Prisma","iniciativa":"Lectura de Viaticos de Cofersa"},{"empresa":"Prisma","iniciativa":"Portal de proveedores - Modelo de pago Post Venta (MPPV)"},{"empresa":"Prisma","iniciativa":"AIDA (Agente Inteligente de Ayuda)"},{"empresa":"Prisma","iniciativa":"Clasificador de Cambio de Precios - Gmail"},{"empresa":"Prisma","iniciativa":"Consulta de Precios"},{"empresa":"Prisma","iniciativa":"AIDA (Agente Inteligente de Ayuda)"},{"empresa":"Prisma","iniciativa":"Script - Conciliación de Cuenta de Auxiliar VS Contabilidad (VE)"},{"empresa":"Prisma","iniciativa":"Ordenes de Compras"},{"empresa":"Prisma","iniciativa":"Facturas de PushMoney"},{"empresa":"Prisma","iniciativa":"Facturas de PushMoney"},{"empresa":"Prisma","iniciativa":"Glosario de Términos Mayoreo"},{"empresa":"Prisma","iniciativa":"Portal de proveedores - Modelo de pago Post Venta (MPPV)"},{"empresa":"Prisma","iniciativa":"Conciliación de Cuenta de Auxiliar VS Contabilidad (VE)"},{"empresa":"Prisma","iniciativa":"Script - Correo electrónico automático para seguimiento de cierre de Anticipos y antigüedad de Facturas (Venezuela)"},{"empresa":"Prisma","iniciativa":"Script - Programación de pagos de gastos de importaciones"},{"empresa":"Prisma","iniciativa":"Script - Programación de pagos semanal (VE)"},{"empresa":"Prisma","iniciativa":"Script - Programación de pagos semanal (CR)"},{"empresa":"Prisma","iniciativa":"Script - Flujo de Tareas y aprobaciones para solicitudes de: Viáticos y Creación de Proveedores"},{"empresa":"Prisma","iniciativa":"Macros en Excel (VBA) para la generación de estados de cuenta personalizados"},{"empresa":"Prisma","iniciativa":"Semiautomatización del envío de estados de cuenta por correo electrónico"},{"empresa":"Prisma","iniciativa":"Automatizacion de envío masivo de correos para solicitudes de retiros de taquilla en USD"},{"empresa":"Prisma","iniciativa":"Generación de Reporte de Vencimientos"},{"empresa":"Prisma","iniciativa":"Generar  reporte Semanal de la Matriz de Préstamos"},{"empresa":"Prisma","iniciativa":"Script para la solicitud de retenciones pendientes"},{"empresa":"Prisma","iniciativa":"Script para alertar sobre efectivo en tránsito fuera de política"},{"empresa":"Prisma","iniciativa":"Seguimiento del proceso de creación de clientes"},{"empresa":"Prisma","iniciativa":"Gems para consultas de Crédito y cobro y para generar Normas y procedimientos de Crédito y Cobro"},{"empresa":"Prisma","iniciativa":"Optimizacion del análisis de Cuentas por Pagar"},{"empresa":"Cofersa","iniciativa":"Script para la generación y envio de reportes de clientes bloqueados con saldos vencidos"},{"empresa":"Cofersa","iniciativa":"Web App de proyecciones financieras para nuevos proyectos comerciales"},{"empresa":"Prisma","iniciativa":"Script - Correos electrónicos automatizados para gestión de citas con Bancos"},{"empresa":"Cofersa","iniciativa":"Llenado de boletas de recibido de tarjetas de regalo"},{"empresa":"Cofersa","iniciativa":"Guia de diagnostico de fallas en compresores dañados en el taller"},{"empresa":"Prisma","iniciativa":"Agente de TFI"},{"empresa":"Prisma","iniciativa":"Gestión de Ordenes de compras"},{"empresa":"Prisma","iniciativa":"Workflow de Bitacora"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Creación de un prompt para automatizar la generación de  reporte de los principales avances del mes."},{"empresa":"Prisma","iniciativa":"Gestión de Ordenes de compras"},{"empresa":"Prisma","iniciativa":"Workflow de Bitacora"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Gestión de Ordenes de compras"},{"empresa":"Prisma","iniciativa":"Workflow de Bitacora"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Categorización de líneas importadas para Colombia y Costa Rica"},{"empresa":"Prisma","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado."},{"empresa":"Prisma","iniciativa":"Investigaciones de Mercadeo"},{"empresa":"Prisma","iniciativa":"Automatización de tareas en Excel con macros"},{"empresa":"Prisma","iniciativa":"Uso de IA para Manejo de redes sociales de todas las casas"},{"empresa":"Prisma","iniciativa":"Uso de IA para Manejo de redes sociales de todas las casas"},{"empresa":"Prisma","iniciativa":"Herramienta para reconocer productos a través de una foto que se toma o se sube, identificarlos dentro del catálogo y devolver una búsqueda idéntica o muy cercana a lo que el cliente busca (Amazon lens)"},{"empresa":"Prisma","iniciativa":"Revisión de redacción y contenido de publicaciones"},{"empresa":"Prisma","iniciativa":"Buscador automatizado de Talento (Personal)"},{"empresa":"Prisma","iniciativa":"Generador de guiones de entrevistas (Personal)"},{"empresa":"Prisma","iniciativa":"Comparador de candidatos (Personal)"},{"empresa":"Prisma","iniciativa":"Análisis de entrevistas de candidatos (Personal)"},{"empresa":"Prisma","iniciativa":"OLOBOT: Agente Virtual de Personal"},{"empresa":"Prisma","iniciativa":"Tu Voz Cuenta: Canal comunicación confidencial"},{"empresa":"Prisma","iniciativa":"OLO-Docs: Todo listo para firmar (Acceso exclusivo para el Dpto. de Personal)"},{"empresa":"Prisma","iniciativa":"Generación de una herramienta para el control de la gestión mensual de la gerencia basada en inteligencia artificial."},{"empresa":"Prisma","iniciativa":"Automatización de requisición de personal"},{"empresa":"Prisma","iniciativa":"Tracking automatico de fases del proceso de captación"},{"empresa":"Prisma","iniciativa":"Script del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información"},{"empresa":"Prisma","iniciativa":"Automatización del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Automatizador de organigramas"},{"empresa":"Prisma","iniciativa":"Pront desarrollador de ejercicio practicos de selección"},{"empresa":"Prisma","iniciativa":"Generación de una herramienta para el control de la gestión mensual de la gerencia basada en inteligencia artificial."},{"empresa":"Prisma","iniciativa":"Automatización de requisición de personal"},{"empresa":"Prisma","iniciativa":"Tracking automatico de fases del proceso de captación"},{"empresa":"Prisma","iniciativa":"Script del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información"},{"empresa":"Prisma","iniciativa":"Automatización del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Automatizador de organigramas"},{"empresa":"Prisma","iniciativa":"Pront desarrollador de ejercicio practicos de selección"},{"empresa":"Prisma","iniciativa":"Tracking automatico de fases del proceso de captación"},{"empresa":"Prisma","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información"},{"empresa":"Prisma","iniciativa":"Automatización del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Automatizador de organigramas"},{"empresa":"Prisma","iniciativa":"Pront desarrollador de ejercicio practicos de selección"},{"empresa":"Prisma","iniciativa":"Automatizador de organigramas"},{"empresa":"Prisma","iniciativa":"Visualizador de Normas y Documentos"},{"empresa":"Prisma","iniciativa":"Flujo de aprobación de documentos"},{"empresa":"Prisma","iniciativa":"DM de proyectos"},{"empresa":"Prisma","iniciativa":"Lectura de Viaticos de Cofersa"},{"empresa":"Prisma","iniciativa":"Agente imprenta digital"},{"empresa":"Cofersa","iniciativa":"Diseño de un script con IA para generar automáticamente una base de datos de los reclamos asociados a ventas."},{"empresa":"Prisma","iniciativa":"Optimizar el análisis de Cuentas por Pagar"},{"empresa":"Cofersa","iniciativa":"prompt analizador de datos comerciales"},{"empresa":"Cofersa","iniciativa":"Pront diagnósticador en video de fallas técnicas en compresores"},{"empresa":"Cofersa","iniciativa":"Script de generación  y envío de reportes automaticos de clientes bloqueados con saldos vencidos"},{"empresa":"Prisma","iniciativa":"Script para efectivo en tránsito fuera de política"},{"empresa":"Prisma","iniciativa":"Script para efectivo en tránsito fuera de política"},{"empresa":"Prisma","iniciativa":"Gems para consultas de CC y para generar Normas y procedimientos de CC"},{"empresa":"Prisma","iniciativa":"Script generador de reporte Semanal de la Matriz de Préstamos"},{"empresa":"Prisma","iniciativa":"Automatización de envío masivo de correos para solicitudes de retiros de taquilla en USD"},{"empresa":"Mundipartes","iniciativa":"Script de correos automáticos a clientes y proveedores notificando cobro o pago de facturas"},{"empresa":"Mundipartes","iniciativa":"Script de notificación automática por correo ante fallos en la carga del aplicativo FR"},{"empresa":"Mundipartes","iniciativa":"Script de reintento automático de carga del aplicativo FR usando IA"},{"empresa":"Mundipartes","iniciativa":"Automatización de reportes en tiempo real a través de pantallas internas"},{"empresa":"Mundipartes","iniciativa":"Automatización contable para la causación de facturas con IA"},{"empresa":"Mundipartes","iniciativa":"División automática de pedidos entre bodegas con IA"},{"empresa":"Mundipartes","iniciativa":"Automatización de guías con transportadora"},{"empresa":"Mundipartes","iniciativa":"Chat de WhatsApp inteligente para ventas y cartera con IA"},{"empresa":"Mundipartes","iniciativa":"Alerta inteligente de rotación de inventario con IA"},{"empresa":"Mundipartes","iniciativa":"Predicción de demanda por cliente y artículo con IA"},{"empresa":"Mundipartes","iniciativa":"Sugerencia automática de combos o productos complementarios"},{"empresa":"Mundipartes","iniciativa":"Automatización de cobro vía correo electrónico a los clientes"},{"empresa":"Beval","iniciativa":"Habladores automaticos a traves del ingreso del n° de palet  del aereo"},{"empresa":"Prisma","iniciativa":"Tracking automatico de fases del proceso de captación"},{"empresa":"Prisma","iniciativa":"Script del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información"},{"empresa":"Prisma","iniciativa":"Automatización del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Automatizador de organigramas"},{"empresa":"Prisma","iniciativa":"Pront desarrollador de ejercicio practicos de selección"},{"empresa":"Prisma","iniciativa":"Tracking automatico de fases del proceso de captación"},{"empresa":"Prisma","iniciativa":"Script del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información"},{"empresa":"Prisma","iniciativa":"Automatización del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Automatizador de organigramas"},{"empresa":"Prisma","iniciativa":"Pront desarrollador de ejercicio practicos de selección"},{"empresa":"Prisma","iniciativa":"Tracking automatico de fases del proceso de captación"},{"empresa":"Prisma","iniciativa":"Script del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información"},{"empresa":"Prisma","iniciativa":"Automatización del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Automatizador de organigramas"},{"empresa":"Prisma","iniciativa":"Pront desarrollador de ejercicio practicos de selección"},{"empresa":"Prisma","iniciativa":"Tracking automatico de fases del proceso de captación"},{"empresa":"Prisma","iniciativa":"Script del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Requisición de vacantes con script de borrado y envio automatico de información"},{"empresa":"Prisma","iniciativa":"Automatización del repositorio de vacantes"},{"empresa":"Prisma","iniciativa":"Automatizador de organigramas"},{"empresa":"Prisma","iniciativa":"Pront desarrollador de ejercicio practicos de selección"},{"empresa":"Prisma","iniciativa":"Gestion de Ordenes en reposición"},{"empresa":"Prisma","iniciativa":"Gestion de Ordenes en reposición"},{"empresa":"Prisma","iniciativa":"Gestion de Ordenes en reposición"},{"empresa":"Prisma","iniciativa":"Gestion de Ordenes en reposición"},{"empresa":"Prisma","iniciativa":"Gestion de Ordenes en reposición"},{"empresa":"Prisma","iniciativa":"Gestion de Ordenes en reposición"},{"empresa":"Prisma","iniciativa":"Gestion de Ordenes en reposición"},{"empresa":"Prisma","iniciativa":"Gestion de Ordenes en reposición"},{"empresa":"Prisma","iniciativa":"Gestion de Ordenes en reposición"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Plataforma de comunicaciones de avances"},{"empresa":"Prisma","iniciativa":"Automatización con Pyton los cargadores dínamicos de comisiones bancarias e igtf"},{"empresa":"Prisma","iniciativa":"Scrip automatizó el cálculo de diferencial cambiario de pagos a proveedores y envió automático del cálculo a los proveedores"},{"empresa":"Prisma","iniciativa":"Automatizó con script el cálculo del 25% de IVA de todas las facturas para hacer la Orden de pago de forma más rápida"},{"empresa":"Prisma","iniciativa":"Automatización de analizador de información en el tracking de personal"},{"empresa":"Prisma","iniciativa":"Automatización de analizador de información en el tracking de personal"},{"empresa":"Prisma","iniciativa":"Automatización de analizador de información en el tracking de personal"},{"empresa":"Prisma","iniciativa":"Automatización de analizador de información en el tracking de personal"},{"empresa":"Febeca","iniciativa":"Automatización de logistica proactiva: aplicativo de recepción e proveedores"},{"empresa":"Febeca","iniciativa":"Reposición automatica de picking"},{"empresa":"Febeca","iniciativa":"Automatización de rotación de articulos (FIFO/FEFO)"},{"empresa":"Febeca","iniciativa":"Automatización de doble posición de almacenaje"},{"empresa":"Febeca","iniciativa":"Aumento de frecuencia de despacho en plaza"},{"empresa":"Febeca","iniciativa":"Script de logistica proactiva para recepción de proveedores"},{"empresa":"Febeca","iniciativa":"Aplicativo de reporte conciliador de inventario"},{"empresa":"Febeca","iniciativa":"Aplicativo para mesas de chequeo movil"},{"empresa":"Febeca","iniciativa":"Automatización de R4 de control de inventario"},{"empresa":"Febeca","iniciativa":"Script para activación de expediciones de estibas completas"},{"empresa":"Febeca","iniciativa":"Script de logistica postventas"},{"empresa":"Sillaca","iniciativa":"Aplicativo de Como vamos (diario)"},{"empresa":"Sillaca","iniciativa":"Script de mensaje automatico  de clientes con oportunidad de activación (semanal)"},{"empresa":"Sillaca","iniciativa":"Script de avaluo general (quincenal)"},{"empresa":"Sillaca","iniciativa":"Script  notificativo de Top deudas (quincenal)"},{"empresa":"Sillaca","iniciativa":"Script notificativo diario de artículos por clientes que históricamente han comprado y no llevan activación de ese surtido en los últimos 2 meses teniendo inventario"},{"empresa":"Sillaca","iniciativa":"Script de validación de pedidos transmitidos"},{"empresa":"Sillaca","iniciativa":"Script de logistica postventas"},{"empresa":"Sillaca","iniciativa":"Aplicativo de Como vamos (diario)"},{"empresa":"Sillaca","iniciativa":"Script de mensaje automatico  de clientes con oportunidad de activación (semanal)"},{"empresa":"Sillaca","iniciativa":"Script de avaluo general (quincenal)"},{"empresa":"Sillaca","iniciativa":"Script  notificativo de Top deudas (quincenal)"},{"empresa":"Sillaca","iniciativa":"Script notificativo diario de artículos por clientes que históricamente han comprado y no llevan activación de ese surtido en los últimos 2 meses teniendo inventario"},{"empresa":"Sillaca","iniciativa":"Script de validación de pedidos transmitidos"},{"empresa":"Sillaca","iniciativa":"Script de validación de pedidos transmitidos"},{"empresa":"Sillaca","iniciativa":"Script de logistica postventas"},{"empresa":"Sillaca","iniciativa":"Aplicativo de Como vamos (diario)"},{"empresa":"Sillaca","iniciativa":"Script de mensaje automatico  de clientes con oportunidad de activación (semanal)"},{"empresa":"Sillaca","iniciativa":"Script de mensaje automatico  de clientes con oportunidad de activación (semanal)"},{"empresa":"Prisma","iniciativa":"Automatización del envío solicitud de soportes de retenciones pre-cargadas pendientes por procesar a correos de  ventas"},{"empresa":"Prisma","iniciativa":"Automatización del envío solicitud de soportes de retenciones pre-cargadas pendientes por procesar a correos de  ventas"},{"empresa":"Prisma","iniciativa":"Automatización del envío solicitud de soportes de retenciones pre-cargadas pendientes por procesar a correos de  ventas"},{"empresa":"Prisma","iniciativa":"Automatización del envío solicitud de soportes de retenciones pre-cargadas pendientes por procesar a correos de  ventas"},{"empresa":"Prisma","iniciativa":"Automatización del envío solicitud de soportes de retenciones pre-cargadas pendientes por procesar a correos de  ventas"},{"empresa":"Prisma","iniciativa":"Script comparador de ordenes de compras contra factura, evidenciando diferencia"},{"empresa":"Prisma","iniciativa":"Script comparador de ordenes de compras contra factura, evidenciando diferencia"},{"empresa":"Febeca","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano"},{"empresa":"Beval","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano"},{"empresa":"Beval","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano"},{"empresa":"Beval","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano"},{"empresa":"Beval","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano"},{"empresa":"Beval","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano"},{"empresa":"Beval","iniciativa":"Script comparador de autopartes en el mercado repuestero venezolano"},{"empresa":"Mundipartes","iniciativa":"Script de promociones y activaciones"},{"empresa":"Mundipartes","iniciativa":"Automatización de Modelo de campaña publicitarias"},{"empresa":"Mundipartes","iniciativa":"Matriz de inventario idela"},{"empresa":"Mundipartes","iniciativa":"modelo de fijación de precios"},{"empresa":"Mundipartes","iniciativa":"Comparativo con IA del surtido que se convirtio en BCG para generar clasificaciones de productos"},{"empresa":"Mundipartes","iniciativa":"Comparativo con IA del surtido que se convirtio en BCG para generar clasificaciones de productos"},{"empresa":"Mundipartes","iniciativa":"Comparativo con IA del surtido que se convirtio en BCG para generar clasificaciones de productos"},{"empresa":"Mundipartes","iniciativa":"Comparativo con IA del surtido que se convirtio en BCG para generar clasificaciones de productos"},{"empresa":"Mundipartes","iniciativa":"Elasticidades de demanda que le permitieron sacar la optimización del precio"},{"empresa":"Mundipartes","iniciativa":"Elasticidades de demanda que le permitieron sacar la optimización del precio"},{"empresa":"Mundipartes","iniciativa":"Elasticidades de demanda que le permitieron sacar la optimización del precio"},{"empresa":"Prisma","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes"},{"empresa":"Prisma","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes"},{"empresa":"Prisma","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes"},{"empresa":"Prisma","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes"},{"empresa":"Prisma","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes"},{"empresa":"Prisma","iniciativa":"Script de automatización de conciliación bancaria para Mundipartes"},{"empresa":"Prisma","iniciativa":"Script de automatización de estados de cuenta para Cofersa"},{"empresa":"Prisma","iniciativa":"Script de automatización de estados de cuenta para Cofersa"},{"empresa":"Prisma","iniciativa":"Script de automatización de estados de cuenta para Cofersa"},{"empresa":"Prisma","iniciativa":"Script de automatización de estados de cuenta para Cofersa"},{"empresa":"Prisma","iniciativa":"Script de automatización de estados de cuenta para Cofersa"},{"empresa":"Prisma","iniciativa":"Automatización de procesos con Python"},{"empresa":"Prisma","iniciativa":"Pront de investigación, analisis y comparación del mercado"},{"empresa":"Prisma","iniciativa":"Integración de la inteligencia artificial en entornos de desarrollo para acelerar la creación de esquemas, empaquetado de funciones y formateo de salidas de datos"},{"empresa":"Prisma","iniciativa":"IA para la gestión y repositorio documentado de proyectos"},{"empresa":"Prisma","iniciativa":"IA para la gestión y repositorio documentado de proyectos"},{"empresa":"Prisma","iniciativa":"Aplicación de modelo de inteligencia artificial para generar etiquetas en grandes volúmenes de datos y obtener clasificaciones más significativas."},{"empresa":"Prisma","iniciativa":"Aplicación de modelo de inteligencia artificial para generar etiquetas en grandes volúmenes de datos y obtener clasificaciones más significativas."},{"empresa":"Prisma","iniciativa":"Aplicación de modelo de inteligencia artificial para generar etiquetas en grandes volúmenes de datos y obtener clasificaciones más significativas."},{"empresa":"Prisma","iniciativa":"Aplicación de modelo de inteligencia artificial para generar etiquetas en grandes volúmenes de datos y obtener clasificaciones más significativas."},{"empresa":"Prisma","iniciativa":"Aplicación de modelo de inteligencia artificial para generar etiquetas en grandes volúmenes de datos y obtener clasificaciones más significativas."},{"empresa":"Prisma","iniciativa":"Bot de extracción y clasificación de información"},{"empresa":"Prisma","iniciativa":"Bot de extracción y clasificación de información"},{"empresa":"Prisma","iniciativa":"Bot de extracción y clasificación de información"},{"empresa":"Prisma","iniciativa":"Bot de extracción y clasificación de información"},{"empresa":"Prisma","iniciativa":"Bot de extracción y clasificación de información"},{"empresa":"Prisma","iniciativa":"Bot de extracción y clasificación de información"},{"empresa":"Prisma","iniciativa":"Bot de extracción y clasificación de información"},{"empresa":"Prisma","iniciativa":"Automatización de los recibos de pago"},{"empresa":"Prisma","iniciativa":"Automatización de los recibos de pago"},{"empresa":"Prisma","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado."},{"empresa":"Prisma","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado."},{"empresa":"Prisma","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado."},{"empresa":"Prisma","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado."},{"empresa":"Prisma","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado."},{"empresa":"Prisma","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado."},{"empresa":"Prisma","iniciativa":"Optimización de imágenes de baja resolución mediante escalamiento y técnicas de procesamiento de imágenes avanzado."},{"empresa":"Prisma","iniciativa":"Optimización Automatizada de Imágenes de productos"},{"empresa":"Prisma","iniciativa":"GPT entrenado para corregir y redactar textos claros, directos, positivos y minimalistas"},{"empresa":"Prisma","iniciativa":"GPT entrenado y configurado para crear grillas de contenido mensuales con 8 publicaciones diseñadas especialmente para empresas mayoristas B2B del sector ferretero, construcción, autopartes y quincallería"},{"empresa":"Prisma","iniciativa":"GPT entrenado para transformar contenidos estratégicos obtenidos del GPT de desarrollo de contenido en piezas gráficas hiperrealistas con estilo fotográfico profesional, alineadas con la identidad visual de las marcas"},{"empresa":"Prisma","iniciativa":"Generación de imágenes hiperrealistas para contenido corporativo"},{"empresa":"Prisma","iniciativa":"Creación de copys persuasivos, formales o emocionales según el canal y objetivo, aplicando tono minimalista y profesional, con foco en claridad y recordación"},{"empresa":"Prisma","iniciativa":"Creación de copys persuasivos, formales o emocionales según el canal y objetivo, aplicando tono minimalista y profesional, con foco en claridad y recordación"},{"empresa":"Prisma","iniciativa":"GPT desarrollador de guiones de voz en off y storyboards detallados para videos internos, comerciales y de campañas, incluyendo recomendaciones técnicas"},{"empresa":"Prisma","iniciativa":"Estandarización de datos de clientes y correos para campañas de marketing, con metodologías para depuración y segmentación automática"},{"empresa":"Prisma","iniciativa":"Estandarización de datos de clientes y correos para campañas de marketing, con metodologías para depuración y segmentación automática"},{"empresa":"Prisma","iniciativa":"Generación de ideas para campañas, activaciones, promociones y materiales internos, incluyendo análisis de variables y recomendaciones estratégicas"},{"empresa":"Mundipartes","iniciativa":"Consulta de fallas técnicas y creación de guía practica de uso del montacargas"},{"empresa":"Mundipartes","iniciativa":"Consulta de fallas técnicas y creación de guía practica de uso del montacargas"},{"empresa":"Mundipartes","iniciativa":"Consulta de fallas técnicas y creación de guía practica de uso del montacargas"},{"empresa":"Mundipartes","iniciativa":"GTP para la generación de reportes y comparativos"},{"empresa":"Mundipartes","iniciativa":"GTP para la generación de reportes y comparativos"},{"empresa":"Mundipartes","iniciativa":"GTP para la generación de reportes y comparativos"},{"empresa":"Mundipartes","iniciativa":"GTP para la generación de reportes y comparativos"},{"empresa":"Mundipartes","iniciativa":"GTP para la generación de reportes y comparativos"},{"empresa":"Febeca","iniciativa":"GPT para mejorar imagenes, extraer información acerca de productos de los catálogos y fichas técnicas de los proveedores"},{"empresa":"Febeca","iniciativa":"GPT para estandarizar las descripciones para la creación de los códigos de artículos"},{"empresa":"Febeca","iniciativa":"Pront para realizar la estructura de presentaciones con marcas estratégicas para reuniones comerciales y solicitudes a los proveedores"},{"empresa":"Febeca","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas"},{"empresa":"Febeca","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas"},{"empresa":"Febeca","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas"},{"empresa":"Febeca","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas"},{"empresa":"Febeca","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas"},{"empresa":"Febeca","iniciativa":"Pront para crear la estructurar promociones y concursos para la fuerza de ventas"},{"empresa":"Prisma","iniciativa":"GPT para cargar en sistema cotizaciones hechas pdf para homologar los precios"},{"empresa":"Prisma","iniciativa":"GPT para cargar en sistema cotizaciones hechas pdf para homologar los precios"},{"empresa":"Prisma","iniciativa":"GPT para perfeccionar la formulación del calculo de los reportes de ventas"},{"empresa":"Beval","iniciativa":"GPT para perfeccionar la formulación del calculo de los reportes de ventas"},{"empresa":"Beval","iniciativa":"GPT para perfeccionar la formulación del calculo de los reportes de ventas"},{"empresa":"Beval","iniciativa":"GPT para perfeccionar la formulación del calculo de los reportes de ventas"},{"empresa":"Beval","iniciativa":"Pront de personalización de plantilla de información de promociones a vendedores y supervisores"},{"empresa":"Beval","iniciativa":"Pront de personalización de plantilla de información de promociones a vendedores y supervisores"},{"empresa":"Beval","iniciativa":"Pront de personalización de plantilla de información de promociones a vendedores y supervisores"},{"empresa":"Febeca","iniciativa":"Pront de personalización de plantilla de información de promociones a vendedores y supervisores"},{"empresa":"Cofersa","iniciativa":"Globales"},{"empresa":"Prisma","iniciativa":"Globales"},{"empresa":"Mundipartes","iniciativa":"Base de datos autogestionable de datos socio económicos y seguridad vial"},{"empresa":"Mundipartes","iniciativa":"Mapeo de gestión de tiempos"},{"empresa":"Mundipartes","iniciativa":"Programación Acompañamiento en Calle"},{"empresa":"Cofersa","iniciativa":"Liquidaciones"},{"empresa":"Cofersa","iniciativa":"Auditor de Margenes en Listas de Precio"},{"empresa":"Cofersa","iniciativa":"Optimizador de Rutas de Visita"},{"empresa":"Prisma","iniciativa":"Portal gestión de vendedores - Febeca, Sillaca y Beval"},{"empresa":"Sillaca","iniciativa":"Como Vamos"},{"empresa":"Sillaca","iniciativa":"SUGERIDO DE VENTA"},{"empresa":"Febeca","iniciativa":"Cálculo de Metas"},{"empresa":"Beval","iniciativa":"Estandarización de Descripciones Comerciales"},{"empresa":"Prisma","iniciativa":"AIPEX"},{"empresa":"Prisma","iniciativa":"Boletas de Gestión de Asesores y Supervisores"},{"empresa":"Prisma","iniciativa":"Cotizador Mayoreo"},{"empresa":"Prisma","iniciativa":"Herramienta Para la Gestión de Nuevos Ingresos"},{"empresa":"Prisma","iniciativa":"Entrevista de Salida"},{"empresa":"Cofersa","iniciativa":"Gestión Ordenes de Compras"},{"empresa":"Prisma","iniciativa":"Vision Gerencial de candidatos"},{"empresa":"Prisma","iniciativa":"Centro de Formación de Fuerza de Ventas"},{"empresa":"Prisma","iniciativa":"Portal de Condiciones Comerciales"},{"empresa":"Prisma","iniciativa":"Herramienta de Gestión de Archivos de Personal"},{"empresa":"Prisma","iniciativa":"Auto-Respuesta y Captación Automatizada de CVs"},{"empresa":"Prisma","iniciativa":"Portal Auditoria de Retenciones de Compras"},{"empresa":"Sillaca","iniciativa":"AIPEX (Versión Beta)"},{"empresa":"Prisma","iniciativa":"Alertas de seguimiento tareas de proyectos"},{"empresa":"Mundipartes","iniciativa":"Clasificación arancelaria"},{"empresa":"Prisma","iniciativa":"Índice dinámico"},{"empresa":"Prisma","iniciativa":"Bot aviso próximo ingreso artículos"},{"empresa":"Sillaca","iniciativa":"Cargador TADIA"},{"empresa":"Prisma","iniciativa":"Solicitudes de mercadeo (Tickets)"},{"empresa":"Mundipartes","iniciativa":"Investigación de Mercado para Artículos nuevos y actuales"},{"empresa":"Mundipartes","iniciativa":"Modelo de Predicción y Análisis del Comportamiento Comercial"},{"empresa":"Cofersa","iniciativa":"Alerta de Clientes Caidos por Marca"},{"empresa":"Cofersa","iniciativa":"Automatización presentaciones en formato"},{"empresa":"Prisma","iniciativa":"Análisis de inventario y fallas"},{"empresa":"Prisma","iniciativa":"Test de Medición del Ingles"},{"empresa":"Prisma","iniciativa":"Generador de organigramas"},{"empresa":"Prisma","iniciativa":"Agente Entrevistador Mayoreo"},{"empresa":"Prisma","iniciativa":"Generador de organigramas"},{"empresa":"Prisma","iniciativa":"Generador de recursos de formación (Videos)"},{"empresa":"Mundipartes","iniciativa":"Estándar de comunicación viajes personal"},{"empresa":"Mundipartes","iniciativa":"Estrategia de comunicación"},{"empresa":"Prisma","iniciativa":"Sistema Gestión de Tickets"},{"empresa":"Prisma","iniciativa":"Creador de archivos excel para Ordenes de compra"},{"empresa":"Prisma","iniciativa":"Radar III - Doppler -  RPA - Documentación de Oportunidades Plan de demanda"},{"empresa":"Prisma","iniciativa":"Radar II - Doppler - RPA - Revisión de Portafolio y Ejecución"},{"empresa":"Prisma","iniciativa":"Seguimiento de Pedidos de Importación"},{"empresa":"Prisma","iniciativa":"Automatizacion reserva contingencia de gastos"},{"empresa":"Prisma","iniciativa":"Cuadre auxiliar FA"},{"empresa":"Prisma","iniciativa":"BPA Mayoreo"},{"empresa":"Cofersa","iniciativa":"Automatización de envío de dinámias"},{"empresa":"Febeca","iniciativa":"Portal de Supervisores"},{"empresa":"Prisma","iniciativa":"Análisis de Data de Reposición IA"},{"empresa":"Cofersa","iniciativa":"BPA Mayoreo"},{"empresa":"Prisma","iniciativa":"Análisis de venta normal"},{"empresa":"Prisma","iniciativa":"Identificador de órdenes"},{"empresa":"Cofersa","iniciativa":"Seguimiento Diario"},{"empresa":"Prisma","iniciativa":"Separador de archivos"},{"empresa":"Prisma","iniciativa":"Facilitador de relaciones entre archivos"},{"empresa":"Prisma","iniciativa":"Bot de estados de cuenta"},{"empresa":"Prisma","iniciativa":"Automatización de transformación de datos"},{"empresa":"Prisma","iniciativa":"Data Completer"},{"empresa":"Prisma","iniciativa":"Procesos Mayoreo"},{"empresa":"Prisma","iniciativa":"Forecast Flow (v1.0.4) - Herramienta Operativa de Gestión por Procesos"},{"empresa":"Prisma","iniciativa":"Radar I - Doppler - Auditoría Gaps (Plan to Forecast)"},{"empresa":"Cofersa","iniciativa":"CYC Cofersa — Sistema de Gestión de Cartera"},{"empresa":"Cofersa","iniciativa":"Sistema de Seguimiento Semanal — Facturas Pendientes Clientes Espejo"},{"empresa":"Cofersa","iniciativa":"Sistema Automatizado de Reporte Semanal — Clientes Bloqueados"},{"empresa":"Cofersa","iniciativa":"Automatización de Reportes CxC – Facturas Plazos Especiales"},{"empresa":"Cofersa","iniciativa":"Control de Facturas CxC - COFERSA"},{"empresa":"Cofersa","iniciativa":"Cliente Digital Cofersa"},{"empresa":"Prisma","iniciativa":"Talento Mayoreo"},{"empresa":"Cofersa","iniciativa":"App de negociaciones especiales"},{"empresa":"Cofersa","iniciativa":"Generador de Metas de Ventas Trimestrales"},{"empresa":"Prisma","iniciativa":"Sistema de cálculo de comisiones"},{"empresa":"Cofersa","iniciativa":"Inteligencia Comercial"},{"empresa":"Prisma","iniciativa":"Sistema de acompañamiento de fuerza ventas"},{"empresa":"Mundipartes","iniciativa":"Causacion automatica facturas"},{"empresa":"Mundipartes","iniciativa":"Notificacion Egreso Factura"},{"empresa":"Mundipartes","iniciativa":"Notificacion Facturas cliente"},{"empresa":"Mundipartes","iniciativa":"SmartFeedback AI – Mundipartes"},{"empresa":"Mundipartes","iniciativa":"Mundi SmartSales"},{"empresa":"Mundipartes","iniciativa":"Análisis de precios"},{"empresa":"Mundipartes","iniciativa":"Segmentación de productos según aplicación"},{"empresa":"Mundipartes","iniciativa":"Asistente Virtual Mayoreo"},{"empresa":"Prisma","iniciativa":"Cargador de Movimientos Bancarios"},{"empresa":"Prisma","iniciativa":"Automatización indicadores de Beconsult para VE, COL, CR."},{"empresa":"Prisma","iniciativa":"Implementación de detalles de pago a vendedores (Nómina y Outsourcing) y/o supervisores y automatización en envío de órdenes de pago."},{"empresa":"Prisma","iniciativa":"Optimización y automatización del proceso de prestaciones sociales"},{"empresa":"Prisma","iniciativa":"Inteligencia Operativa: Automatización y Centro de Control Beval (Crédito y Cobranza)."},{"empresa":"Prisma","iniciativa":"Cargador facturas de suministros"},{"empresa":"Cofersa","iniciativa":"APP para vacacionista"},{"empresa":"Cofersa","iniciativa":"Cotizador Multi-SKU con Ingreso Masivo y Cálculo por Volumen"},{"empresa":"Prisma","iniciativa":"Arquitecto de Procesos Inteligentes ( API)"},{"empresa":"Prisma","iniciativa":"Laboratorio de Innovación Contable"},{"empresa":"Prisma","iniciativa":"Portal Central de Herramientas Contables Inteligentes."},{"empresa":"Cofersa","iniciativa":"Upscaler de Imagenes"},{"empresa":"Cofersa","iniciativa":"Automatizacion de Envio de Correos Masivos"},{"empresa":"Prisma","iniciativa":"Saldos a favor"},{"empresa":"Cofersa","iniciativa":"APP Feria Bosch"},{"empresa":"Prisma","iniciativa":"Calculadora de Diferencial Cambiario"},{"empresa":"Prisma","iniciativa":"Automatización de Control Fiscal"},{"empresa":"Cofersa","iniciativa":"Recopilacion de Datos de Clientes"},{"empresa":"Cofersa","iniciativa":"Calculadora de Incentivos - Pedidos PL"},{"empresa":"Cofersa","iniciativa":"Gestion de Reclamos"},{"empresa":"Mundipartes","iniciativa":"Simulación de repuestos en 3D"},{"empresa":"Prisma","iniciativa":"Herramienta para Gestión de Solicitudes de Compras"},{"empresa":"Prisma","iniciativa":"App Inciativas IA Mayoreo"},{"empresa":"Mundipartes","iniciativa":"Escuela Partes y Mentes"},{"empresa":"Mundipartes","iniciativa":"Escuela Partes y Mentes"},{"empresa":"Mundipartes","iniciativa":"Escuela Partes y Mentes"},{"empresa":"Mundipartes","iniciativa":"Escuela Partes y Mentes"},{"empresa":"Mundipartes","iniciativa":"Escuela Partes y Mentes"}];
+var INICIATIVAS_DATA = INIT_INICIATIVAS_DATA.slice();
+
+// Embedded initial dataset
+var INIT_DATA = [{"colaborador":"Alejandra Lopez","area":"Compras","empresa":"Beval","mejoras":2,"capacitaciones":0},{"colaborador":"Edgar Martinez","area":"Compras","empresa":"Beval","mejoras":1,"capacitaciones":1},{"colaborador":"Fabiola Bonifacio","area":"Compras","empresa":"Beval","mejoras":1,"capacitaciones":1},{"colaborador":"Jade Varela","area":"Compras","empresa":"Beval","mejoras":2,"capacitaciones":1},{"colaborador":"Natasha Briceño","area":"Compras","empresa":"Beval","mejoras":5,"capacitaciones":1},{"colaborador":"Ramon Manzol","area":"Compras","empresa":"Beval","mejoras":2,"capacitaciones":1},{"colaborador":"José Seijas","area":"Gerencia","empresa":"Beval","mejoras":1,"capacitaciones":1},{"colaborador":"Jose Aponte","area":"Logistica","empresa":"Beval","mejoras":0,"capacitaciones":2},{"colaborador":"Brayan Veliz","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Carmela Caramagno","area":"Ventas","empresa":"Beval","mejoras":0,"capacitaciones":2},{"colaborador":"Charles Hernández","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Christian Flores","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Edgar Graterol","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Frank Pérez","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Franyexon Mosquera","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Jesús Gil","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Juan Cardenas","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Juan Jiménez","area":"Ventas","empresa":"Beval","mejoras":2,"capacitaciones":0},{"colaborador":"Kenny Hernández","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Maria Montes de oca","area":"Ventas","empresa":"Beval","mejoras":0,"capacitaciones":2},{"colaborador":"Oneida Sanchez","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Orianny Villanueva","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":2},{"colaborador":"Pablo Montaño","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Renny Noguera","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Willmer Márquez","area":"Ventas","empresa":"Beval","mejoras":1,"capacitaciones":0},{"colaborador":"Alejandro Jimenez","area":"Compras","empresa":"Cofersa","mejoras":1,"capacitaciones":1},{"colaborador":"Freddy Alvarado","area":"Compras","empresa":"Cofersa","mejoras":0,"capacitaciones":0},{"colaborador":"Luis Vega","area":"Compras","empresa":"Cofersa","mejoras":0,"capacitaciones":0},{"colaborador":"Viviana Arce","area":"Compras","empresa":"Cofersa","mejoras":1,"capacitaciones":0},{"colaborador":"Frank Trujillo","area":"Control","empresa":"Cofersa","mejoras":0,"capacitaciones":1},{"colaborador":"Jeffrey Díaz","area":"Control","empresa":"Cofersa","mejoras":0,"capacitaciones":8},{"colaborador":"Jorge Figeac","area":"Control","empresa":"Cofersa","mejoras":1,"capacitaciones":0},{"colaborador":"Raul Orellana","area":"Control","empresa":"Cofersa","mejoras":1,"capacitaciones":0},{"colaborador":"Ignacio Vietto","area":"Gerencia","empresa":"Cofersa","mejoras":0,"capacitaciones":1},{"colaborador":"Oswaldo Silva","area":"Gerencia","empresa":"Cofersa","mejoras":1,"capacitaciones":3},{"colaborador":"Jose Araya","area":"Sistemas","empresa":"Cofersa","mejoras":0,"capacitaciones":1},{"colaborador":"Alejandro Barrios","area":"Ventas","empresa":"Cofersa","mejoras":0,"capacitaciones":1},{"colaborador":"Alejandro Prado","area":"Ventas","empresa":"Cofersa","mejoras":0,"capacitaciones":1},{"colaborador":"Esteban Araya","area":"Ventas","empresa":"Cofersa","mejoras":1,"capacitaciones":0},{"colaborador":"Jonathan Tarazon","area":"Ventas","empresa":"Cofersa","mejoras":0,"capacitaciones":1},{"colaborador":"Jorge Garcia","area":"Ventas","empresa":"Cofersa","mejoras":0,"capacitaciones":15},{"colaborador":"Pablo Jimenez","area":"Ventas","empresa":"Cofersa","mejoras":1,"capacitaciones":0},{"colaborador":"Pamela Sandoval","area":"Ventas","empresa":"Cofersa","mejoras":2,"capacitaciones":0},{"colaborador":"Victor Moreno","area":"Ventas","empresa":"Cofersa","mejoras":1,"capacitaciones":0},{"colaborador":"Wilfredo Lopez","area":"Ventas","empresa":"Cofersa","mejoras":1,"capacitaciones":0},{"colaborador":"Adriana Sierra","area":"Compras","empresa":"Febeca","mejoras":0,"capacitaciones":1},{"colaborador":"Daniel Velasquez","area":"Compras","empresa":"Febeca","mejoras":0,"capacitaciones":1},{"colaborador":"Miguelangel Zauschi","area":"Compras","empresa":"Febeca","mejoras":0,"capacitaciones":1},{"colaborador":"Wilfred Bracho","area":"Compras","empresa":"Febeca","mejoras":0,"capacitaciones":0},{"colaborador":"Adrian Saad","area":"Importaciones","empresa":"Febeca","mejoras":0,"capacitaciones":1},{"colaborador":"Abreu Jesus","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Acosta Ronad","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Aguilar Robert","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Alejandro Sierra","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Andrés Aguilera","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Carrillo Luis","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Carvallo Jesus","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Castillo Jesus","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Cermeño Jose","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Diaz Javier","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Diaz Pablo","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Fernandez Leonardo","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Freites Maria","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Gamez Baudilio","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Garcia Elier","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Gonzalez Asdrubal","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Guerra Silverio","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Jean Castillos","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Jesús Jiménez","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Jimenez Oswaldo","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"José Pérez","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Leal Erick","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Lopez Leonardo","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Lozada Heber","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Martínez Gabriel","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Mejicano Luis","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Melendez Yonaickel","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Mendez Luis","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Mijares Yolanis","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Milano Alexander","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Morellis Andrés","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Moreno Gregory","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Moreno Jose","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Nieves Gabriel","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Ojeda Miguel","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Orocua José","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Ortega Orlando","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Ortega Sebastián","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Ospino Jacnnier","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Oviedo Jose","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Pacheco Eduardo","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Paez Anyelis","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Palencia Jose","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Pereira Leandro","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Perez Marcos","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Piñero Johns","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Pugliese Jesus","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Ramirez Juan","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Ramones Cristian","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Ramos Ricardo","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Romero Robert","area":"Logistica","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Hermes Villamizar","area":"Transporte","empresa":"Febeca","mejoras":0,"capacitaciones":1},{"colaborador":"Jorge Rodriguez","area":"Transporte","empresa":"Febeca","mejoras":0,"capacitaciones":1},{"colaborador":"Alejandro Prieto","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Alexander Castillo","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Anand Panday","area":"Ventas","empresa":"Febeca","mejoras":2,"capacitaciones":0},{"colaborador":"Anarella Montilla","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Arismar Escalona","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Bernando Duque","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Carlos Dos Santos","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Carlos Guanipa","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Carlos Lagares","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":1},{"colaborador":"Daniel Almeira","area":"Ventas","empresa":"Febeca","mejoras":2,"capacitaciones":0},{"colaborador":"Diego Pereda","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Donys Vera","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Edison Carrillo","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Eliabel Aguirre","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Elías Jiménez","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Emerita Ferrer","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Eyber Melendez","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Franny Indriago","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Geraldine Castellano","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":5},{"colaborador":"Gilberto Mata","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Gustavo Pacheco","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Héctor Fernández","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Henry Yepez","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Humberto Carrizo","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Jean Rojas","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Jesús Aponte","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Jesús Muñoz","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Joel Sanoja","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"José Estrella","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"José Natera","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"José Rincón","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Juan Gimenez","area":"Ventas","empresa":"Febeca","mejoras":0,"capacitaciones":4},{"colaborador":"Juliane Cruz","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Lizmar Marrero","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Luis Carmona","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Luis Jaimes","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Luis Landaeta","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Martín Santander","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Natalia Álvarez","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Nehomar Chirinos","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Nelly Patiño","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Orlando Ortegano","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Oscar Sánchez","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Rafael Anato","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Richard Gómez","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Richard Pineda","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Richard Salazar","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Rodolfo Briceño","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Tabardo Villasmil","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Wilfredo González","area":"Ventas","empresa":"Febeca","mejoras":1,"capacitaciones":0},{"colaborador":"Carolina Marin","area":"Compras","empresa":"Mundipartes","mejoras":0,"capacitaciones":3},{"colaborador":"Diego Henao","area":"Compras","empresa":"Mundipartes","mejoras":0,"capacitaciones":2},{"colaborador":"Jonathan Restrepo","area":"Compras","empresa":"Mundipartes","mejoras":0,"capacitaciones":5},{"colaborador":"José Alberto Torres","area":"Compras","empresa":"Mundipartes","mejoras":0,"capacitaciones":2},{"colaborador":"Alexander Zuluaga","area":"Control","empresa":"Mundipartes","mejoras":2,"capacitaciones":0},{"colaborador":"Andres Jaramillo","area":"Control","empresa":"Mundipartes","mejoras":1,"capacitaciones":0},{"colaborador":"Angy Tamayo","area":"Control","empresa":"Mundipartes","mejoras":1,"capacitaciones":0},{"colaborador":"Karina Cuberos","area":"Control","empresa":"Mundipartes","mejoras":1,"capacitaciones":1},{"colaborador":"Sandra Ortega","area":"Control","empresa":"Mundipartes","mejoras":1,"capacitaciones":0},{"colaborador":"Estid Castañeda","area":"Logistica","empresa":"Mundipartes","mejoras":1,"capacitaciones":0},{"colaborador":"Jhon Camargo","area":"Logistica","empresa":"Mundipartes","mejoras":1,"capacitaciones":0},{"colaborador":"Jhon Echeverry","area":"Logistica","empresa":"Mundipartes","mejoras":1,"capacitaciones":2},{"colaborador":"Juan Esteban","area":"Logistica","empresa":"Mundipartes","mejoras":1,"capacitaciones":0},{"colaborador":"Kevin Montoya","area":"Logistica","empresa":"Mundipartes","mejoras":1,"capacitaciones":1},{"colaborador":"Miguel Hernandez","area":"Logistica","empresa":"Mundipartes","mejoras":1,"capacitaciones":1},{"colaborador":"Alexandra Orozco","area":"Personal","empresa":"Mundipartes","mejoras":2,"capacitaciones":2},{"colaborador":"Elda Ceballos","area":"Personal","empresa":"Mundipartes","mejoras":1,"capacitaciones":3},{"colaborador":"Mildrey Correa","area":"Personal","empresa":"Mundipartes","mejoras":2,"capacitaciones":2},{"colaborador":"Alexander Gomez","area":"Sistemas","empresa":"Mundipartes","mejoras":0,"capacitaciones":14},{"colaborador":"Angel Lopez","area":"Ventas","empresa":"Mundipartes","mejoras":1,"capacitaciones":0},{"colaborador":"Jorge Restrepo","area":"Ventas","empresa":"Mundipartes","mejoras":1,"capacitaciones":0},{"colaborador":"Jose Torres","area":"Ventas","empresa":"Mundipartes","mejoras":1,"capacitaciones":1},{"colaborador":"Alejandro Bordones","area":"Control","empresa":"Prisma","mejoras":0,"capacitaciones":3},{"colaborador":"Andrea Ramirez","area":"Control","empresa":"Prisma","mejoras":0,"capacitaciones":2},{"colaborador":"Fernando Linares","area":"Control","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Gianella Álvarez","area":"Control","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Julien Barroeta","area":"Control","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Lusibely Gonzalez","area":"Control","empresa":"Prisma","mejoras":0,"capacitaciones":2},{"colaborador":"Maikel Gutierrez","area":"Control","empresa":"Prisma","mejoras":0,"capacitaciones":2},{"colaborador":"María Gabriela Franco","area":"Control","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Mario La Veglia","area":"Control","empresa":"Prisma","mejoras":1,"capacitaciones":0},{"colaborador":"Paola Guerra","area":"Control","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Paola Rodriguez","area":"Control","empresa":"Prisma","mejoras":1,"capacitaciones":0},{"colaborador":"Roselyn Henríquez","area":"Control","empresa":"Prisma","mejoras":0,"capacitaciones":2},{"colaborador":"Stephany De Sousa","area":"Control","empresa":"Prisma","mejoras":0,"capacitaciones":9},{"colaborador":"Alejandro Saavedra","area":"Crédito y cobro","empresa":"Prisma","mejoras":1,"capacitaciones":6},{"colaborador":"Carolina Ache","area":"Crédito y cobro","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Francy Zabaleta","area":"Crédito y cobro","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Lolimar Oropeza","area":"Crédito y cobro","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Luis Cardozo","area":"Crédito y cobro","empresa":"Prisma","mejoras":1,"capacitaciones":2},{"colaborador":"Jose Palencia","area":"Gerencia","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Eimy Marquez","area":"Mejora Continua","empresa":"Prisma","mejoras":1,"capacitaciones":0},{"colaborador":"Fabián Tovar","area":"Mejora Continua","empresa":"Prisma","mejoras":2,"capacitaciones":0},{"colaborador":"Jesús Redondo","area":"Mejora Continua","empresa":"Prisma","mejoras":2,"capacitaciones":0},{"colaborador":"Miguelangel Vásquez","area":"Mejora Continua","empresa":"Prisma","mejoras":1,"capacitaciones":0},{"colaborador":"Saúl Vargas","area":"Mejora Continua","empresa":"Prisma","mejoras":2,"capacitaciones":0},{"colaborador":"Adriana Navas","area":"Mercadeo","empresa":"Prisma","mejoras":0,"capacitaciones":7},{"colaborador":"Ali Navarro","area":"Mercadeo","empresa":"Prisma","mejoras":2,"capacitaciones":6},{"colaborador":"Irina Moghelbay","area":"Mercadeo","empresa":"Prisma","mejoras":0,"capacitaciones":3},{"colaborador":"Jessica Gonzalez","area":"Mercadeo","empresa":"Prisma","mejoras":0,"capacitaciones":3},{"colaborador":"Maria Marquez","area":"Mercadeo","empresa":"Prisma","mejoras":1,"capacitaciones":0},{"colaborador":"Paola Macho","area":"Mercadeo","empresa":"Prisma","mejoras":0,"capacitaciones":2},{"colaborador":"Reina Chirinos","area":"Mercadeo","empresa":"Prisma","mejoras":1,"capacitaciones":7},{"colaborador":"Ricardo Adarmes","area":"Mercadeo","empresa":"Prisma","mejoras":0,"capacitaciones":5},{"colaborador":"Ruth Martinez","area":"Mercadeo","empresa":"Prisma","mejoras":2,"capacitaciones":2},{"colaborador":"Simon Linares","area":"Mercadeo","empresa":"Prisma","mejoras":0,"capacitaciones":3},{"colaborador":"Wilmary Soto","area":"Mercadeo","empresa":"Prisma","mejoras":0,"capacitaciones":3},{"colaborador":"Yulitze Querales","area":"Operaciones","empresa":"Prisma","mejoras":1,"capacitaciones":2},{"colaborador":"Alvaro Rivera","area":"Personal","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Angela Leon","area":"Personal","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Angélica González","area":"Personal","empresa":"Prisma","mejoras":1,"capacitaciones":0},{"colaborador":"Daniela Melendez","area":"Personal","empresa":"Prisma","mejoras":2,"capacitaciones":1},{"colaborador":"Jessie Espinoza","area":"Personal","empresa":"Prisma","mejoras":1,"capacitaciones":6},{"colaborador":"Jhossett Vela","area":"Personal","empresa":"Prisma","mejoras":0,"capacitaciones":5},{"colaborador":"Krysmar Oliveros","area":"Personal","empresa":"Prisma","mejoras":1,"capacitaciones":2},{"colaborador":"Lourdes Manrique","area":"Personal","empresa":"Prisma","mejoras":2,"capacitaciones":0},{"colaborador":"Luis Millan","area":"Personal","empresa":"Prisma","mejoras":6,"capacitaciones":1},{"colaborador":"Mariangela Fonseca","area":"Personal","empresa":"Prisma","mejoras":0,"capacitaciones":7},{"colaborador":"Rosalia Rincones","area":"Personal","empresa":"Prisma","mejoras":2,"capacitaciones":2},{"colaborador":"Ruannys Aguiar","area":"Personal","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Yazmin Quiceno","area":"Personal","empresa":"Prisma","mejoras":5,"capacitaciones":11},{"colaborador":"Aida Urdaneta","area":"Procesos","empresa":"Prisma","mejoras":4,"capacitaciones":9},{"colaborador":"Alejandro Mora","area":"Procesos","empresa":"Prisma","mejoras":0,"capacitaciones":3},{"colaborador":"Ambar Pulido","area":"Procesos","empresa":"Prisma","mejoras":5,"capacitaciones":1},{"colaborador":"Angely Ojeda","area":"Procesos","empresa":"Prisma","mejoras":4,"capacitaciones":8},{"colaborador":"Edgar Monagas","area":"Procesos","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Giovanny Milano","area":"Procesos","empresa":"Prisma","mejoras":8,"capacitaciones":6},{"colaborador":"Jesús Araujo","area":"Procesos","empresa":"Prisma","mejoras":5,"capacitaciones":8},{"colaborador":"Mayte Zarraga","area":"Procesos","empresa":"Prisma","mejoras":4,"capacitaciones":0},{"colaborador":"Edgar Montilla","area":"Pronóstico","empresa":"Prisma","mejoras":1,"capacitaciones":5},{"colaborador":"Hamilkar Sandoval","area":"Pronóstico","empresa":"Prisma","mejoras":1,"capacitaciones":6},{"colaborador":"Jose Garcia","area":"Pronóstico","empresa":"Prisma","mejoras":2,"capacitaciones":0},{"colaborador":"Raquel Perozo","area":"Pronóstico","empresa":"Prisma","mejoras":2,"capacitaciones":0},{"colaborador":"Anixy Guedez","area":"Reposición","empresa":"Prisma","mejoras":1,"capacitaciones":2},{"colaborador":"Anyimar Perez","area":"Reposición","empresa":"Prisma","mejoras":1,"capacitaciones":1},{"colaborador":"Branfort Monro","area":"Reposición","empresa":"Prisma","mejoras":1,"capacitaciones":2},{"colaborador":"Daniel Duran","area":"Reposición","empresa":"Prisma","mejoras":1,"capacitaciones":2},{"colaborador":"Glendys Rodriguez","area":"Reposición","empresa":"Prisma","mejoras":1,"capacitaciones":2},{"colaborador":"Josshana Tesorero","area":"Reposición","empresa":"Prisma","mejoras":1,"capacitaciones":3},{"colaborador":"Juan Guanipa","area":"Reposición","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Kevin Escobar","area":"Reposición","empresa":"Prisma","mejoras":1,"capacitaciones":7},{"colaborador":"Nancy Garcia","area":"Reposición","empresa":"Prisma","mejoras":1,"capacitaciones":0},{"colaborador":"Stephany Guadarrama","area":"Reposición","empresa":"Prisma","mejoras":0,"capacitaciones":2},{"colaborador":"Wleidy Ramones","area":"Reposición","empresa":"Prisma","mejoras":1,"capacitaciones":2},{"colaborador":"Gabriel Segura","area":"Servicios Operacionales","empresa":"Prisma","mejoras":0,"capacitaciones":2},{"colaborador":"Karla Siderex","area":"Servicios Operacionales","empresa":"Prisma","mejoras":0,"capacitaciones":3},{"colaborador":"Oswaldo Silva","area":"Servicios Operacionales","empresa":"Prisma","mejoras":1,"capacitaciones":3},{"colaborador":"Verona Salas","area":"Servicios Operacionales","empresa":"Prisma","mejoras":0,"capacitaciones":1},{"colaborador":"Cesar Campo","area":"Sistemas","empresa":"Prisma","mejoras":1,"capacitaciones":9},{"colaborador":"Editson Noriega","area":"Sistemas","empresa":"Prisma","mejoras":0,"capacitaciones":11},{"colaborador":"Flavio Ruiz","area":"Sistemas","empresa":"Prisma","mejoras":8,"capacitaciones":0},{"colaborador":"Gabriel Arcila","area":"Sistemas","empresa":"Prisma","mejoras":13,"capacitaciones":0},{"colaborador":"Giovanni Pérez","area":"Sistemas","empresa":"Prisma","mejoras":0,"capacitaciones":7},{"colaborador":"Luis Rivas","area":"Sistemas","empresa":"Prisma","mejoras":6,"capacitaciones":16},{"colaborador":"Nelson Lucena","area":"Sistemas","empresa":"Prisma","mejoras":0,"capacitaciones":4},{"colaborador":"Juan Gimenez","area":"Ventas","empresa":"Prisma","mejoras":0,"capacitaciones":4},{"colaborador":"Andrea Osio","area":"Compras","empresa":"Sillaca","mejoras":0,"capacitaciones":1},{"colaborador":"Daniel Salas","area":"Compras","empresa":"Sillaca","mejoras":1,"capacitaciones":2},{"colaborador":"Gerardo Salas","area":"Compras","empresa":"Sillaca","mejoras":0,"capacitaciones":1},{"colaborador":"Maiguelangel Zauzich","area":"Compras","empresa":"Sillaca","mejoras":0,"capacitaciones":1},{"colaborador":"Maria Rodriguez","area":"Compras","empresa":"Sillaca","mejoras":0,"capacitaciones":1},{"colaborador":"Luis Hidalgo","area":"Crédito y cobro","empresa":"Sillaca","mejoras":2,"capacitaciones":0},{"colaborador":"Alfonso Escalante","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Amilcar Bellais","area":"Ventas","empresa":"Sillaca","mejoras":0,"capacitaciones":6},{"colaborador":"Andrés Guzman","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Andy Saldivia","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":1},{"colaborador":"Argenis Araque","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Argenis Ontiveros","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Christina Gomez","area":"Ventas","empresa":"Sillaca","mejoras":0,"capacitaciones":1},{"colaborador":"David Cala","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Francisco Zambrano","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Franz Pérez","area":"Ventas","empresa":"Sillaca","mejoras":0,"capacitaciones":7},{"colaborador":"Hector Villalón","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"José Revette","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Joselys Ventura","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"María Meza","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Mariana Palacio","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Mayra Leon","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Ronald Acosta","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Ruthsby Salcedo","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Saulo Bravo","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0},{"colaborador":"Yoleida Pérez","area":"Ventas","empresa":"Sillaca","mejoras":1,"capacitaciones":0}];
+
+var DATA = INIT_DATA.slice();
+var filteredData = [];
+var sortCol = 'mejoras';
+var sortDir = -1; // Default: sort descending by number of improvements
+
+var COLS = [
+  { key: 'colaborador', label: 'Colaborador', w: '220px' },
+  { key: 'empresa', label: 'Empresa', w: '120px' },
+  { key: 'area', label: 'Area', w: '140px' },
+  { key: 'mejoras', label: 'Iniciativas', w: '180px' },
+  { key: 'capacitaciones', label: 'Capacitaciones', w: '180px' },
+  { key: 'estado', label: 'Participacion IA', w: '180px' }
+];
+
+/* ========== PARSE GVIZ RESPONSE ========== */
+function parseGviz(resp) {
+  var recs = [];
+  if (!resp || !resp.table || !resp.table.rows) return recs;
+  var rows = resp.table.rows;
+  for (var i = 0; i < rows.length; i++) {
+    var c = rows[i].c;
+    if (!c) continue;
+    var g = function(idx) {
+      return c[idx] && c[idx].v != null ? String(c[idx].v).trim() : '';
+    };
+    var gNum = function(idx) {
+      if (!c[idx] || c[idx].v == null) return 0;
+      var n = parseFloat(c[idx].v);
+      return isNaN(n) ? 0 : Math.round(n);
+    };
+
+    var col = g(0);
+    var area = g(1);
+    var emp = g(2);
+    var mej = gNum(3);
+    var cap = gNum(4);
+
+    if (!col || col === 'Colaborador') continue;
+
+    recs.push({
+      colaborador: col,
+      area: area || 'Sin asignar',
+      empresa: emp || 'Sin asignar',
+      mejoras: mej,
+      capacitaciones: cap
+    });
+  }
+  return recs;
+}
+
+/* ========== FETCH FORMACIONES (HOJA 1) ========== */
+function parseFormaciones(resp) {
+  var recs = [];
+  if (!resp || !resp.table || !resp.table.rows) return recs;
+  var rows = resp.table.rows;
+  for (var i = 0; i < rows.length; i++) {
+    var c = rows[i].c;
+    if (!c) continue;
+    var g = function(idx) { return c[idx] && c[idx].v != null ? String(c[idx].v).trim() : ''; };
+    // Columnas: 0=Empresa, 1=Area, 2=Colaborador, 3=Tipo, 4=Duracion, 5=Formacion, 6=Instituto
+    var col = g(2);
+    if (!col || col.toLowerCase() === 'colaborador') continue;
+    var empresa = g(0) || 'Sin asignar';
+    var tipo = g(3) || 'Interno';
+    var formacion = g(5) || 'Sin titulo';
+    recs.push({ empresa: empresa, tipo: tipo, formacion: formacion });
+  }
+  return recs;
+}
+
+function fetchFormaciones() {
+  return new Promise(function(resolve) {
+    var resolved = false;
+    var cb = '__gviz_form_' + Date.now();
+    window[cb] = function(resp) {
+      if (resolved) return;
+      resolved = true;
+      var recs = parseFormaciones(resp);
+      if (recs.length > 0) {
+        FORMACIONES_DATA = recs;
+        apply(); // re-render con datos frescos
+      }
+      try { delete window[cb]; } catch(e) {}
+      resolve(true);
+    };
+    var s = document.createElement('script');
+    s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=responseHandler:' + cb + '&tq=select%20*&gid=' + GID_FORMACIONES;
+    s.onerror = function() {
+      if (resolved) return; resolved = true;
+      resolve(false);
+    };
+    document.head.appendChild(s);
+    setTimeout(function() { if (!resolved) { resolved = true; resolve(false); } }, 12000);
+  });
+}
+
+/* ========== FETCH INICIATIVAS (COLABORADORES EN INICIATIVAS) ========== */
+function parseIniciativas(resp) {
+  var recs = [];
+  if (!resp || !resp.table || !resp.table.rows) return recs;
+  var rows = resp.table.rows;
+  for (var i = 0; i < rows.length; i++) {
+    var c = rows[i].c;
+    if (!c) continue;
+    var g = function(idx) { return c[idx] && c[idx].v != null ? String(c[idx].v).trim() : ''; };
+    var emp = g(0);
+    var col = g(2);
+    var ini = g(4);
+    if (!col || col.toLowerCase() === 'colaborador' || !ini || emp === 'Empresa') continue;
+    recs.push({
+      empresa: emp || 'Sin asignar',
+      area: g(1) || 'Sin asignar',
+      colaborador: col,
+      iniciativa: ini
+    });
+  }
+  return recs;
+}
+
+function fetchIniciativas() {
+  return new Promise(function(resolve) {
+    var resolved = false;
+    var cb = '__gviz_ini_' + Date.now();
+    window[cb] = function(resp) {
+      if (resolved) return;
+      resolved = true;
+      var recs = parseIniciativas(resp);
+      if (recs.length > 0) {
+        INICIATIVAS_DATA = recs;
+        apply(); // re-render con datos frescos
+      }
+      try { delete window[cb]; } catch(e) {}
+      resolve(true);
+    };
+    var s = document.createElement('script');
+    s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=responseHandler:' + cb + '&tq=select%20*&gid=' + GID_INICIATIVAS;
+    s.onerror = function() {
+      if (resolved) return; resolved = true;
+      resolve(false);
+    };
+    document.head.appendChild(s);
+    setTimeout(function() { if (!resolved) { resolved = true; resolve(false); } }, 12000);
+  });
+}
+
+/* ========== FETCH DATA VIA JSONP ========== */
+function fetchData() {
+  var btn = document.getElementById('refreshBtn');
+  btn.classList.add('loading');
+
+  return new Promise(function(resolve) {
+    var resolved = false;
+    var cb = '__gviz_uni_' + Date.now();
+
+    window[cb] = function(resp) {
+      if (resolved) return;
+      resolved = true;
+      btn.classList.remove('loading');
+      var recs = parseGviz(resp);
+      if (recs.length > 0) {
+        DATA = recs;
+        showStatus('Datos unificados sincronizados: ' + recs.length + ' registros en tiempo real desde Google Sheets', 'ok');
+        stamp();
+        populateFilters();
+        apply();
+        resolve(true);
+      } else {
+        showStatus('Se mantuvieron los datos locales (sin registros nuevos)', 'err');
+        resolve(false);
+      }
+      try { delete window[cb]; } catch(e) {}
+    };
+
+    var s = document.createElement('script');
+    s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=responseHandler:' + cb + '&tq=select%20*&gid=' + GID;
+    s.onerror = function() {
+      if (resolved) return;
+      resolved = true;
+      btn.classList.remove('loading');
+      showStatus('Modo sin conexion: visualizando datos almacenados del indicador unificado', 'err');
+      resolve(false);
+    };
+    document.head.appendChild(s);
+
+    setTimeout(function() {
+      if (resolved) return;
+      resolved = true;
+      btn.classList.remove('loading');
+      showStatus('Tiempo de espera agotado, usando datos precargados', 'err');
+      resolve(false);
+    }, 12000);
+  });
+}
+
+function showStatus(msg, type) {
+  var el = document.getElementById('statusMsg');
+  el.textContent = msg;
+  el.className = 'status-msg ' + (type === 'ok' ? 'status-ok' : 'status-err');
+  if (type === 'ok') setTimeout(function() { el.style.display = 'none'; }, 4500);
+}
+
+function stamp() {
+  var d = new Date();
+  var pad = function(n) { return n < 10 ? '0' + n : n; };
+  document.getElementById('ts').textContent = 'Act.: ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+}
+
+/* ========== HELPER: GET STATE ========== */
+function getColabState(d) {
+  if (d.mejoras > 0 && d.capacitaciones > 0) return 'ambos';
+  if (d.mejoras > 0 && d.capacitaciones === 0) return 'solo_mejora';
+  if (d.mejoras === 0 && d.capacitaciones > 0) return 'solo_cap';
+  return 'base';
+}
+
+/* ========== FILTERS & APPLICATION ========== */
+function populateFilters() {
+  var empSel = document.getElementById('fEmp');
+  var areaSel = document.getElementById('fArea');
+  var curEmp = empSel.value;
+  var curArea = areaSel.value;
+
+  var emps = {}, areas = {};
+  DATA.forEach(function(d) {
+    if (d.empresa) emps[d.empresa] = (emps[d.empresa] || 0) + 1;
+    if (d.area) areas[d.area] = (areas[d.area] || 0) + 1;
+  });
+
+  empSel.innerHTML = '<option value="">Todas (' + DATA.length + ')</option>';
+  Object.keys(emps).sort().forEach(function(e) {
+    var opt = document.createElement('option');
+    opt.value = e;
+    opt.textContent = e + ' (' + emps[e] + ')';
+    if (e === curEmp) opt.selected = true;
+    empSel.appendChild(opt);
+  });
+
+  areaSel.innerHTML = '<option value="">Todas</option>';
+  Object.keys(areas).sort().forEach(function(a) {
+    var opt = document.createElement('option');
+    opt.value = a;
+    opt.textContent = a + ' (' + areas[a] + ')';
+    if (a === curArea) opt.selected = true;
+    areaSel.appendChild(opt);
+  });
+}
+
+function apply() {
+  var empVal = document.getElementById('fEmp').value;
+  var areaVal = document.getElementById('fArea').value;
+  var stateVal = document.getElementById('fState').value;
+  var searchVal = document.getElementById('fSearch').value.toLowerCase().trim();
+
+  filteredData = DATA.filter(function(d) {
+    if (empVal && d.empresa !== empVal) return false;
+    if (areaVal && d.area !== areaVal) return false;
+    if (stateVal && getColabState(d) !== stateVal) return false;
+    if (searchVal) {
+      var matchCol = d.colaborador && d.colaborador.toLowerCase().indexOf(searchVal) !== -1;
+      var matchArea = d.area && d.area.toLowerCase().indexOf(searchVal) !== -1;
+      var matchEmp = d.empresa && d.empresa.toLowerCase().indexOf(searchVal) !== -1;
+      if (!matchCol && !matchArea && !matchEmp) return false;
+    }
+    return true;
+  });
+
+  renderQuadrants();
+  renderSummaryBar();
+  renderMatrix();
+  renderTable();
+}
+
+var TOTAL_EMPRESA = 741; // Total de colaboradores en la compania (todas las sedes)
+var TOTAL_REGISTRADOS_IA = 285; // Total registrados en IA (formacion o iniciativas)
+
+// Colaboradores por compania segun la pestaña "Colaboradores por compañia" (GID 496508915)
+var COLABORADORES_POR_COMPANIA = {
+  'Febeca': 261,
+  'Beval': 98,
+  'Sillaca': 72,
+  'Cofersa': 91,
+  'Mundipartes': 59,
+  'Prisma': 160
+};
+var TOTAL_COLABORADORES_COMPANIAS = 741;
+
+// Metas de iniciativas por empresa
+var META_INICIATIVAS = {
+  'Febeca': 50, 'Sillaca': 50, 'Beval': 50,
+  'Mundipartes': 50, 'Cofersa': 50, 'Prisma': 50
+};
+var META_INICIATIVAS_TOTAL = 300;
+
+/* ========== RENDER QUADRANTS ========== */
+function renderQuadrants() {
+  var cAmbos = 0, cMejora = 0, cCap = 0, cBase = 0;
+  var empVal = document.getElementById('fEmp').value;
+
+  // Total registrados en IA segun empresa (o todos si no hay filtro)
+  var totalRegistradosIA = 0;
+  DATA.forEach(function(d) {
+    if (empVal && d.empresa !== empVal) return;
+    if (d.mejoras > 0 || d.capacitaciones > 0) totalRegistradosIA++;
+  });
+  if (!totalRegistradosIA) totalRegistradosIA = TOTAL_REGISTRADOS_IA;
+
+  // Total empresa (censo real por compania o total global de 741)
+  var totalEmpresa = empVal ? (COLABORADORES_POR_COMPANIA[empVal] || TOTAL_EMPRESA) : TOTAL_EMPRESA;
+  filteredData.forEach(function(d) {
+    var st = getColabState(d);
+    if (st === 'ambos') cAmbos++;
+    else if (st === 'solo_mejora') cMejora++;
+    else if (st === 'solo_cap') cCap++;
+    else cBase++;
+  });
+
+  var curState = document.getElementById('fState').value;
+
+  // Equivalencia 1: sobre total registrados en IA
+  var pctAmbosIA   = ((cAmbos / totalRegistradosIA) * 100).toFixed(1);
+  var pctMejoraIA  = ((cMejora / totalRegistradosIA) * 100).toFixed(1);
+  var pctCapIA     = ((cCap / totalRegistradosIA) * 100).toFixed(1);
+
+  // Equivalencia 2: sobre total de colaboradores en las companias
+  var pctAmbosEmp  = ((cAmbos / totalEmpresa) * 100).toFixed(1);
+  var pctMejoraEmp = ((cMejora / totalEmpresa) * 100).toFixed(1);
+  var pctCapEmp    = ((cCap / totalEmpresa) * 100).toFixed(1);
+
+  var totalConAlgo = cAmbos + cMejora + cCap;
+  var pctEnIAvsIA  = ((totalConAlgo / totalRegistradosIA) * 100).toFixed(1);
+  var pctEnIAvsEmp = ((totalConAlgo / totalEmpresa) * 100).toFixed(1);
+
+  var html = '' +
+    '<div class="q-card q-green ' + (curState === 'ambos' ? 'selected' : '') + '" onclick="filterByState(\'ambos\')">' +
+      '<span class="q-badge">Capacitaciones e iniciativas</span>' +
+      '<div class="q-val">' + cAmbos + '</div>' +
+      '<div class="q-title">Colaboradores con capacitaciones e iniciativas</div>' +
+      '<div class="q-desc">' +
+        '<strong>' + pctAmbosIA + '%</strong> de registrados en IA<br>' +
+        '<strong>' + pctAmbosEmp + '%</strong> del total de colaboradores' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="q-card q-blue ' + (curState === 'solo_mejora' ? 'selected' : '') + '" onclick="filterByState(\'solo_mejora\')">' +
+      '<span class="q-badge">Solo iniciativas</span>' +
+      '<div class="q-val">' + cMejora + '</div>' +
+      '<div class="q-title">Colaboradores con participacion en iniciativas</div>' +
+      '<div class="q-desc">' +
+        '<strong>' + pctMejoraIA + '%</strong> de registrados en IA<br>' +
+        '<strong>' + pctMejoraEmp + '%</strong> del total de colaboradores' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="q-card q-amber ' + (curState === 'solo_cap' ? 'selected' : '') + '" onclick="filterByState(\'solo_cap\')">' +
+      '<span class="q-badge">Solo formacion</span>' +
+      '<div class="q-val">' + cCap + '</div>' +
+      '<div class="q-title">Colaboradores con formacion</div>' +
+      '<div class="q-desc">' +
+        '<strong>' + pctCapIA + '%</strong> de registrados en IA<br>' +
+        '<strong>' + pctCapEmp + '%</strong> del total de colaboradores' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="q-card q-gray">' +
+      '<span class="q-badge">% en IA</span>' +
+      '<div class="q-val">' + pctEnIAvsEmp + '%</div>' +
+      '<div class="q-title">% de colaboradores en IA</div>' +
+      '<div class="q-desc">' +
+        '<strong>' + pctEnIAvsIA + '%</strong> de registrados en IA<br>' +
+        '<strong>' + pctEnIAvsEmp + '%</strong> del total de colaboradores' +
+      '</div>' +
+    '</div>';
+
+  document.getElementById('quadrantsGrid').innerHTML = html;
+}
+
+function filterByState(state) {
+  var el = document.getElementById('fState');
+  el.value = el.value === state ? '' : state;
+  apply();
+}
+
+/* ========== RENDER SUMMARY BAR ========== */
+function renderSummaryBar() {
+  var empVal = document.getElementById('fEmp').value;
+  var conIA = 0;
+  var conIniciativas = 0;
+  var conFormacion = 0;
+  var iniciativasUnicas = new Set();
+  var capUnicas = new Set();
+
+  // Total empresa base para %: censo real por compania o total global de 741
+  var totalEmpresaBase = empVal ? (COLABORADORES_POR_COMPANIA[empVal] || TOTAL_EMPRESA) : TOTAL_EMPRESA;
+
+  // Meta de iniciativas segun empresa
+  var metaIniciativas = empVal ? (META_INICIATIVAS[empVal] || 50) : META_INICIATIVAS_TOTAL;
+
+  filteredData.forEach(function(d) {
+    if (d.mejoras > 0 || d.capacitaciones > 0) conIA++;
+    if (d.mejoras > 0) conIniciativas++;
+    if (d.capacitaciones > 0) conFormacion++;
+    if (d.mejoras > 0) iniciativasUnicas.add(d.colaborador);
+    if (d.capacitaciones > 0) capUnicas.add(d.colaborador);
+  });
+
+  // ---- Iniciativas unicas desde INICIATIVAS_DATA ("Colaboradores en iniciativas" - GID 433982814) ----
+  var iniUniqSet = new Set();
+  var iniciativasSource = (INICIATIVAS_DATA && INICIATIVAS_DATA.length > 0) ? INICIATIVAS_DATA : INIT_INICIATIVAS_DATA;
+
+  iniciativasSource.forEach(function(item) {
+    if (empVal && (item.empresa || '').toLowerCase().trim() !== empVal.toLowerCase().trim()) return; // filtrar por empresa si hay seleccion
+    var key = (item.iniciativa || '').toLowerCase().trim();
+    if (key) iniUniqSet.add(key);
+  });
+
+  var iniUniqTotal = iniUniqSet.size;
+  var pctMetaIniciativas = metaIniciativas > 0 ? ((iniUniqTotal / metaIniciativas) * 100).toFixed(1) : '0.0';
+  if (parseFloat(pctMetaIniciativas) > 100) pctMetaIniciativas = '100.0';
+
+  var pctAvanzando = ((conIA / totalEmpresaBase) * 100).toFixed(1);
+
+  // ---- Capacitaciones unicas desde FORMACIONES_DATA (Hoja 1) ----
+  var capUniqTotalSet = new Set();
+  var capUniqIntSet   = new Set();
+  var capUniqExtSet   = new Set();
+
+  FORMACIONES_DATA.forEach(function(f) {
+    if (empVal && f.empresa !== empVal) return; // filtrar por empresa si hay seleccion
+    var key = (f.formacion || '').toLowerCase().trim();
+    if (!key) return;
+    capUniqTotalSet.add(key);
+    var tipo = (f.tipo || '').toLowerCase();
+    if (tipo === 'externo') {
+      capUniqExtSet.add(key);
+    } else {
+      capUniqIntSet.add(key);
+    }
+  });
+
+  var capUniqTotal = capUniqTotalSet.size;
+  var capUniqInt   = capUniqIntSet.size;
+  var capUniqExt   = capUniqExtSet.size;
+
+  // Si aun no hay datos de formaciones cargados, mostrar placeholder
+  var capLine = capUniqTotal > 0
+    ? capUniqTotal
+    : '...';
+  var capSubLine = capUniqTotal > 0
+    ? '<span style="display:block;font-size:11px;color:var(--g500);margin-top:2px">' +
+        capUniqInt + ' internas &nbsp;|&nbsp; ' + capUniqExt + ' externas' +
+      '</span>'
+    : '<span style="font-size:11px;color:var(--g500)">Cargando...</span>';
+
+  var html = '' +
+    '<div class="sb-item">' +
+      '<div class="sb-lbl">Colaboradores Avanzando en IA</div>' +
+      '<div class="sb-val">' + conIA + ' <span style="font-size:14px; font-weight:600; color:var(--g500)">(' + pctAvanzando + '%)</span></div>' +
+      '<div class="sb-sub">' + conIA + ' de ' + totalEmpresaBase + ' colaboradores en total (' + pctAvanzando + '%)</div>' +
+    '</div>' +
+    '<div class="sb-item">' +
+      '<div class="sb-lbl">Iniciativas creadas</div>' +
+      '<div class="sb-val" style="color:var(--primary)">' + iniUniqTotal + ' <span style="font-size:14px; font-weight:600; color:var(--g500)">/ ' + metaIniciativas + '</span></div>' +
+      '<div class="sb-sub">Meta: ' + metaIniciativas + ' iniciativas &mdash; ' + pctMetaIniciativas + '% cumplido</div>' +
+    '</div>' +
+    '<div class="sb-item">' +
+      '<div class="sb-lbl">Total capacitaciones registradas</div>' +
+      '<div class="sb-val" style="color:var(--amber)">' + capLine + '</div>' +
+      capSubLine +
+    '</div>';
+
+  document.getElementById('summaryBar').innerHTML = html;
+}
+
+/* ========== RENDER MATRIX BY COMPANY ========== */
+function renderMatrix() {
+  var empMap = {};
+
+  filteredData.forEach(function(d) {
+    var emp = d.empresa || 'Sin asignar';
+    if (!empMap[emp]) {
+      empMap[emp] = { total: 0, conCap: 0, conMej: 0, conAmbos: 0, sumMej: 0, sumCap: 0 };
+    }
+    var item = empMap[emp];
+    item.total++;
+    item.sumMej += d.mejoras;
+    item.sumCap += d.capacitaciones;
+    if (d.capacitaciones > 0) item.conCap++;
+    if (d.mejoras > 0) item.conMej++;
+    if (d.capacitaciones > 0 && d.mejoras > 0) item.conAmbos++;
+  });
+
+  var sortedEmp = Object.keys(empMap).sort();
+  var curEmp = document.getElementById('fEmp').value;
+  var bodyHtml = '';
+
+  var tTot = 0, tCap = 0, tMej = 0, tAmb = 0;
+
+  sortedEmp.forEach(function(emp) {
+    var item = empMap[emp];
+    tTot += item.total;
+    tCap += item.conCap;
+    tMej += item.conMej;
+    tAmb += item.conAmbos;
+
+    // % en IA = quienes tienen al menos formacion O iniciativa / censo total de colaboradores de la compania
+    var conAlgoEmp = item.conCap + item.conMej - item.conAmbos; // union
+    var totalCensoEmp = COLABORADORES_POR_COMPANIA[emp] || item.total;
+    var pctEnIAEmp = ((conAlgoEmp / totalCensoEmp) * 100).toFixed(1);
+    var isSel = emp === curEmp;
+
+    var barColor = parseFloat(pctEnIAEmp) >= 50 ? 'var(--green)' : parseFloat(pctEnIAEmp) >= 20 ? 'var(--amber)' : 'var(--primary)';
+
+    bodyHtml += '<tr style="cursor:pointer; ' + (isSel ? 'background:var(--primary-bg)' : '') + '" onclick="filterByEmpTable(\'' + emp.replace(/'/g, "\\'") + '\')">' +
+      '<td><strong>' + escapeHtml(emp) + '</strong></td>' +
+      '<td style="text-align:center">' + item.total + ' <span style="font-size:11px; color:var(--g500)">/ ' + totalCensoEmp + '</span></td>' +
+      '<td style="text-align:center"><span style="color:var(--amber); font-weight:700">' + item.conCap + '</span> <span style="font-size:11px; color:var(--g500)">(' + ((item.conCap/totalCensoEmp)*100).toFixed(0) + '%)</span></td>' +
+      '<td style="text-align:center"><span style="color:var(--primary); font-weight:700">' + item.conMej + '</span> <span style="font-size:11px; color:var(--g500)">(' + ((item.conMej/totalCensoEmp)*100).toFixed(0) + '%)</span></td>' +
+      '<td style="text-align:center"><strong style="color:var(--green)">' + item.conAmbos + '</strong></td>' +
+      '<td style="text-align:center"><strong>' + pctEnIAEmp + '%</strong></td>' +
+      '<td>' +
+        '<div style="display:flex; align-items:center; gap:8px">' +
+          '<div style="flex:1; height:6px; background:var(--g200); border-radius:999px; overflow:hidden">' +
+            '<div style="width:' + pctEnIAEmp + '%; height:100%; background:' + barColor + '; border-radius:999px"></div>' +
+          '</div>' +
+          '<span style="font-size:11px; color:var(--g500); min-width:32px; text-align:right">' + pctEnIAEmp + '%</span>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  });
+
+  // Total footer row
+  var tConAlgo = tCap + tMej - tAmb; // union: quienes tienen al menos uno
+  var tPctEnIA = TOTAL_COLABORADORES_COMPANIAS > 0 ? ((tConAlgo / TOTAL_COLABORADORES_COMPANIAS) * 100).toFixed(1) : '0.0';
+  bodyHtml += '<tr style="border-top:2px solid var(--black); font-weight:700; background:var(--g100)">' +
+    '<td>Total</td>' +
+    '<td style="text-align:center">' + tTot + ' <span style="font-size:11px; color:var(--g500)">/ ' + TOTAL_COLABORADORES_COMPANIAS + '</span></td>' +
+    '<td style="text-align:center">' + tCap + '</td>' +
+    '<td style="text-align:center">' + tMej + '</td>' +
+    '<td style="text-align:center; color:var(--green)">' + tAmb + '</td>' +
+    '<td style="text-align:center">' + tPctEnIA + '%</td>' +
+    '<td>' +
+      '<div style="display:flex; align-items:center; gap:8px">' +
+        '<div style="flex:1; height:6px; background:var(--g300); border-radius:999px; overflow:hidden">' +
+          '<div style="width:' + tPctEnIA + '%; height:100%; background:var(--green); border-radius:999px"></div>' +
+        '</div>' +
+        '<span style="font-size:11px; color:var(--g500); min-width:32px">' + tPctEnIA + '%</span>' +
+      '</div>' +
+    '</td>' +
+  '</tr>';
+
+  document.getElementById('matrixBody').innerHTML = bodyHtml;
+}
+function filterByEmpTable(emp) {
+  var el = document.getElementById('fEmp');
+  el.value = el.value === emp ? '' : emp;
+  apply();
+}
+
+/* ========== TABLE & SORTING ========== */
+function renderTable() {
+  var maxMejora = 1, maxCap = 1;
+  filteredData.forEach(function(d) {
+    if (d.mejoras > maxMejora) maxMejora = d.mejoras;
+    if (d.capacitaciones > maxCap) maxCap = d.capacitaciones;
+  });
+
+  // Sort
+  var list = filteredData.slice();
+  list.sort(function(a, b) {
+    if (sortCol === 'mejoras' || sortCol === 'capacitaciones') {
+      return (a[sortCol] - b[sortCol]) * sortDir;
+    }
+    if (sortCol === 'estado') {
+      var sa = getColabState(a);
+      var sb = getColabState(b);
+      return sa.localeCompare(sb) * sortDir;
+    }
+    var va = (a[sortCol] || '').toLowerCase();
+    var vb = (b[sortCol] || '').toLowerCase();
+    return va.localeCompare(vb) * sortDir;
+  });
+
+  // Headers
+  var headHtml = '';
+  COLS.forEach(function(col) {
+    var isSorted = sortCol === col.key;
+    var arrow = isSorted ? (sortDir === 1 ? '&#9650;' : '&#9660;') : '&#9650;';
+    headHtml += '<th class="' + (isSorted ? 'sorted' : '') + '" onclick="toggleSort(\'' + col.key + '\')" style="width:' + col.w + '">' +
+      col.label + '<span class="arrow">' + arrow + '</span></th>';
+  });
+  document.getElementById('tblHead').innerHTML = headHtml;
+
+  // Body
+  var bodyHtml = '';
+  for (var i = 0; i < list.length; i++) {
+    var row = list[i];
+    var state = getColabState(row);
+
+    var tagHtml = '';
+    if (state === 'ambos') {
+      tagHtml = '<span class="tag tag-ambos">Con Capacitaciones e Iniciativas</span>';
+    } else if (state === 'solo_mejora') {
+      tagHtml = '<span class="tag tag-mejora">Solo Iniciativa</span>';
+    } else if (state === 'solo_cap') {
+      tagHtml = '<span class="tag tag-cap">Solo Capacitaci\u00f3n</span>';
+    } else {
+      tagHtml = '<span class="tag tag-base">Sin Registro</span>';
+    }
+
+    var wMej = ((row.mejoras / maxMejora) * 100).toFixed(0);
+    var wCap = ((row.capacitaciones / maxCap) * 100).toFixed(0);
+
+    bodyHtml += '<tr>' +
+      '<td><strong>' + escapeHtml(row.colaborador) + '</strong></td>' +
+      '<td><span class="tag tag-emp">' + escapeHtml(row.empresa) + '</span></td>' +
+      '<td>' + escapeHtml(row.area) + '</td>' +
+      '<td>' +
+        '<div class="val-bar-cell">' +
+          '<span class="val-num">' + row.mejoras + '</span>' +
+          '<div class="mini-bar"><div class="mini-fill" style="width:' + wMej + '%; background:var(--primary)"></div></div>' +
+        '</div>' +
+      '</td>' +
+      '<td>' +
+        '<div class="val-bar-cell">' +
+          '<span class="val-num">' + row.capacitaciones + '</span>' +
+          '<div class="mini-bar"><div class="mini-fill" style="width:' + wCap + '%; background:var(--amber)"></div></div>' +
+        '</div>' +
+      '</td>' +
+      '<td>' + tagHtml + '</td>' +
+    '</tr>';
+  }
+
+  if (list.length === 0) {
+    bodyHtml = '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--g500)">No se encontraron colaboradores con los criterios seleccionados.</td></tr>';
+  }
+
+  document.getElementById('tblBody').innerHTML = bodyHtml;
+  document.getElementById('tblCount').textContent = list.length + ' de ' + DATA.length + ' colaboradores';
+}
+function toggleSort(colKey) {
+  if (sortCol === colKey) {
+    sortDir = -sortDir;
+  } else {
+    sortCol = colKey;
+    sortDir = (colKey === 'mejoras' || colKey === 'capacitaciones') ? -1 : 1;
+  }
+  renderTable();
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* ========== EXPORT CSV ========== */
+document.getElementById('exportBtn').onclick = function() {
+  var csv = '\uFEFF"Colaborador","Empresa","Area","Iniciativas","Capacitaciones","Participacion IA"\r\n';
+  filteredData.forEach(function(d) {
+    var st = getColabState(d);
+    var stLabel = st === 'ambos' ? 'Formacion, Iniciativas o ambas' : st === 'solo_mejora' ? 'Solo Iniciativas' : st === 'solo_cap' ? 'Solo Formacion' : 'Sin Registro';
+    csv += '"' + (d.colaborador||'').replace(/"/g, '""') + '",' +
+           '"' + (d.empresa||'').replace(/"/g, '""') + '",' +
+           '"' + (d.area||'').replace(/"/g, '""') + '",' +
+           d.mejoras + ',' +
+           d.capacitaciones + ',' +
+           '"' + stLabel + '"\r\n';
+  });
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'indicador_unificado_ia_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+/* ========== EVENT LISTENERS ========== */
+document.getElementById('fEmp').onchange = apply;
+document.getElementById('fArea').onchange = apply;
+document.getElementById('fState').onchange = apply;
+document.getElementById('fSearch').oninput = apply;
+document.getElementById('clearBtn').onclick = function() {
+  document.getElementById('fEmp').value = '';
+  document.getElementById('fArea').value = '';
+  document.getElementById('fState').value = '';
+  document.getElementById('fSearch').value = '';
+  apply();
+};
+document.getElementById('refreshBtn').onclick = function() {
+  fetchData();
+  fetchFormaciones();
+  fetchIniciativas();
+};
+
+/* ========== INITIALIZATION ========== */
+window.onload = function() {
+  stamp();
+  populateFilters();
+  apply();
+  // Fetch live updates silently
+  fetchData();
+  // Fetch training detail from Hoja 1 for unique counts
+  fetchFormaciones();
+  // Fetch initiatives detail from "Colaboradores en iniciativas"
+  fetchIniciativas();
+};
+</script>
+</body>
+</html>

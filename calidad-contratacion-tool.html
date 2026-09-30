@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seguimiento de Nuevos Ingresos</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,sans-serif;background:#f4f5f7;color:#1e293b;min-height:100vh;font-size:14px}
+.screen{display:none}.screen.active{display:block}
+.hdr{padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.08)}
+.container{max-width:1200px;margin:0 auto;padding:24px}
+.card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;border:none;transition:all .15s}
+.btn:hover{filter:brightness(.9)}.btn-sm{padding:5px 12px;font-size:12px}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.st-pen{background:#fff3cd;color:#856404;border:1px solid #ffeeba}
+.st-don{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+.st-risk{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:999px;outline:none;background:#e8e8e8;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.lbl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8a8a8a;margin-bottom:6px}
+.inp{width:100%;padding:8px 12px;border:1px solid #e2e2e2;border-radius:8px;font-size:13px;outline:none;background:#fff}
+.inp:focus{border-color:#666}
+.tab-bar{display:flex;gap:4px;background:#f0f0f0;padding:3px;border-radius:10px;flex-wrap:wrap}
+.tab-btn{padding:7px 14px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:#666}
+.tab-btn.on{background:#fff;color:#1e293b;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.trow{display:grid;align-items:center;padding:10px 16px;border-bottom:1px solid #f0f0f0;font-size:13px;gap:8px}
+.trow:hover{background:#fafbfc}
+.thd{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a8a8a;background:#f9fafb;border-radius:8px 8px 0 0}
+.co-row{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f0f0f0;cursor:pointer;transition:background .15s}
+.co-row:hover{background:#f0f9ff}
+textarea{width:100%;padding:10px;border:1px solid #e2e2e2;border-radius:8px;font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:80px}
+textarea:focus{border-color:#666}
+.fade{animation:fi .3s ease-out both}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.notif-bar{background:#e8f5e9;border:1px solid #c8e6c9;border-radius:8px;padding:10px 16px;display:flex;align-items:center;gap:8px;font-size:13px;color:#2e7d32}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal{background:#fff;border-radius:16px;max-width:560px;width:92%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-hd{padding:20px 24px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
+.modal-body{padding:24px}
+.modal-ft{padding:16px 24px;border-top:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
+.likert-legend{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:8px}
+.likert-item{text-align:center;padding:6px 4px;border-radius:8px;font-size:11px;line-height:1.3}
+.info-box{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;color:#1e40af;line-height:1.5}
+.step-indicator{display:flex;gap:4px;justify-content:center;margin-bottom:12px}
+.step-dot{width:8px;height:8px;border-radius:50%;background:#e2e2e2}
+.step-dot.active{background:#1e293b}
+.expand-section{border:1px solid #e8e8e8;border-radius:10px;overflow:hidden;margin-bottom:8px}
+.expand-hd{padding:10px 14px;background:#f9fafb;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600}
+.expand-bd{padding:12px 14px;display:none;font-size:13px;border-top:1px solid #f0f0f0}
+.expand-bd.open{display:block}
+
+input[type=range]::-webkit-slider-thumb{background:#1e293b;box-shadow:0 0 0 4px rgba(30,41,59,.2),0 2px 6px rgba(0,0,0,.3)}
+input[type=range]::-moz-range-thumb{background:#1e293b;box-shadow:0 0 0 4px rgba(30,41,59,.2),0 2px 6px rgba(0,0,0,.3);width:22px;height:22px;border-radius:50%;border:none;cursor:pointer}
+input[type=range]{height:8px;background:linear-gradient(to right,#fca5a5,#fde68a,#bbf7d0)}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="screen active">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e293b,#0f172a)">
+<div class="card fade" style="width:420px;max-width:92vw;padding:36px">
+  <div style="text-align:center;margin-bottom:28px">
+    <h1 style="font-size:20px;font-weight:700">Seguimiento de Nuevos Ingresos</h1>
+    <p style="color:#8a8a8a;font-size:13px;margin-top:4px">Medicion evolutiva del talento reclutado</p>
+  </div>
+  <div style="margin-bottom:14px"><label class="lbl">Correo Electronico</label><input type="email" id="loginEmail" placeholder="usuario@mayoreo.biz" class="inp"></div>
+  <div style="margin-bottom:14px"><label class="lbl">Contrasena</label><input type="password" id="loginPass" placeholder="........" class="inp"></div>
+  <div style="margin-bottom:20px">
+    <label class="lbl">Rol de Acceso</label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button type="button" id="rSup" class="btn" style="background:#f0f0f0;color:#4a4a4a;justify-content:center" data-action="pickRole" data-arg="supervisor">Supervisor</button>
+      <button type="button" id="rAdm" class="btn" style="background:#f0f0f0;color:#4a4a4a;justify-content:center" data-action="pickRole" data-arg="admin">Administrador</button>
+    </div>
+  </div>
+  <div id="supCoPick" style="margin-bottom:16px;display:none">
+    <label class="lbl">Tu Empresa</label>
+    <select id="supCompany" class="inp" style="cursor:pointer"><option value="">-- Seleccionar --</option><option>Beval</option><option>Cofersa</option><option>Febeca</option><option>Mundipartes</option><option>Prisma</option><option>Sillaca</option></select>
+  </div>
+  <button class="btn" style="width:100%;background:#1e293b;color:#fff;padding:11px;font-size:14px;justify-content:center" data-action="doLogin">Ingresar</button>
+  <p id="loginErr" style="color:#d32f2f;font-size:12px;text-align:center;margin-top:10px;display:none"></p>
+</div>
+</div>
+</div>
+
+<div id="adminDash" class="screen">
+<div class="hdr" style="background:#1e293b">
+  <span style="color:#fff;font-weight:600;font-size:15px">Seguimiento de Nuevos Ingresos - Administrador</span>
+  <div style="display:flex;gap:8px;align-items:center"><span id="lsBadge" style="font-size:11px;color:#a8a8a8"></span><button class="btn btn-sm" style="background:rgba(255,255,255,.08);color:#a8a8a8" data-action="clearLocal">Limpiar datos</button><button class="btn btn-sm" style="background:rgba(255,255,255,.12);color:#fff" data-action="doLogout">Cerrar Sesion</button></div>
+</div>
+<div class="container">
+  <div class="tab-bar" style="margin-bottom:24px;width:fit-content" id="adminTabs">
+    <button class="tab-btn on" data-action="adminTab" data-arg="empresas">Empresas</button>
+    <button class="tab-btn" data-action="adminTab" data-arg="supervisores">Supervisores</button>
+    <button class="tab-btn" data-action="adminTab" data-arg="plantilla">Plantilla</button>
+    <button class="tab-btn" data-action="adminTab" data-arg="preview">Preview Evaluacion</button>
+    <button class="tab-btn" data-action="adminTab" data-arg="repositorio">Repositorio</button>
+    <button class="tab-btn" data-action="adminTab" data-arg="guia">Guia</button>
+  </div>
+
+  <!-- TAB: GUIA -->
+  <div id="tabGuia" style="display:none">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:16px">Como funciona la herramienta</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      <div class="card">
+        <h3 style="font-size:14px;font-weight:700;margin-bottom:8px">Objetivo</h3>
+        <p style="font-size:13px;color:#666;line-height:1.6">Medir la calidad de cada contratacion a traves de una evaluacion evolutiva en 3 periodos (mes 3, 6 y 9), valorando competencias tecnicas, adhesion normativa, fit actitudinal, ejecucion autonoma y aportes significativos.</p>
+      </div>
+      <div class="card">
+        <h3 style="font-size:14px;font-weight:700;margin-bottom:8px">Escala de Medicion</h3>
+        <p style="font-size:13px;color:#666;line-height:1.6">Se usa una escala Likert de 1 a 5 por cada pregunta. El Indice de Calidad se calcula como la suma ponderada de todas las respuestas segun los pesos del periodo. El umbral minimo varia por periodo.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:12px">Regla de Calculo</h3>
+      <div style="background:#f9fafb;border-radius:8px;padding:14px;font-family:monospace;font-size:13px;margin-bottom:12px">Indice = (Comp x Peso) + (Norm x Peso) + (Act x Peso) + (Aut x Peso) + (Imp x Peso)</div>
+      <p style="font-size:13px;color:#666;margin-bottom:12px">Cada dimension se evalua con 2-3 preguntas cuyo promedio se multiplica por el peso asignado al periodo.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+        <div class="card" style="background:#f0f9ff;border-color:#bfdbfe;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:#1e40af;margin-bottom:4px">Mes 3 - Prueba</div>
+          <div style="font-size:12px;color:#666;line-height:1.5">Comp 30% | Norm 25% | Act 25% | Aut 20%<br>Umbral minimo: <b>3.2</b><br>Enfoque: Adaptacion basica y cumplimiento</div>
+        </div>
+        <div class="card" style="background:#f0fdf4;border-color:#bbf7d0;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:4px">Mes 6 - Consolidacion</div>
+          <div style="font-size:12px;color:#666;line-height:1.5">Comp 20% | Norm 15% | Act 20% | Aut 25% | Imp 20%<br>Umbral minimo: <b>3.8</b><br>Enfoque: Autonomia y primeros aportes</div>
+        </div>
+        <div class="card" style="background:#fefce8;border-color:#fde68a;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:#854d0e;margin-bottom:4px">Mes 9 - Impacto</div>
+          <div style="font-size:12px;color:#666;line-height:1.5">Comp 15% | Norm 10% | Act 15% | Aut 30% | Imp 30%<br>Umbral minimo: <b>4.2</b><br>Enfoque: Liderazgo y contribucion tangible</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:8px">Criterios de Resultado</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+        <div style="display:flex;align-items:center;gap:8px"><span class="badge st-don">Ingreso Exitoso</span><span style="font-size:12px;color:#666">Indice >= umbral y Continuidad favorable</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="badge st-pen">Revisar Continuidad</span><span style="font-size:12px;color:#666">Indice >= umbral pero Continuidad desfavorable</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="badge st-risk">Riesgo</span><span style="font-size:12px;color:#666">Indice por debajo del umbral</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: EMPRESAS -->
+  <div id="tabEmpresas">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:4px">Mediciones Pendientes por Empresa</h2>
+    <p style="color:#8a8a8a;font-size:13px;margin-bottom:20px">Haz clic en una empresa para ver colaboradores</p>
+    <div class="card" style="padding:0;overflow:hidden" id="companyList"></div>
+  </div>
+
+  <!-- TAB: SUPERVISORES -->
+  <div id="tabSupervisores" style="display:none">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:4px">Notificaciones a Supervisores</h2>
+    <p style="color:#8a8a8a;font-size:13px;margin-bottom:16px">Correos editables. Despliega cada supervisor para ver sus colaboradores pendientes.</p>
+    <div id="notifBanner" class="notif-bar" style="display:none"><span id="notifMsg"></span></div>
+    <div style="margin-bottom:14px;display:flex;gap:12px;flex-wrap:wrap">
+      <input type="text" id="supSearch" class="inp" placeholder="Buscar supervisor..." style="max-width:280px" data-action="renderSups">
+      <select id="supCoFilter" class="inp" style="width:150px;cursor:pointer" data-action="renderSupsC"><option value="">Todas</option><option>Beval</option><option>Cofersa</option><option>Febeca</option><option>Mundipartes</option><option>Prisma</option><option>Sillaca</option></select>
+    </div>
+    <div id="supList"></div>
+  </div>
+
+  <!-- TAB: PLANTILLA -->
+  <div id="tabPlantilla" style="display:none">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:4px">Plantilla de Notificacion</h2>
+    <p style="color:#8a8a8a;font-size:13px;margin-bottom:16px">Configura el mensaje predeterminado</p>
+    <div class="card" style="max-width:700px">
+      <div style="margin-bottom:14px"><label class="lbl">Asunto</label><input type="text" id="tplSubject" class="inp" value="Evaluaciones de Seguimiento Pendientes"></div>
+      <div style="margin-bottom:14px">
+        <label class="lbl">Cuerpo del Mensaje</label>
+        <p style="font-size:11px;color:#a8a8a8;margin-bottom:6px">Variables: {supervisor}, {empresa}, {cantidad}, {lista_colaboradores}, {enlace}</p>
+        <textarea id="tplBody" rows="10">Estimado/a {supervisor},
+
+Le informamos que tiene {cantidad} evaluacion(es) pendientes en {empresa}.
+
+Colaboradores pendientes:
+{lista_colaboradores}
+
+Acceda al siguiente enlace para completar:
+{enlace}
+
+Saludos cordiales,
+Equipo de Talento Humano</textarea>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" style="background:#1e293b;color:#fff" data-action="saveTpl">Guardar Predeterminada</button>
+        <button class="btn" style="background:#f0f0f0;color:#4a4a4a" data-action="previewTpl">Vista Previa</button>
+        <button class="btn" style="background:#009EE3;color:#fff" data-action="notifyAll">Notificar a Todos</button>
+      </div>
+      <div id="tplPreview" class="card" style="display:none;margin-top:14px;background:#f9fafb;white-space:pre-wrap;font-size:13px"></div>
+    </div>
+  </div>
+
+  <!-- TAB: PREVIEW EVALUACION -->
+  <div id="tabPreview" style="display:none">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:4px">Preview de Evaluacion por Periodo</h2>
+    <p style="color:#8a8a8a;font-size:13px;margin-bottom:16px">Vista previa del formulario que vera el supervisor</p>
+    <div class="tab-bar" style="margin-bottom:16px;width:fit-content" id="previewPeriodTabs">
+      <button class="tab-btn on" data-action="setPreviewPer" data-arg="3">Mes 3</button>
+      <button class="tab-btn" data-action="setPreviewPer" data-arg="6">Mes 6</button>
+      <button class="tab-btn" data-action="setPreviewPer" data-arg="9">Mes 9</button>
+    </div>
+    <div id="previewContent" class="card"></div>
+  </div>
+
+  <!-- TAB: REPOSITORIO -->
+  <div id="tabRepositorio" style="display:none">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:4px">Repositorio de Mediciones</h2>
+    <p style="color:#8a8a8a;font-size:13px;margin-bottom:16px">Historial de evaluaciones completadas</p>
+    <input type="text" id="repoSearch" class="inp" placeholder="Buscar por nombre..." style="max-width:350px;margin-bottom:14px" data-action="renderRepo">
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="trow thd" style="grid-template-columns:2fr 1fr 1fr .8fr 1fr 100px"><span>Colaborador</span><span>Empresa</span><span>Periodo</span><span>Indice</span><span>Fecha</span><span></span></div>
+      <div id="repoList"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div id="listScreen" class="screen">
+<div class="hdr" id="listHdr">
+  <span id="listHdrTitle" style="font-weight:600;font-size:15px"></span>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-sm" id="btnBackCo" style="background:rgba(255,255,255,.2)" data-action="backToDash">Volver</button>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,.2)" data-action="doLogout">Salir</button>
+  </div>
+</div>
+<div class="container">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+    <h2 id="listCoName" style="font-size:20px;font-weight:700"></h2>
+    <div style="display:flex;gap:8px"><span id="sPen" class="badge st-pen"></span><span id="sDon" class="badge st-don"></span></div>
+  </div>
+  <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+    <input type="text" id="searchInput" class="inp" placeholder="Buscar..." style="max-width:280px" data-action="renderList">
+    <select id="filterPeriod" class="inp" style="width:150px;cursor:pointer" data-action="renderListC"><option value="">Todos</option><option value="3">Mes 3</option><option value="6">Mes 6</option><option value="9">Mes 9</option></select>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="trow thd" style="grid-template-columns:2.2fr 1fr .8fr .7fr 90px"><span>Colaborador</span><span>Area</span><span>Periodo</span><span>Estado</span><span></span></div>
+    <div id="collabList"></div>
+  </div>
+</div>
+</div>
+
+<div id="supScreen" class="screen">
+<div class="hdr" id="supHdr">
+  <span id="supHdrTitle" style="font-weight:600;font-size:15px"></span>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-sm" style="background:rgba(255,255,255,.2)" data-action="openGuide">? Guia</button>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,.2)" data-action="doLogout">Salir</button>
+  </div>
+</div>
+<div class="container">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+    <h2 id="supCoName" style="font-size:20px;font-weight:700"></h2>
+    <div style="display:flex;gap:8px"><span id="ssPen" class="badge st-pen"></span><span id="ssDon" class="badge st-don"></span></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="trow thd" style="grid-template-columns:2.2fr 1fr .8fr .7fr 90px"><span>Colaborador</span><span>Area</span><span>Periodo</span><span>Estado</span><span></span></div>
+    <div id="supCollabList"></div>
+  </div>
+</div>
+</div>
+
+
+<div id="evalScreen" class="screen">
+<div class="hdr" id="evalHdr">
+  <span id="evalHdrTitle" style="font-weight:600;font-size:15px"></span>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-sm" data-action="openGuide" style="background:rgba(255,255,255,.2)">? Guia</button>
+    <button class="btn btn-sm" id="btnBackList" data-action="goBackList" style="background:rgba(255,255,255,.2)">Volver</button>
+  </div>
+</div>
+<div style="max-width:920px;margin:0 auto;padding:24px">
+  <!-- Employee info -->
+  <div class="card fade" style="margin-bottom:16px">
+    <h3 id="evalName" style="font-size:17px;font-weight:700"></h3>
+    <p id="evalMeta" style="color:#8a8a8a;font-size:12px;margin-top:2px"></p>
+    <!-- Progress bar -->
+    <div style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span id="evalStepLabel" style="font-size:12px;font-weight:600;color:#8a8a8a"></span>
+        <span id="evalStepCount" style="font-size:12px;color:#8a8a8a"></span>
+      </div>
+      <div style="width:100%;background:#f0f0f0;height:4px;border-radius:999px;overflow:hidden">
+        <div id="evalProgress" style="height:100%;border-radius:999px;transition:width .3s;width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step content (one dimension at a time) -->
+  <div id="evalStepContent"></div>
+
+  <!-- Navigation buttons -->
+  <div style="display:flex;gap:10px;margin-top:16px" id="evalNav">
+    <button class="btn" data-action="evalPrev" id="evalPrevBtn" style="background:#f0f0f0;color:#4a4a4a;flex:1;justify-content:center">Anterior</button>
+    <button class="btn" data-action="evalNext" id="evalNextBtn" style="background:#1e293b;color:#fff;flex:2;justify-content:center">Continuar</button>
+  </div>
+</div>
+</div>
+
+<!-- CONFIRMATION SCREEN -->
+<div id="confirmScreen" class="screen">
+<div class="hdr" id="confirmHdr" style="background:#1e293b">
+  <span style="color:#fff;font-weight:600;font-size:15px">Confirmar Evaluacion</span>
+  <button class="btn btn-sm" style="background:rgba(255,255,255,.2);color:#fff" data-action="backToEval">Editar</button>
+</div>
+<div style="max-width:1060px;margin:0 auto;padding:24px">
+  <div class="card" style="margin-bottom:16px;text-align:center">
+    <h3 id="confName" style="font-size:18px;font-weight:700"></h3>
+    <p id="confMeta" style="color:#8a8a8a;font-size:13px;margin-top:2px"></p>
+  </div>
+  <div style="margin-bottom:20px;max-height:60vh;overflow-y:auto;border:1px solid #e8e8e8;border-radius:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:12px 16px;background:#fff;border-bottom:1px solid #e8e8e8;position:sticky;top:0;z-index:10">
+      <h3 class="lbl" style="margin:0">Valoracion</h3>
+      <h3 class="lbl" style="margin:0">Observaciones y Evidencias</h3>
+    </div>
+    <div style="padding:12px" id="confLeft"></div>
+    <div id="confRight" style="display:none"></div>
+  </div>
+  <div id="confNps" class="card" style="margin-bottom:16px;text-align:center"></div>
+  <button class="btn" data-action="confirmSave" style="background:#1e293b;color:#fff;width:100%;justify-content:center;padding:14px;font-size:15px">Confirmar y Guardar Evaluacion</button>
+</div>
+</div>
+
+
+<div id="resultScreen" class="screen">
+<div class="hdr" id="resHdr" style="background:#1e293b">
+  <span style="color:#fff;font-weight:600;font-size:15px">Resultado de Evaluacion</span>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-sm" style="background:#fff;color:#1e293b" data-action="downloadPDF">Descargar PDF</button>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,.2);color:#fff" data-action="backFromResult">Volver</button>
+  </div>
+</div>
+<div class="container" style="max-width:800px"><div id="resultContent" class="card"></div></div>
+</div>
+
+<div id="guideModal" class="modal-overlay" style="display:none">
+<div class="modal">
+  <div class="modal-hd">
+    <h3 style="font-size:16px;font-weight:700" id="guideTitle">Guia de Evaluacion</h3>
+    <button class="btn btn-sm" style="background:#f0f0f0;color:#4a4a4a" data-action="closeGuide">Cerrar</button>
+  </div>
+  <div class="modal-body">
+    <div class="step-indicator" id="guideSteps"></div>
+    <div id="guideContent"></div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-sm" style="background:#f0f0f0;color:#4a4a4a" id="guidePrev" data-action="guidePrev">Anterior</button>
+    <span id="guideCounter" style="font-size:12px;color:#8a8a8a"></span>
+    <button class="btn btn-sm" style="background:#1e293b;color:#fff" id="guideNext" data-action="guideNext">Siguiente</button>
+  </div>
+</div>
+</div>
+
+<script>
+
+var COLLABS=[{"id": 1, "n": "David Mejia Mendoza", "ci": "10076758", "ca": "Especialista comercial", "co": "Beval", "de": "Compras", "su": "Jaime Espinoza Flores", "se": "jaime.flores@mayoreo.biz", "fe": "2026-03-19", "pe": 6}, {"id": 2, "n": "Norma Rodriguez Sanchez", "ci": "58718453", "ca": "Asesor de ventas", "co": "Mundipartes", "de": "Ventas", "su": "Nestor Ortiz Santos", "se": "nestor.santos@mayoreo.biz", "fe": "2026-06-22", "pe": 3}, {"id": 3, "n": "Patricia Lopez Morales", "ci": "86149359", "ca": "Asesor de ventas", "co": "Sillaca", "de": "Ventas", "su": "Orlando Dominguez Ruiz", "se": "orlando.ruiz@mayoreo.biz", "fe": "2026-05-18", "pe": 6}, {"id": 4, "n": "Gabriel Bautista Soto", "ci": "19289546", "ca": "Especialista comercial", "co": "Sillaca", "de": "Compras", "su": "Tatiana Reyes Campos", "se": "tatiana.campos@mayoreo.biz", "fe": "2026-04-06", "pe": 6}, {"id": 5, "n": "Jorge Guerrero Castro", "ci": "83793389", "ca": "Asesor de ventas", "co": "Mundipartes", "de": "Ventas", "su": "Florencia Ortiz Gonzalez", "se": "florencia.gonzalez@mayoreo.biz", "fe": "2026-07-14", "pe": 3}, {"id": 6, "n": "Tomas Mendoza Fuentes", "ci": "66792612", "ca": "Analista de mejora continua", "co": "Prisma", "de": "Personal", "su": "Ulises Alvarez Ruiz", "se": "ulises.ruiz@mayoreo.biz", "fe": "2026-02-11", "pe": 9}, {"id": 7, "n": "David Salazar Bautista", "ci": "36998038", "ca": "Asesor de ventas", "co": "Mundipartes", "de": "Ventas", "su": "Florencia Ortiz Gonzalez", "se": "florencia.gonzalez@mayoreo.biz", "fe": "2026-07-14", "pe": 3}, {"id": 8, "n": "Florencia Guerrero Navarro", "ci": "60119651", "ca": "Analista de administración de ventas", "co": "Sillaca", "de": "Ventas", "su": "Orlando Dominguez Ruiz", "se": "orlando.ruiz@mayoreo.biz", "fe": "2026-04-23", "pe": 6}, {"id": 9, "n": "Rosa Aguilar Sanchez", "ci": "43273328", "ca": "Asesor de ventas", "co": "Cofersa", "de": "Ventas", "su": "Susana Sanchez Moreno", "se": "susana.moreno@mayoreo.biz", "fe": "2026-06-02", "pe": 3}, {"id": 10, "n": "Fernando Vargas Rodriguez", "ci": "88961459", "ca": "Especialista comercial", "co": "Sillaca", "de": "Reposición", "su": "Tatiana Reyes Campos", "se": "tatiana.campos@mayoreo.biz", "fe": "2026-04-06", "pe": 6}, {"id": 11, "n": "Gerardo Reyes Garcia", "ci": "19528530", "ca": "Asistente de logística medellin", "co": "Mundipartes", "de": "Logística", "su": "Esteban Gutierrez Espinoza", "se": "esteban.espinoza@mayoreo.biz", "fe": "2026-05-13", "pe": 6}, {"id": 12, "n": "Rafael Gonzalez Martinez", "ci": "54349361", "ca": "Analista de telecobranza", "co": "Prisma", "de": "Crédito y cobranza", "su": "Diana Reyes Martinez", "se": "diana.martinez@mayoreo.biz", "fe": "2026-05-18", "pe": 6}, {"id": 13, "n": "Bruno Morales Ortiz", "ci": "99788677", "ca": "Analista de transporte", "co": "Febeca", "de": "Logística", "su": "Ignacio Perez Castillo", "se": "ignacio.castillo@mayoreo.biz", "fe": "2026-03-09", "pe": 6}, {"id": 14, "n": "Natalia Ruiz Ramirez", "ci": "86644106", "ca": "Asesor de ventas", "co": "Beval", "de": "Ventas", "su": "Olivia Aguilar Vasquez", "se": "olivia.vasquez@mayoreo.biz", "fe": "2026-03-16", "pe": 6}, {"id": 15, "n": "Patricia Castro Herrera", "ci": "35556386", "ca": "Trade Marketing", "co": "Cofersa", "de": "Compras", "su": "", "se": "", "fe": "2026-03-23", "pe": 6}, {"id": 16, "n": "Hugo Guerrero Medina", "ci": "57553014", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Orlando Ruiz Salazar", "se": "orlando.salazar@mayoreo.biz", "fe": "2026-05-04", "pe": 6}, {"id": 17, "n": "Gisela Pena Bautista", "ci": "17270733", "ca": "Asesor de ventas", "co": "Cofersa", "de": "Ventas", "su": "Paulina Salazar Rivera", "se": "paulina.rivera@mayoreo.biz", "fe": "2026-03-23", "pe": 6}, {"id": 18, "n": "Eduardo Romero Bautista", "ci": "55540424", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-01-12", "pe": 9}, {"id": 19, "n": "Santiago Gomez Ruiz", "ci": "70211891", "ca": "Promotor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-03-02", "pe": 6}, {"id": 20, "n": "Marco Rivera Ortiz", "ci": "72092888", "ca": "Asesor de ventas", "co": "Sillaca", "de": "Ventas", "su": "Orlando Dominguez Ruiz", "se": "orlando.ruiz@mayoreo.biz", "fe": "2026-01-12", "pe": 9}, {"id": 21, "n": "Fernando Aguilar Alvarez", "ci": "23141087", "ca": "Asesor de ventas", "co": "Mundipartes", "de": "Ventas", "su": "Nestor Ortiz Santos", "se": "nestor.santos@mayoreo.biz", "fe": "2026-05-06", "pe": 6}, {"id": 22, "n": "Martin Ruiz Garcia", "ci": "22517517", "ca": "Asesor de ventas", "co": "Mundipartes", "de": "Ventas", "su": "Gabriel Diaz Reyes", "se": "gabriel.reyes@mayoreo.biz", "fe": "2026-02-02", "pe": 9}, {"id": 23, "n": "Manuel Herrera Soto", "ci": "74606833", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Orlando Ruiz Salazar", "se": "orlando.salazar@mayoreo.biz", "fe": "2026-05-18", "pe": 6}, {"id": 24, "n": "Joaquin Lopez Flores", "ci": "60864911", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Martin Soto Romero", "se": "martin.romero@mayoreo.biz", "fe": "2026-05-04", "pe": 6}, {"id": 25, "n": "Ignacio Cruz Pena", "ci": "48285503", "ca": "Asesor de ventas", "co": "Beval", "de": "Ventas", "su": "Olivia Aguilar Vasquez", "se": "olivia.vasquez@mayoreo.biz", "fe": "2026-05-18", "pe": 6}, {"id": 26, "n": "Tatiana Guerrero Acosta", "ci": "75319931", "ca": "Analista de servicios operacionales", "co": "Prisma", "de": "Servicios operacionales", "su": "Yolanda Gonzalez Moreno", "se": "yolanda.moreno@mayoreo.biz", "fe": "2026-04-24", "pe": 6}, {"id": 27, "n": "Oscar Gutierrez Diaz", "ci": "17849494", "ca": "Asistente de logística", "co": "Febeca", "de": "Logística", "su": "Daniel Guerrero Reyes", "se": "daniel.reyes@mayoreo.biz", "fe": "2026-05-25", "pe": 6}, {"id": 28, "n": "Ulises Ramos Lopez", "ci": "16729990", "ca": "Asesor de ventas", "co": "Cofersa", "de": "Ventas", "su": "Lorenzo Chavez Espinoza", "se": "lorenzo.espinoza@mayoreo.biz", "fe": "2026-03-17", "pe": 6}, {"id": 29, "n": "Paulina Mendoza Flores", "ci": "17634247", "ca": "Analista de personal", "co": "Cofersa", "de": "Personal", "su": "Julia Cruz Ramirez", "se": "julia.ramirez@mayoreo.biz", "fe": "2026-02-16", "pe": 9}, {"id": 30, "n": "Nicolas Gonzalez Fuentes", "ci": "19121552", "ca": "Product owner", "co": "Cofersa", "de": "Sistemas", "su": "Sofia Pena Espinoza", "se": "sofia.espinoza@mayoreo.biz", "fe": "2026-06-02", "pe": 3}, {"id": 31, "n": "Joaquin Sanchez Contreras", "ci": "43046464", "ca": "Asesor de ventas", "co": "Mundipartes", "de": "Ventas", "su": "Nestor Ortiz Santos", "se": "nestor.santos@mayoreo.biz", "fe": "2026-04-22", "pe": 6}, {"id": 32, "n": "Kevin Hernandez Herrera", "ci": "98231132", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-03-09", "pe": 6}, {"id": 33, "n": "Raquel Diaz Guerrero", "ci": "52169044", "ca": "Analista de facturación", "co": "Febeca", "de": "Ventas", "su": "Ignacio Perez Castillo", "se": "ignacio.castillo@mayoreo.biz", "fe": "2026-04-27", "pe": 6}, {"id": 34, "n": "Tomas Romero Ramirez", "ci": "96637649", "ca": "Asesor de ventas", "co": "Beval", "de": "Ventas", "su": "Olivia Aguilar Vasquez", "se": "olivia.vasquez@mayoreo.biz", "fe": "2026-05-04", "pe": 6}, {"id": 35, "n": "Lucia Ramos Salazar", "ci": "19736572", "ca": "Promotor de marca", "co": "Cofersa", "de": "Compras", "su": "Karen Jimenez Castillo", "se": "karen.castillo@mayoreo.biz", "fe": "2026-05-06", "pe": 6}, {"id": 36, "n": "Ricardo Rojas Contreras", "ci": "23419256", "ca": "Entrenante comercial", "co": "Febeca", "de": "Ventas", "su": "", "se": "", "fe": "2026-06-02", "pe": 3}, {"id": 37, "n": "David Diaz Delgado", "ci": "45594597", "ca": "Promotor de marca", "co": "Cofersa", "de": "Compras", "su": "Yolanda Cruz Martinez", "se": "yolanda.martinez@mayoreo.biz", "fe": "2026-05-09", "pe": 6}, {"id": 38, "n": "Gonzalo Gonzalez Morales", "ci": "59597086", "ca": "Promotor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-03-02", "pe": 6}, {"id": 39, "n": "Karen Aguilar Ruiz", "ci": "50603163", "ca": "Promotor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-03-02", "pe": 6}, {"id": 40, "n": "Nestor Alvarez Chavez", "ci": "99038526", "ca": "Promotor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-03-02", "pe": 6}, {"id": 41, "n": "Jorge Cruz Sanchez", "ci": "24366125", "ca": "Promotor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-03-02", "pe": 6}, {"id": 42, "n": "Victor Gutierrez Fuentes", "ci": "38270233", "ca": "Asistente de logística", "co": "Febeca", "de": "Logística", "su": "Daniel Guerrero Reyes", "se": "daniel.reyes@mayoreo.biz", "fe": "2026-05-25", "pe": 6}, {"id": 43, "n": "Natalia Campos Espinoza", "ci": "45431319", "ca": "Promotor", "co": "Cofersa", "de": "Compras", "su": "Gerardo Medina Martinez", "se": "gerardo.martinez@mayoreo.biz", "fe": "2026-06-30", "pe": 3}, {"id": 44, "n": "Raquel Lopez Hernandez", "ci": "95132217", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Martin Soto Romero", "se": "martin.romero@mayoreo.biz", "fe": "2026-06-01", "pe": 3}, {"id": 45, "n": "Sofia Martinez Garcia", "ci": "54769200", "ca": "Asesor de ventas", "co": "Sillaca", "de": "Ventas", "su": "Orlando Dominguez Ruiz", "se": "orlando.ruiz@mayoreo.biz", "fe": "2026-04-06", "pe": 6}, {"id": 46, "n": "Lorenzo Cruz Flores", "ci": "69302158", "ca": "Analista de crédito y cobranza", "co": "Prisma", "de": "Crédito y cobranza", "su": "Rafael Ramirez Dominguez", "se": "rafael.dominguez@mayoreo.biz", "fe": "2026-05-26", "pe": 6}, {"id": 47, "n": "Tatiana Garcia Sanchez", "ci": "20099059", "ca": "Analista de taller", "co": "Cofersa", "de": "Logística", "su": "Daniela Reyes Ramirez", "se": "daniela.ramirez@mayoreo.biz", "fe": "2026-04-07", "pe": 6}, {"id": 48, "n": "David Martinez Jimenez", "ci": "88183110", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-04-06", "pe": 6}, {"id": 49, "n": "Marco Ramirez Martinez", "ci": "51373735", "ca": "Analista de mejora continua", "co": "Prisma", "de": "Personal", "su": "Ulises Alvarez Ruiz", "se": "ulises.ruiz@mayoreo.biz", "fe": "2026-02-11", "pe": 9}, {"id": 50, "n": "Carolina Castillo Diaz", "ci": "43491314", "ca": "Asesor de ventas", "co": "Mundipartes", "de": "Ventas", "su": "Nestor Ortiz Santos", "se": "nestor.santos@mayoreo.biz", "fe": "2026-07-06", "pe": 3}, {"id": 51, "n": "Gonzalo Mejia Alvarez", "ci": "64543049", "ca": "Asesor de ventas", "co": "Cofersa", "de": "Ventas", "su": "Susana Sanchez Moreno", "se": "susana.moreno@mayoreo.biz", "fe": "2026-04-07", "pe": 6}, {"id": 52, "n": "Santiago Flores Rivera", "ci": "65337219", "ca": "Analista de crédito y cobranza", "co": "Prisma", "de": "Crédito y cobranza", "su": "Rafael Ramirez Dominguez", "se": "rafael.dominguez@mayoreo.biz", "fe": "2026-05-14", "pe": 6}, {"id": 53, "n": "Nicolas Dominguez Vargas", "ci": "65259205", "ca": "Jefe de despacho", "co": "Febeca", "de": "Logística", "su": "Fernanda Salazar Lopez", "se": "fernanda.lopez@mayoreo.biz", "fe": "2026-04-06", "pe": 6}, {"id": 54, "n": "Victor Flores Santos", "ci": "24508349", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Martin Soto Romero", "se": "martin.romero@mayoreo.biz", "fe": "2026-05-18", "pe": 6}, {"id": 55, "n": "Carolina Castro Reyes", "ci": "36786211", "ca": "Asesor de ventas", "co": "Beval", "de": "Ventas", "su": "Olivia Aguilar Vasquez", "se": "olivia.vasquez@mayoreo.biz", "fe": "2026-02-02", "pe": 9}, {"id": 56, "n": "Camila Chavez Reyes", "ci": "39920292", "ca": "Promotor de ventas", "co": "Cofersa", "de": "Compras", "su": "Esteban Gomez Acosta", "se": "esteban.acosta@mayoreo.biz", "fe": "2026-04-07", "pe": 6}, {"id": 57, "n": "Nestor Gomez Romero", "ci": "54058573", "ca": "Asistente de logística", "co": "Febeca", "de": "Logística", "su": "Orlando Ruiz Salazar", "se": "orlando.salazar@mayoreo.biz", "fe": "2026-01-26", "pe": 9}, {"id": 58, "n": "Elena Mejia Ortiz", "ci": "57130035", "ca": "Asesor de ventas", "co": "Sillaca", "de": "Ventas", "su": "Orlando Dominguez Ruiz", "se": "orlando.ruiz@mayoreo.biz", "fe": "2026-05-18", "pe": 6}, {"id": 59, "n": "Susana Vargas Rodriguez", "ci": "25480907", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-01-05", "pe": 9}, {"id": 60, "n": "Laura Vasquez Cruz", "ci": "15134794", "ca": "Asistente de logística", "co": "Mundipartes", "de": "Logística", "su": "Esteban Gutierrez Espinoza", "se": "esteban.espinoza@mayoreo.biz", "fe": "2026-02-02", "pe": 9}, {"id": 61, "n": "Jaime Medina Castillo", "ci": "52101056", "ca": "Asistente de logistica", "co": "Mundipartes", "de": "Logística", "su": "Esteban Gutierrez Espinoza", "se": "esteban.espinoza@mayoreo.biz", "fe": "2026-01-13", "pe": 9}, {"id": 62, "n": "Yolanda Delgado Sanchez", "ci": "61700055", "ca": "Asesor de ventas", "co": "Mundipartes", "de": "Ventas", "su": "Nestor Ortiz Santos", "se": "nestor.santos@mayoreo.biz", "fe": "2026-03-02", "pe": 6}, {"id": 63, "n": "Tomas Martinez Acosta", "ci": "68526649", "ca": "Analista de administración de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-04-23", "pe": 6}, {"id": 64, "n": "Camilo Ruiz Campos", "ci": "36445607", "ca": "Asesor de ventas", "co": "Sillaca", "de": "Ventas", "su": "Orlando Dominguez Ruiz", "se": "orlando.ruiz@mayoreo.biz", "fe": "2026-04-06", "pe": 6}, {"id": 65, "n": "Irene Gonzalez Guerrero", "ci": "54318698", "ca": "Asesor de ventas", "co": "Beval", "de": "Ventas", "su": "Olivia Aguilar Vasquez", "se": "olivia.vasquez@mayoreo.biz", "fe": "2026-04-13", "pe": 6}, {"id": 66, "n": "Helena Bautista Chavez", "ci": "78064830", "ca": "Asesor de ventas", "co": "Mundipartes", "de": "Ventas", "su": "Gabriel Diaz Reyes", "se": "gabriel.reyes@mayoreo.biz", "fe": "2026-06-22", "pe": 3}, {"id": 67, "n": "Gisela Ramos Romero", "ci": "49682169", "ca": "Asesor de ventas", "co": "Beval", "de": "Ventas", "su": "Olivia Aguilar Vasquez", "se": "olivia.vasquez@mayoreo.biz", "fe": "2026-04-20", "pe": 6}, {"id": 68, "n": "Oscar Herrera Guerrero", "ci": "60888017", "ca": "Asesor de ventas", "co": "Beval", "de": "Ventas", "su": "Olivia Aguilar Vasquez", "se": "olivia.vasquez@mayoreo.biz", "fe": "2026-01-12", "pe": 9}, {"id": 69, "n": "Kevin Contreras Chavez", "ci": "64502486", "ca": "Coordinador de personal", "co": "Prisma", "de": "Personal", "su": "Ulises Alvarez Ruiz", "se": "ulises.ruiz@mayoreo.biz", "fe": "2026-05-12", "pe": 6}, {"id": 70, "n": "Diego Gutierrez Diaz", "ci": "67698610", "ca": "Jefe de ventas", "co": "Febeca", "de": "Ventas", "su": "Fernanda Salazar Lopez", "se": "fernanda.lopez@mayoreo.biz", "fe": "2026-04-20", "pe": 6}, {"id": 71, "n": "Lucia Aguilar Campos", "ci": "38682516", "ca": "Coordinador de Captación y Desarrollo", "co": "Prisma", "de": "Desarrollo humano", "su": "Fabian Acosta Ramos", "se": "fabian.ramos@mayoreo.biz", "fe": "2026-07-29", "pe": 3}, {"id": 72, "n": "Karen Guerrero Hernandez", "ci": "48089166", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-04-13", "pe": 6}, {"id": 73, "n": "Fernanda Salazar Morales", "ci": "51663795", "ca": "Jefe de compras", "co": "Mundipartes", "de": "Compras", "su": "Manuel Pena Moreno", "se": "manuel.moreno@mayoreo.biz", "fe": "2026-06-15", "pe": 3}, {"id": 74, "n": "Oscar Torres Rodriguez", "ci": "16202700", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-02-18", "pe": 9}, {"id": 75, "n": "Sebastian Rojas Mejia", "ci": "19774839", "ca": "Coordinador de personal", "co": "Cofersa", "de": "Personal", "su": "Yolanda Pena Mendoza", "se": "yolanda.mendoza@mayoreo.biz", "fe": "2026-03-23", "pe": 6}, {"id": 76, "n": "Gisela Espinoza Contreras", "ci": "36096655", "ca": "Servicios generales", "co": "Cofersa", "de": "Personal", "su": "Julia Cruz Ramirez", "se": "julia.ramirez@mayoreo.biz", "fe": "2026-05-19", "pe": 6}, {"id": 77, "n": "Norma Romero Morales", "ci": "29806690", "ca": "Coordinador de redes sociales", "co": "Prisma", "de": "Mercadeo", "su": "Carlos Dominguez Ortiz", "se": "carlos.ortiz@mayoreo.biz", "fe": "2026-02-18", "pe": 9}, {"id": 78, "n": "Valentin Mejia Perez", "ci": "67062156", "ca": "Asesor de ventas", "co": "Sillaca", "de": "Ventas", "su": "Orlando Dominguez Ruiz", "se": "orlando.ruiz@mayoreo.biz", "fe": "2026-04-06", "pe": 6}, {"id": 79, "n": "Nicolas Santos Mendoza", "ci": "72350830", "ca": "Promotor de ventas", "co": "Febeca", "de": "Ventas", "su": "Bianca Sanchez Gutierrez", "se": "bianca.gutierrez@mayoreo.biz", "fe": "2026-03-02", "pe": 6}, {"id": 80, "n": "Esteban Morales Sanchez", "ci": "71265269", "ca": "Asesor de ventas", "co": "Beval", "de": "Ventas", "su": "Olivia Aguilar Vasquez", "se": "olivia.vasquez@mayoreo.biz", "fe": "2026-01-12", "pe": 9}, {"id": 81, "n": "Ricardo Guerrero Mendoza", "ci": "85017682", "ca": "Gerente regional de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-03-02", "pe": 6}, {"id": 82, "n": "Jessica Rojas Bautista", "ci": "77750178", "ca": "Analista de tesorería", "co": "Prisma", "de": "Tesorería", "su": "Tatiana Garcia Campos", "se": "tatiana.campos@mayoreo.biz", "fe": "2026-05-04", "pe": 6}, {"id": 83, "n": "Tatiana Aguilar Flores", "ci": "73709724", "ca": "Analista de diseño", "co": "Prisma", "de": "Mercadeo", "su": "Carlos Dominguez Ortiz", "se": "carlos.ortiz@mayoreo.biz", "fe": "2026-05-25", "pe": 6}, {"id": 84, "n": "Raquel Salazar Morales", "ci": "95585469", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-01-26", "pe": 9}, {"id": 85, "n": "Rosa Soto Espinoza", "ci": "42111036", "ca": "Asesor de ventas", "co": "Cofersa", "de": "Ventas", "su": "Luis Jimenez Salazar", "se": "luis.salazar@mayoreo.biz", "fe": "2026-03-17", "pe": 6}, {"id": 86, "n": "Jessica Gonzalez Acosta", "ci": "48349783", "ca": "Asesor de ventas", "co": "Mundipartes", "de": "Ventas", "su": "Nestor Ortiz Santos", "se": "nestor.santos@mayoreo.biz", "fe": "2026-02-02", "pe": 9}, {"id": 87, "n": "Victor Vargas Ramos", "ci": "82498004", "ca": "Gerente de formación y desarrollo", "co": "Prisma", "de": "Personal", "su": "Ulises Alvarez Ruiz", "se": "ulises.ruiz@mayoreo.biz", "fe": "2026-02-10", "pe": 9}, {"id": 88, "n": "Jorge Torres Reyes", "ci": "61410126", "ca": "Especialista comercial", "co": "Beval", "de": "Compras", "su": "Jaime Espinoza Flores", "se": "jaime.flores@mayoreo.biz", "fe": "2026-04-06", "pe": 6}, {"id": 89, "n": "Ramon Diaz Gonzalez", "ci": "65682626", "ca": "Gerente regional de ventas", "co": "Cofersa", "de": "Ventas", "su": "Fernanda Reyes Perez", "se": "fernanda.perez@mayoreo.biz", "fe": "2026-04-13", "pe": 6}, {"id": 90, "n": "Bianca Ruiz Pena", "ci": "65804273", "ca": "Promotor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-03-02", "pe": 6}, {"id": 91, "n": "Pablo Herrera Moreno", "ci": "88393811", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-04-06", "pe": 6}, {"id": 92, "n": "Valentin Contreras Moreno", "ci": "74019136", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-04-13", "pe": 6}, {"id": 93, "n": "Gonzalo Chavez Salazar", "ci": "62343121", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-04-08", "pe": 6}, {"id": 94, "n": "Susana Dominguez Ruiz", "ci": "90967191", "ca": "Analista de crédito y cobranza", "co": "Prisma", "de": "Crédito y cobranza", "su": "Rafael Ramirez Dominguez", "se": "rafael.dominguez@mayoreo.biz", "fe": "2026-04-23", "pe": 6}, {"id": 95, "n": "Alberto Reyes Ortiz", "ci": "68496914", "ca": "Coordinador de beneficios", "co": "Prisma", "de": "Personal", "su": "Ulises Alvarez Ruiz", "se": "ulises.ruiz@mayoreo.biz", "fe": "2026-03-02", "pe": 6}, {"id": 96, "n": "Beatriz Moreno Vargas", "ci": "99774697", "ca": "Asistente de logística", "co": "Febeca", "de": "Logística", "su": "Daniel Guerrero Reyes", "se": "daniel.reyes@mayoreo.biz", "fe": "2026-05-25", "pe": 6}, {"id": 97, "n": "Karen Pena Ramirez", "ci": "93517915", "ca": "Asesor de ventas", "co": "Beval", "de": "Ventas", "su": "Olivia Aguilar Vasquez", "se": "olivia.vasquez@mayoreo.biz", "fe": "2026-01-12", "pe": 9}, {"id": 98, "n": "Joaquin Vasquez Contreras", "ci": "98986321", "ca": "Asistente de logística", "co": "Febeca", "de": "Logística", "su": "Daniel Guerrero Reyes", "se": "daniel.reyes@mayoreo.biz", "fe": "2026-05-11", "pe": 6}, {"id": 99, "n": "Gabriel Navarro Medina", "ci": "28213276", "ca": "Asistente de logística", "co": "Febeca", "de": "Logística", "su": "Daniel Guerrero Reyes", "se": "daniel.reyes@mayoreo.biz", "fe": "2026-05-11", "pe": 6}, {"id": 100, "n": "Laura Lopez Cruz", "ci": "60882459", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-04-13", "pe": 6}, {"id": 101, "n": "Natalia Pena Ramos", "ci": "55298556", "ca": "Asesor de ventas", "co": "Beval", "de": "Ventas", "su": "Olivia Aguilar Vasquez", "se": "olivia.vasquez@mayoreo.biz", "fe": "2026-03-16", "pe": 6}, {"id": 102, "n": "Sofia Salazar Herrera", "ci": "43859311", "ca": "Asesor de ventas", "co": "Sillaca", "de": "Ventas", "su": "Orlando Dominguez Ruiz", "se": "orlando.ruiz@mayoreo.biz", "fe": "2026-01-12", "pe": 9}, {"id": 103, "n": "Sebastian Rodriguez Dominguez", "ci": "82399599", "ca": "Asesor de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-02-18", "pe": 9}, {"id": 104, "n": "Gonzalo Reyes Navarro", "ci": "19209801", "ca": "Jefe regional de ventas", "co": "Febeca", "de": "Ventas", "su": "Andrea Salazar Flores", "se": "andrea.flores@mayoreo.biz", "fe": "2026-01-07", "pe": 9}, {"id": 105, "n": "Valentin Rodriguez Morales", "ci": "36757737", "ca": "Analista de personal", "co": "Prisma", "de": "Personal", "su": "Vanessa Gomez Acosta", "se": "vanessa.acosta@mayoreo.biz", "fe": "2026-05-04", "pe": 6}, {"id": 106, "n": "Kevin Torres Morales", "ci": "26941092", "ca": "Especialista comercial", "co": "Febeca", "de": "Compras", "su": "Bianca Ortiz Torres", "se": "bianca.torres@mayoreo.biz", "fe": "2025-12-22", "pe": 9}, {"id": 107, "n": "Helena Contreras Diaz", "ci": "72415804", "ca": "Supervisor de ventas", "co": "Cofersa", "de": "Ventas", "su": "Luis Espinoza Flores", "se": "luis.flores@mayoreo.biz", "fe": "2026-02-16", "pe": 9}, {"id": 108, "n": "Daniela Flores Fuentes", "ci": "91503378", "ca": "Analista de crédito y cobro", "co": "Prisma", "de": "Crédito y cobranza", "su": "Diana Reyes Martinez", "se": "diana.martinez@mayoreo.biz", "fe": "2026-04-27", "pe": 6}, {"id": 109, "n": "Xavier Flores Chavez", "ci": "24508768", "ca": "Asistente de logística bogota", "co": "Mundipartes", "de": "Logística", "su": "Esteban Gutierrez Espinoza", "se": "esteban.espinoza@mayoreo.biz", "fe": "2026-05-21", "pe": 6}, {"id": 110, "n": "Diego Contreras Campos", "ci": "60372847", "ca": "Promotor de marca", "co": "Cofersa", "de": "Compras", "su": "Valentin Vargas Perez", "se": "valentin.perez@mayoreo.biz", "fe": "2026-04-14", "pe": 6}, {"id": 111, "n": "Monica Gonzalez Vasquez", "ci": "94187049", "ca": "Asesor de ventas", "co": "Sillaca", "de": "Ventas", "su": "Orlando Dominguez Ruiz", "se": "orlando.ruiz@mayoreo.biz", "fe": "2026-04-20", "pe": 6}, {"id": 112, "n": "Hugo Santos Mejia", "ci": "50477742", "ca": "Asesor de ventas", "co": "Beval", "de": "Ventas", "su": "Olivia Aguilar Vasquez", "se": "olivia.vasquez@mayoreo.biz", "fe": "2026-04-06", "pe": 6}, {"id": 113, "n": "Fabian Martinez Castillo", "ci": "81503856", "ca": "Abogado", "co": "Prisma", "de": "Legal", "su": "Karen Pena Garcia", "se": "karen.garcia@mayoreo.biz", "fe": "2026-03-09", "pe": 6}, {"id": 114, "n": "Daniela Gonzalez Delgado", "ci": "96911784", "ca": "Asistente de logística", "co": "Febeca", "de": "Logística", "su": "Daniel Guerrero Reyes", "se": "daniel.reyes@mayoreo.biz", "fe": "2026-05-11", "pe": 6}, {"id": 115, "n": "Andrea Herrera Soto", "ci": "24165187", "ca": "Jefe de compras", "co": "Mundipartes", "de": "Compras", "su": "Manuel Pena Moreno", "se": "manuel.moreno@mayoreo.biz", "fe": "2026-03-10", "pe": 6}, {"id": 116, "n": "Daniela Espinoza Pena", "ci": "30534124", "ca": "Especialista de reposición", "co": "Prisma", "de": "Reposición", "su": "Ximena Medina Vasquez", "se": "ximena.vasquez@mayoreo.biz", "fe": "2026-04-22", "pe": 6}];
+var SUPS=[{"n": "Andrea Salazar Flores", "e": "andrea.flores@mayoreo.biz", "co": ["Febeca"], "pend": 21}, {"n": "Olivia Aguilar Vasquez", "e": "olivia.vasquez@mayoreo.biz", "co": ["Beval"], "pend": 11}, {"n": "Orlando Dominguez Ruiz", "e": "orlando.ruiz@mayoreo.biz", "co": ["Sillaca"], "pend": 9}, {"n": "Nestor Ortiz Santos", "e": "nestor.santos@mayoreo.biz", "co": ["Mundipartes"], "pend": 6}, {"n": "Daniel Guerrero Reyes", "e": "daniel.reyes@mayoreo.biz", "co": ["Febeca"], "pend": 6}, {"n": "Ulises Alvarez Ruiz", "e": "ulises.ruiz@mayoreo.biz", "co": ["Prisma"], "pend": 5}, {"n": "Esteban Gutierrez Espinoza", "e": "esteban.espinoza@mayoreo.biz", "co": ["Mundipartes"], "pend": 4}, {"n": "Orlando Ruiz Salazar", "e": "orlando.salazar@mayoreo.biz", "co": ["Febeca"], "pend": 3}, {"n": "Martin Soto Romero", "e": "martin.romero@mayoreo.biz", "co": ["Febeca"], "pend": 3}, {"n": "Rafael Ramirez Dominguez", "e": "rafael.dominguez@mayoreo.biz", "co": ["Prisma"], "pend": 3}, {"n": "Jaime Espinoza Flores", "e": "jaime.flores@mayoreo.biz", "co": ["Beval"], "pend": 2}, {"n": "Tatiana Reyes Campos", "e": "tatiana.campos@mayoreo.biz", "co": ["Sillaca"], "pend": 2}, {"n": "Florencia Ortiz Gonzalez", "e": "florencia.gonzalez@mayoreo.biz", "co": ["Mundipartes"], "pend": 2}, {"n": "Susana Sanchez Moreno", "e": "susana.moreno@mayoreo.biz", "co": ["Cofersa"], "pend": 2}, {"n": "Diana Reyes Martinez", "e": "diana.martinez@mayoreo.biz", "co": ["Prisma"], "pend": 2}, {"n": "Ignacio Perez Castillo", "e": "ignacio.castillo@mayoreo.biz", "co": ["Febeca"], "pend": 2}, {"n": "Gabriel Diaz Reyes", "e": "gabriel.reyes@mayoreo.biz", "co": ["Mundipartes"], "pend": 2}, {"n": "Julia Cruz Ramirez", "e": "julia.ramirez@mayoreo.biz", "co": ["Cofersa"], "pend": 2}, {"n": "Fernanda Salazar Lopez", "e": "fernanda.lopez@mayoreo.biz", "co": ["Febeca"], "pend": 2}, {"n": "Manuel Pena Moreno", "e": "manuel.moreno@mayoreo.biz", "co": ["Mundipartes"], "pend": 2}, {"n": "Carlos Dominguez Ortiz", "e": "carlos.ortiz@mayoreo.biz", "co": ["Prisma"], "pend": 2}, {"n": "Paulina Salazar Rivera", "e": "paulina.rivera@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Yolanda Gonzalez Moreno", "e": "yolanda.moreno@mayoreo.biz", "co": ["Prisma"], "pend": 1}, {"n": "Lorenzo Chavez Espinoza", "e": "lorenzo.espinoza@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Sofia Pena Espinoza", "e": "sofia.espinoza@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Karen Jimenez Castillo", "e": "karen.castillo@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Yolanda Cruz Martinez", "e": "yolanda.martinez@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Gerardo Medina Martinez", "e": "gerardo.martinez@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Daniela Reyes Ramirez", "e": "daniela.ramirez@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Esteban Gomez Acosta", "e": "esteban.acosta@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Fabian Acosta Ramos", "e": "fabian.ramos@mayoreo.biz", "co": ["Prisma"], "pend": 1}, {"n": "Yolanda Pena Mendoza", "e": "yolanda.mendoza@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Bianca Sanchez Gutierrez", "e": "bianca.gutierrez@mayoreo.biz", "co": ["Febeca"], "pend": 1}, {"n": "Tatiana Garcia Campos", "e": "tatiana.campos@mayoreo.biz", "co": ["Prisma"], "pend": 1}, {"n": "Luis Jimenez Salazar", "e": "luis.salazar@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Fernanda Reyes Perez", "e": "fernanda.perez@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Vanessa Gomez Acosta", "e": "vanessa.acosta@mayoreo.biz", "co": ["Prisma"], "pend": 1}, {"n": "Bianca Ortiz Torres", "e": "bianca.torres@mayoreo.biz", "co": ["Febeca"], "pend": 1}, {"n": "Luis Espinoza Flores", "e": "luis.flores@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Valentin Vargas Perez", "e": "valentin.perez@mayoreo.biz", "co": ["Cofersa"], "pend": 1}, {"n": "Karen Pena Garcia", "e": "karen.garcia@mayoreo.biz", "co": ["Prisma"], "pend": 1}, {"n": "Ximena Medina Vasquez", "e": "ximena.vasquez@mayoreo.biz", "co": ["Prisma"], "pend": 1}];
+var supEmails={};
+for(var i=0;i<SUPS.length;i++) supEmails[SUPS[i].n]=SUPS[i].e;
+
+var COS={
+  Prisma:{accent:'#666666',toa:'#fff'},Febeca:{accent:'#009EE3',toa:'#fff'},
+  Beval:{accent:'#CCDB2A',toa:'#000'},Cofersa:{accent:'#009EE3',toa:'#fff'},
+  Mundipartes:{accent:'#CCDB2A',toa:'#000'},Sillaca:{accent:'#E5007D',toa:'#fff'}
+};
+
+var SCH={
+  3:{w:{comp:.30,norm:.25,act:.25,aut:.20,imp:.00},min:3.2,q:[
+    {id:'comp1',dim:'comp',l:'Competencia tecnica basica',d:'Demuestra los conocimientos tecnicos minimos que el puesto requiere para operar?'},
+    {id:'comp2',dim:'comp',l:'Aplicacion de conocimiento',d:'Aplica lo aprendido en induccion/entrenamiento a sus tareas diarias?'},
+    {id:'norm1',dim:'norm',l:'Puntualidad y asistencia',d:'Cumple horarios de entrada/salida y tiene un registro de asistencia sin faltas injustificadas?'},
+    {id:'norm2',dim:'norm',l:'Cumplimiento de politicas',d:'Sigue las politicas internas, codigo de vestimenta y protocolos de seguridad?'},
+    {id:'act1',dim:'act',l:'Actitud hacia el equipo',d:'Muestra disposicion al trabajo en equipo y colabora con sus companeros?'},
+    {id:'act2',dim:'act',l:'Receptividad al feedback',d:'Recibe retroalimentacion de forma abierta y realiza ajustes cuando se le indica?'},
+    {id:'aut1',dim:'aut',l:'Seguimiento de instrucciones',d:'Ejecuta las instrucciones dadas sin necesidad de repetir la solicitud?'},
+    {id:'aut2',dim:'aut',l:'Solicitud de apoyo',d:'Identifica cuando necesita ayuda y la solicita oportunamente antes de bloquearse?'}
+  ]},
+  6:{w:{comp:.20,norm:.15,act:.20,aut:.25,imp:.20},min:3.8,q:[
+    {id:'comp1',dim:'comp',l:'Calidad de ejecucion',d:'Ejecuta las tareas con la calidad y oportunidad esperada para un puesto ya consolidado?'},
+    {id:'comp2',dim:'comp',l:'Dominio de herramientas',d:'Maneja con soltura las herramientas, sistemas o procesos especificos de su area?'},
+    {id:'norm1',dim:'norm',l:'Integracion de procedimientos',d:'Aplica politicas y procedimientos operativos de forma natural sin recordatorios?'},
+    {id:'norm2',dim:'norm',l:'Responsabilidad con reportes',d:'Entrega reportes e informacion requerida en tiempo y forma?'},
+    {id:'act1',dim:'act',l:'Estabilidad emocional',d:'Muestra estabilidad emocional y manejo adecuado de la presion laboral?'},
+    {id:'act2',dim:'act',l:'Colaboracion proactiva',d:'Ofrece ayuda a companeros sin que se lo soliciten y contribuye al clima del equipo?'},
+    {id:'aut1',dim:'aut',l:'Resolucion de imprevistos',d:'Resuelve problemas operacionales cotidianos sin requerir supervision constante?'},
+    {id:'aut2',dim:'aut',l:'Priorizacion autonoma',d:'Organiza y prioriza sus tareas de forma efectiva sin que le indiquen el orden?'},
+    {id:'imp1',dim:'imp',l:'Propuestas de mejora',d:'Ha propuesto al menos una mejora concreta en sus tareas o procesos?'},
+    {id:'imp2',dim:'imp',l:'Iniciativa para aprender',d:'Busca activamente aprender mas alla de lo que su rol estricto requiere?'}
+  ]},
+  9:{w:{comp:.15,norm:.10,act:.15,aut:.30,imp:.30},min:4.2,q:[
+    {id:'comp1',dim:'comp',l:'Dominio tecnico avanzado',d:'Tiene dominio del rol al nivel de orientar o ser referente tecnico del area?'},
+    {id:'comp2',dim:'comp',l:'Transferencia de conocimiento',d:'Es capaz de explicar procesos a nuevos integrantes y servir como mentor?'},
+    {id:'norm1',dim:'norm',l:'Modelaje normativo',d:'Modela las normas corporativas y fomenta su cumplimiento en su entorno?'},
+    {id:'act1',dim:'act',l:'Compromiso sostenido',d:'Demuestra compromiso consistente con los objetivos y valores de la organizacion?'},
+    {id:'act2',dim:'act',l:'Resiliencia ante cambios',d:'Se adapta positivamente a cambios organizacionales sin afectar su rendimiento?'},
+    {id:'aut1',dim:'aut',l:'Toma de decisiones',d:'Toma decisiones acertadas e independientes dentro de su nivel de autoridad?'},
+    {id:'aut2',dim:'aut',l:'Gestion autonoma de proyectos',d:'Gestiona tareas complejas o mini-proyectos de principio a fin sin supervision directa?'},
+    {id:'aut3',dim:'aut',l:'Anticipacion de problemas',d:'Anticipa potenciales problemas y actua preventivamente antes de que escalen?'},
+    {id:'imp1',dim:'imp',l:'Impacto en resultados',d:'Ha entregado proyectos o soluciones concretas con impacto positivo medible al area?'},
+    {id:'imp2',dim:'imp',l:'Influencia en el equipo',d:'Su presencia eleva el rendimiento o motivacion del equipo que lo rodea?'},
+    {id:'imp3',dim:'imp',l:'Innovacion aplicada',d:'Ha implementado ideas nuevas que mejoraron un proceso, herramienta o metrica del area?'}
+  ]}
+};
+
+var LM={comp:'Competencias Tecnicas',norm:'Adhesion Normativa',act:'Fit Actitudinal',aut:'Ejecucion Autonoma',imp:'Aportes Significativos'};
+var LIKERT={1:{t:'Muy deficiente',c:'#dc2626',bg:'#fef2f2'},2:{t:'Insuficiente',c:'#ea580c',bg:'#fff7ed'},3:{t:'Aceptable',c:'#ca8a04',bg:'#fefce8'},4:{t:'Bueno',c:'#16a34a',bg:'#f0fdf4'},5:{t:'Excelente',c:'#059669',bg:'#ecfdf5'}};
+
+var GUIDE_STEPS=[
+  {title:'Bienvenido a la Evaluacion',body:'Esta herramienta mide la calidad de cada contratacion. Evaluaras a tus colaboradores de nuevo ingreso en las dimensiones clave del desempeno.'},
+  {title:'Competencias Tecnicas',body:'Evalua si el colaborador domina los conocimientos y herramientas necesarias para ejecutar su rol.'},
+  {title:'Adhesion Normativa',body:'Mide el cumplimiento de horarios, politicas, protocolos y procesos. Un puntaje alto indica integracion a la cultura operativa.'},
+  {title:'Fit Actitudinal',body:'Valora disposicion al trabajo en equipo, receptividad al feedback, estabilidad emocional y colaboracion proactiva.'},
+  {title:'Ejecucion Autonoma',body:'Evalua la capacidad de trabajar sin supervision constante: seguir instrucciones, resolver imprevistos y tomar decisiones.'},
+  {title:'Aportes Significativos',body:'Disponible desde el Mes 6. Mide propuestas de mejora, iniciativa, impacto en resultados e innovacion aplicada.'},
+  {title:'Escala Likert (1-5)',body:'<b>1</b> Muy deficiente: No cumple.<br><b>2</b> Insuficiente: Cumple minimo.<br><b>3</b> Aceptable: Cumple lo basico.<br><b>4</b> Bueno: Supera lo esperado.<br><b>5</b> Excelente: Referente en su nivel.'},
+  {title:'Observaciones',body:'Si el puntaje de un indicador esta por debajo del minimo, deberas registrar observaciones o evidencias que sustenten la calificacion.'},
+  {title:'Indicador de Continuidad',body:'Al final encontraras la pregunta: Recomendarias la continuidad de este colaborador/a? Complementa el indice numerico.'},
+  {title:'Listo para evaluar',body:'Avanza indicador por indicador usando el boton Continuar. Al terminar, revisaras un resumen antes de confirmar.'}
+];
+
+var role=null,coKey=null,curCol=null,curPer=3;
+var sc={},obs={},npsVal=null;
+var chart=null,evaluated={},adminTab='empresas',guideStep=0,previewPer=3;
+var evalStep=0,evalDims=[],evalTotalSteps=0;
+
+// ===== LOCAL STORAGE PERSISTENCE =====
+var LS_KEY='sni_evaluaciones_v1';
+
+function saveToLocal(){
+  try{localStorage.setItem(LS_KEY,JSON.stringify(evaluated));} catch(e){}
+}
+
+function loadFromLocal(){
+  try{
+    var data=localStorage.getItem(LS_KEY);
+    if(data){evaluated=JSON.parse(data);return Object.keys(evaluated).length;}
+  }catch(e){}
+  return 0;
+}
+
+function clearLocalData(){
+  if(confirm('Esto eliminara todas las evaluaciones guardadas. Continuar?')){
+    localStorage.removeItem(LS_KEY);evaluated={};
+    alert('Datos eliminados.');
+    if(role==='admin')renderAdminTab();
+    else if(role==='supervisor')renderSupList();
+  }
+}
+
+// Load saved data on startup
+var _loaded=loadFromLocal();
+if(_loaded>0){console.log('Cargadas '+_loaded+' evaluaciones desde almacenamiento local.');}
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById(id).classList.add('active');}
+
+function initScores(per){
+  sc={};obs={};
+  var qs=SCH[per].q;
+  for(var i=0;i<qs.length;i++){sc[qs[i].id]=3;obs[qs[i].id]='';}
+}
+
+function getDims(per){
+  var w=SCH[per].w,dims=[];
+  var keys=Object.keys(w);
+  for(var i=0;i<keys.length;i++){
+    if(Math.round(w[keys[i]]*100)===0)continue;
+    var qs=[];
+    for(var j=0;j<SCH[per].q.length;j++){if(SCH[per].q[j].dim===keys[i])qs.push(SCH[per].q[j]);}
+    dims.push({key:keys[i],name:LM[keys[i]],weight:w[keys[i]],qs:qs});
+  }
+  return dims;
+}
+
+function calcDimAvg(dim){
+  var qs=SCH[curPer].q,sum=0,cnt=0;
+  for(var i=0;i<qs.length;i++){if(qs[i].dim===dim){sum+=(sc[qs[i].id]||0);cnt++;}}
+  return cnt?sum/cnt:0;
+}
+
+// EVENT DELEGATION
+document.addEventListener('click',function(e){
+  var el=e.target.closest('[data-action]');if(!el)return;
+  var a=el.getAttribute('data-action'),arg=el.getAttribute('data-arg');
+  if(a==='pickRole')pickRole(arg);
+  else if(a==='doLogin')doLogin();
+  else if(a==='doLogout')doLogout();
+  else if(a==='adminTab')setAdminTab(arg);
+  else if(a==='selectCo'){coKey=arg;renderList();showScreen('listScreen');}
+  else if(a==='backToDash'){showScreen('adminDash');renderAdminTab();}
+  else if(a==='openEval')openEval(parseInt(arg));
+  else if(a==='goBackList')goBackList();
+  else if(a==='evalNext')evalNext();
+  else if(a==='evalPrev')evalPrev();
+  else if(a==='setNpsEval'){npsVal=arg==='true';renderEvalStep();}
+  else if(a==='backToEval'){showScreen('evalScreen');}
+  else if(a==='confirmSave')confirmSave();
+  else if(a==='clearLocal')clearLocalData();
+  else if(a==='saveTpl'){alert('Plantilla guardada como predeterminada.');}
+  else if(a==='previewTpl')previewTpl();
+  else if(a==='notifyAll')notifyAll();
+  else if(a==='notifySup')notifySup(arg);
+  else if(a==='viewResult')viewResult(parseInt(arg));
+  else if(a==='downloadPDF')downloadPDF();
+  else if(a==='backFromResult')goBackList();
+  else if(a==='openGuide'){guideStep=0;renderGuide();document.getElementById('guideModal').style.display='flex';}
+  else if(a==='closeGuide'){document.getElementById('guideModal').style.display='none';}
+  else if(a==='guideNext'){if(guideStep<GUIDE_STEPS.length-1){guideStep++;renderGuide();}else{document.getElementById('guideModal').style.display='none';}}
+  else if(a==='guidePrev'){if(guideStep>0){guideStep--;renderGuide();}}
+  else if(a==='setPreviewPer'){previewPer=parseInt(arg);renderPreview();}
+  else if(a==='toggleExpand'){var bd=el.parentElement.querySelector('.expand-bd');if(bd)bd.classList.toggle('open');}
+});
+document.addEventListener('input',function(e){
+  var el=e.target;var a=el.getAttribute('data-action');
+  if(a==='renderSups')renderSups();
+  else if(a==='renderRepo')renderRepo();
+  else if(a==='renderList')renderList();
+  else if(a==='slide'){
+    var id=el.getAttribute('data-qid');
+    sc[id]=parseFloat(el.value);
+    var lk=LIKERT[el.value];
+    var valEl=document.getElementById('v-'+id);
+    if(valEl){valEl.textContent=el.value+' - '+lk.t;valEl.style.color=lk.c;valEl.style.background=lk.bg;}
+    checkObsRequired();
+  }
+  else if(a==='obsInput'){var id=el.getAttribute('data-qid');obs[id]=el.value;}
+});
+document.addEventListener('change',function(e){
+  var a=e.target.getAttribute('data-action');
+  if(a==='renderSupsC')renderSups();
+  else if(a==='renderListC')renderList();
+});
+
+// LOGIN
+var selRole=null;
+function pickRole(r){
+  selRole=r;
+  document.getElementById('rSup').style.background=r==='supervisor'?'#1e293b':'#f0f0f0';
+  document.getElementById('rSup').style.color=r==='supervisor'?'#fff':'#4a4a4a';
+  document.getElementById('rAdm').style.background=r==='admin'?'#1e293b':'#f0f0f0';
+  document.getElementById('rAdm').style.color=r==='admin'?'#fff':'#4a4a4a';
+  document.getElementById('supCoPick').style.display=r==='supervisor'?'block':'none';
+}
+function doLogin(){
+  var err=document.getElementById('loginErr');
+  if(!selRole){err.textContent='Seleccione un rol';err.style.display='block';return;}
+  if(selRole==='supervisor'){var v=document.getElementById('supCompany').value;if(!v){err.textContent='Seleccione su empresa';err.style.display='block';return;}coKey=v;}
+  err.style.display='none';role=selRole;
+  if(role==='admin'){
+    renderAdminTab();showScreen('adminDash');
+    var cnt=Object.keys(evaluated).length;
+    var badge=document.getElementById('lsBadge');
+    if(badge)badge.textContent=cnt>0?cnt+' evaluacion'+(cnt>1?'es':'')+' guardada'+(cnt>1?'s':''):'Sin evaluaciones';
+  }
+  else{renderSupList();showScreen('supScreen');}
+}
+function doLogout(){role=null;selRole=null;coKey=null;showScreen('loginScreen');}
+
+// ADMIN TABS
+function setAdminTab(t){
+  adminTab=t;
+  document.querySelectorAll('#adminTabs .tab-btn').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-arg')===t);});
+  ['tabEmpresas','tabSupervisores','tabPlantilla','tabPreview','tabRepositorio','tabGuia'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});
+  var map={empresas:'tabEmpresas',supervisores:'tabSupervisores',plantilla:'tabPlantilla',preview:'tabPreview',repositorio:'tabRepositorio',guia:'tabGuia'};
+  if(map[t]){var e=document.getElementById(map[t]);if(e)e.style.display='';}
+  renderAdminTab();
+}
+function renderAdminTab(){
+  if(adminTab==='empresas')renderCompanyList();
+  else if(adminTab==='supervisores')renderSups();
+  else if(adminTab==='repositorio')renderRepo();
+  else if(adminTab==='preview')renderPreview();
+}
+
+function renderCompanyList(){
+  var keys=Object.keys(COS),h='';
+  for(var i=0;i<keys.length;i++){
+    var k=keys[i],pen=0,tot=0;
+    for(var j=0;j<COLLABS.length;j++){if(COLLABS[j].co===k){tot++;if(!evaluated[COLLABS[j].id])pen++;}}
+    h+='<div class="co-row" data-action="selectCo" data-arg="'+k+'"><div><span style="font-weight:700;font-size:15px">'+k+'</span><span style="color:#8a8a8a;font-size:12px;margin-left:8px">'+tot+' colaboradores</span></div><div style="display:flex;gap:8px;align-items:center">'+(pen?'<span class="badge st-pen">'+pen+' pendiente'+(pen>1?'s':'')+'</span>':'<span class="badge st-don">Completo</span>')+'<span style="color:#ccc">&#8250;</span></div></div>';
+  }
+  document.getElementById('companyList').innerHTML=h;
+}
+
+function renderSups(){
+  var search=(document.getElementById('supSearch')||{}).value||'';search=search.toLowerCase();
+  var coF=(document.getElementById('supCoFilter')||{}).value||'';
+  var h='';
+  for(var i=0;i<SUPS.length;i++){
+    var s=SUPS[i],pen=0,collabs=[];
+    for(var j=0;j<COLLABS.length;j++){if(COLLABS[j].su===s.n&&!evaluated[COLLABS[j].id]){pen++;collabs.push(COLLABS[j]);}}
+    if(pen===0)continue;
+    if(search&&s.n.toLowerCase().indexOf(search)===-1&&(supEmails[s.n]||'').toLowerCase().indexOf(search)===-1)continue;
+    if(coF){var m=false;for(var c=0;c<s.co.length;c++){if(s.co[c]===coF)m=true;}if(!m)continue;}
+    var email=supEmails[s.n]||s.e;
+    var collabH='';
+    for(var k=0;k<collabs.length;k++){var x=collabs[k];collabH+='<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px"><span>'+x.n+' <span style="color:#8a8a8a">('+x.de+')</span></span><span class="badge st-pen" style="font-size:10px">Mes '+x.pe+'</span></div>';}
+    h+='<div class="expand-section fade"><div class="expand-hd" data-action="toggleExpand"><div><span style="font-weight:600">'+s.n+'</span><span style="color:#8a8a8a;font-size:12px;margin-left:8px">'+s.co.join(', ')+'</span></div><div style="display:flex;align-items:center;gap:8px"><span class="badge st-pen">'+pen+'</span><button class="btn btn-sm" style="background:#009EE3;color:#fff" data-action="notifySup" data-arg="'+s.n+'">Notificar</button></div></div><div class="expand-bd"><div style="margin-bottom:8px"><label class="lbl">Correo del Supervisor</label><input type="text" class="inp" value="'+email+'" style="max-width:350px" data-sup-email="'+s.n+'"></div><div class="lbl">Colaboradores Pendientes ('+pen+')</div>'+collabH+'</div></div>';
+  }
+  if(!h)h='<div style="padding:30px;text-align:center;color:#a8a8a8">No hay supervisores con pendientes</div>';
+  document.getElementById('supList').innerHTML=h;
+}
+function notifySup(name){var inp=document.querySelector('[data-sup-email="'+name+'"]');var email=inp?inp.value:(supEmails[name]||'');if(inp)supEmails[name]=inp.value;var b=document.getElementById('notifBanner');document.getElementById('notifMsg').textContent='Notificacion enviada a '+name+' ('+email+')';b.style.display='flex';setTimeout(function(){b.style.display='none';},4000);}
+function notifyAll(){var c=0;for(var i=0;i<SUPS.length;i++){var pen=0;for(var j=0;j<COLLABS.length;j++){if(COLLABS[j].su===SUPS[i].n&&!evaluated[COLLABS[j].id])pen++;}if(pen)c++;}alert('Notificacion enviada a '+c+' supervisores.');}
+function previewTpl(){var body=document.getElementById('tplBody').value;var p=body.replace('{supervisor}','Demo Supervisor').replace('{empresa}','Febeca').replace('{cantidad}','5').replace('{lista_colaboradores}','- Juan Perez (Mes 3) / Maria Lopez (Mes 6)').replace('{enlace}','https://seguimiento.mayoreo.biz/eval');document.getElementById('tplPreview').textContent=p;document.getElementById('tplPreview').style.display='block';}
+
+function renderPreview(){
+  var per=previewPer;
+  document.querySelectorAll('#previewPeriodTabs .tab-btn').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-arg')===String(per));});
+  var d=SCH[per],dims=getDims(per);
+  var h='<h3 style="font-size:16px;font-weight:700;margin-bottom:4px">Evaluacion Mes '+per+'</h3><p style="color:#8a8a8a;font-size:13px;margin-bottom:16px">Umbral minimo: '+d.min+' | '+d.q.length+' preguntas en '+dims.length+' indicadores</p>';
+  for(var i=0;i<dims.length;i++){
+    var dm=dims[i],pct=Math.round(dm.weight*100);
+    h+='<div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-weight:700;font-size:14px">'+dm.name+'</span><span class="badge" style="background:#f0f0f0;color:#666">'+pct+'%</span><span style="color:#8a8a8a;font-size:12px">'+dm.qs.length+' pregunta'+(dm.qs.length>1?'s':'')+'</span></div>';
+    for(var j=0;j<dm.qs.length;j++){h+='<div style="padding:10px 14px;background:#f9fafb;border-radius:8px;margin-bottom:6px"><div style="font-weight:600;font-size:13px">'+dm.qs[j].l+'</div><div style="font-size:12px;color:#8a8a8a;margin-top:2px">'+dm.qs[j].d+'</div></div>';}
+    h+='</div>';
+  }
+  document.getElementById('previewContent').innerHTML=h;
+}
+
+function renderRepo(){
+  var search=(document.getElementById('repoSearch')||{}).value||'';search=search.toLowerCase();
+  var items=[];
+  var ids=Object.keys(evaluated);
+  for(var i=0;i<ids.length;i++){
+    var id=parseInt(ids[i]),ev=evaluated[id],col=null;
+    for(var j=0;j<COLLABS.length;j++){if(COLLABS[j].id===id){col=COLLABS[j];break;}}
+    if(!col)continue;if(search&&col.n.toLowerCase().indexOf(search)===-1&&col.co.toLowerCase().indexOf(search)===-1)continue;
+    items.push({col:col,ev:ev,id:id});
+  }
+  if(items.length===0){document.getElementById('repoList').innerHTML='<div style="padding:30px;text-align:center;color:#a8a8a8">No hay evaluaciones completadas</div>';return;}
+  // Group by period, then by area
+  var periods={3:[],6:[],9:[]};
+  for(var i=0;i<items.length;i++){var p=items[i].ev.period;if(!periods[p])periods[p]=[];periods[p].push(items[i]);}
+  var h='';
+  var pLabels={3:'Mes 3 - Prueba',6:'Mes 6 - Consolidacion',9:'Mes 9 - Impacto'};
+  var pKeys=[3,6,9];
+  for(var p=0;p<pKeys.length;p++){
+    var pk=pKeys[p],list=periods[pk];
+    if(!list||list.length===0)continue;
+    // Sort by area then name
+    list.sort(function(a,b){var da=a.col.de||'';var db=b.col.de||'';return da<db?-1:da>db?1:a.col.n<b.col.n?-1:1;});
+    h+='<div style="padding:10px 16px;background:#f0f7ff;font-size:13px;font-weight:700;color:#1e40af;border-bottom:1px solid #bfdbfe">'+pLabels[pk]+' ('+list.length+' evaluacion'+(list.length>1?'es':'')+')</div>';
+    var curArea='';
+    for(var i=0;i<list.length;i++){
+      var it=list[i],col=it.col,ev=it.ev;
+      if(col.de!==curArea){curArea=col.de;h+='<div style="padding:6px 16px;background:#f9fafb;font-size:11px;font-weight:700;color:#8a8a8a;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #f0f0f0">'+curArea+'</div>';}
+      var stCls=ev.qoh>=SCH[ev.period].min?'st-don':'st-risk';
+      h+='<div class="trow" style="grid-template-columns:2fr 1fr 1fr .8fr 1fr 100px"><span style="font-weight:600">'+col.n+'</span><span style="color:#666">'+col.co+'</span><span>Mes '+ev.period+'</span><span class="badge '+stCls+'">'+ev.qoh.toFixed(2)+'</span><span style="color:#666;font-size:12px">'+ev.date+'</span><button class="btn btn-sm" style="background:#f0f0f0;color:#4a4a4a" data-action="viewResult" data-arg="'+it.id+'">Ver</button></div>';
+    }
+  }
+  document.getElementById('repoList').innerHTML=h;
+}
+
+// COLLAB LIST (admin)
+function renderList(){
+  var c=COS[coKey]||{accent:'#1e293b',toa:'#fff'};
+  document.getElementById('listHdr').style.background=c.accent;
+  document.getElementById('listHdrTitle').style.color=c.toa;document.getElementById('listHdrTitle').textContent=coKey+' - Evaluaciones';
+  document.getElementById('btnBackCo').style.color=c.toa;
+  document.getElementById('listCoName').textContent=coKey;document.getElementById('listCoName').style.color=c.accent==='#666666'?'#1e293b':c.accent;
+  var search=(document.getElementById('searchInput')||{}).value||'';search=search.toLowerCase();
+  var perF=(document.getElementById('filterPeriod')||{}).value||'';
+  var items=[];
+  for(var i=0;i<COLLABS.length;i++){var x=COLLABS[i];if(x.co!==coKey)continue;if(search&&x.n.toLowerCase().indexOf(search)===-1&&x.de.toLowerCase().indexOf(search)===-1)continue;if(perF&&x.pe!==parseInt(perF))continue;items.push(x);}
+  var pen=0,don=0;for(var i=0;i<items.length;i++){if(evaluated[items[i].id])don++;else pen++;}
+  document.getElementById('sPen').textContent=pen+' Pendiente'+(pen!==1?'s':'');
+  document.getElementById('sDon').textContent=don+' Evaluado'+(don!==1?'s':'');
+  // Group by area, sort by period
+  var areas={};
+  for(var i=0;i<items.length;i++){var x=items[i],area=x.de||'Sin area';if(!areas[area])areas[area]=[];areas[area].push(x);}
+  var areaKeys=Object.keys(areas).sort();
+  var pLbl={3:'Mes 3',6:'Mes 6',9:'Mes 9'},h='';
+  for(var a=0;a<areaKeys.length;a++){
+    var area=areaKeys[a],list=areas[area];
+    list.sort(function(x,y){return x.pe-y.pe;});
+    h+='<div style="padding:8px 16px;background:#f9fafb;font-size:12px;font-weight:700;color:#8a8a8a;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #f0f0f0">'+area+' ('+list.length+')</div>';
+    for(var i=0;i<list.length;i++){
+      var x=list[i],isDone=!!evaluated[x.id],act=isDone?'viewResult':'openEval';
+      h+='<div class="trow" style="grid-template-columns:2.2fr 1fr .8fr .7fr 90px"><div><div style="font-weight:600">'+x.n+'</div><div style="font-size:11px;color:#8a8a8a">'+x.ca+' | '+x.su+'</div></div><span style="color:#666">'+x.de+'</span><span style="color:#666">'+pLbl[x.pe]+'</span>'+(isDone?'<span class="badge st-don">Evaluado</span>':'<span class="badge st-pen">Pendiente</span>')+'<button class="btn btn-sm" style="background:'+(isDone?'#f0f0f0':c.accent)+';color:'+(isDone?'#8a8a8a':c.toa)+'" data-action="'+act+'" data-arg="'+x.id+'">'+(isDone?'Ver':'Evaluar')+'</button></div>';
+    }
+  }
+  if(!h)h='<div style="padding:30px;text-align:center;color:#a8a8a8">Sin resultados</div>';
+  document.getElementById('collabList').innerHTML=h;
+}
+
+// SUP LIST
+function renderSupList(){
+  var c=COS[coKey]||{accent:'#1e293b',toa:'#fff'};
+  document.getElementById('supHdr').style.background=c.accent;
+  document.getElementById('supHdrTitle').style.color=c.toa;document.getElementById('supHdrTitle').textContent=coKey+' - Mis Evaluaciones';
+  document.getElementById('supCoName').textContent=coKey;document.getElementById('supCoName').style.color=c.accent==='#666666'?'#1e293b':c.accent;
+  var items=[],pen=0,don=0;
+  for(var i=0;i<COLLABS.length;i++){if(COLLABS[i].co===coKey)items.push(COLLABS[i]);}
+  for(var i=0;i<items.length;i++){if(evaluated[items[i].id])don++;else pen++;}
+  document.getElementById('ssPen').textContent=pen+' Pendiente'+(pen!==1?'s':'');
+  document.getElementById('ssDon').textContent=don+' Evaluado'+(don!==1?'s':'');
+  // Group by area, then sort by period within each area
+  var areas={};
+  for(var i=0;i<items.length;i++){
+    var x=items[i],area=x.de||'Sin area';
+    if(!areas[area])areas[area]=[];
+    areas[area].push(x);
+  }
+  var areaKeys=Object.keys(areas).sort();
+  var pLbl={3:'Mes 3',6:'Mes 6',9:'Mes 9'};
+  var h='';
+  for(var a=0;a<areaKeys.length;a++){
+    var area=areaKeys[a],list=areas[area];
+    list.sort(function(x,y){return x.pe-y.pe;});
+    h+='<div style="margin-bottom:4px"><div style="padding:8px 16px;background:#f9fafb;font-size:12px;font-weight:700;color:#8a8a8a;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #f0f0f0">'+area+'</div>';
+    for(var i=0;i<list.length;i++){
+      var x=list[i],isDone=!!evaluated[x.id],act=isDone?'viewResult':'openEval';
+      h+='<div class="trow" style="grid-template-columns:2.2fr 1fr .8fr .7fr 90px"><div><div style="font-weight:600">'+x.n+'</div><div style="font-size:11px;color:#8a8a8a">'+x.ca+'</div></div><span style="color:#666">'+x.de+'</span><span style="color:#666">'+pLbl[x.pe]+'</span>'+(isDone?'<span class="badge st-don">Evaluado</span>':'<span class="badge st-pen">Pendiente</span>')+'<button class="btn btn-sm" style="background:'+(isDone?'#f0f0f0':c.accent)+';color:'+(isDone?'#8a8a8a':c.toa)+'" data-action="'+act+'" data-arg="'+x.id+'">'+(isDone?'Ver':'Evaluar')+'</button></div>';
+    }
+    h+='</div>';
+  }
+  document.getElementById('supCollabList').innerHTML=h;
+}
+
+// ===== STEP-BY-STEP EVALUATOR =====
+function openEval(id){
+  curCol=null;for(var i=0;i<COLLABS.length;i++){if(COLLABS[i].id===id){curCol=COLLABS[i];break;}}
+  if(!curCol)return;
+  if(!coKey)coKey=curCol.co;
+  curPer=curCol.pe;initScores(curPer);npsVal=null;
+  evalDims=getDims(curPer);
+  evalTotalSteps=evalDims.length+1; // +1 for Continuidad step
+  evalStep=0;
+  var c=COS[coKey]||{accent:'#1e293b',toa:'#fff'};
+  document.getElementById('evalHdr').style.background=c.accent;
+  document.getElementById('evalHdrTitle').style.color=c.toa;document.getElementById('evalHdrTitle').textContent=coKey+' - Evaluacion';
+  document.getElementById('btnBackList').style.color=c.toa;
+  document.getElementById('evalName').textContent=curCol.n;
+  document.getElementById('evalMeta').innerHTML=curCol.ca+' | '+curCol.de+' | Ingreso: '+curCol.fe+'<span style="display:inline-block;margin-left:10px;padding:3px 12px;border-radius:999px;font-size:12px;font-weight:700;background:'+c.accent+'20;color:'+c.accent+';border:1px solid '+c.accent+'40">Periodo: Mes '+curPer+'</span>';
+  document.getElementById('evalProgress').style.background=c.accent;
+  renderEvalStep();
+  showScreen('evalScreen');
+}
+
+function renderEvalStep(){
+  var c=COS[coKey]||{accent:'#1e293b',toa:'#fff'};
+  var pct=Math.round(((evalStep+1)/evalTotalSteps)*100);
+  document.getElementById('evalProgress').style.width=pct+'%';
+  document.getElementById('evalStepCount').textContent='Paso '+(evalStep+1)+' de '+evalTotalSteps;
+  document.getElementById('evalPrevBtn').style.visibility=evalStep===0?'hidden':'visible';
+
+  var isNpsStep=evalStep>=evalDims.length;
+  var isLast=evalStep===evalTotalSteps-1;
+  document.getElementById('evalNextBtn').textContent=isLast?'Revisar y Confirmar':'Continuar';
+
+  var el=document.getElementById('evalStepContent');
+
+  if(isNpsStep){
+    // Continuidad step
+    document.getElementById('evalStepLabel').textContent='Indicador de Continuidad';
+    var yesStyle=npsVal===true?'background:#d4edda;color:#155724;border:2px solid #16a34a':'background:#f9fafb;color:#8a8a8a;border:2px solid #e2e2e2';
+    var noStyle=npsVal===false?'background:#f8d7da;color:#721c24;border:2px solid #dc2626':'background:#f9fafb;color:#8a8a8a;border:2px solid #e2e2e2';
+    el.innerHTML='<div class="card fade" style="text-align:center;padding:32px"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Recomendarias la continuidad de '+curCol.n+'?</h3><p style="color:#8a8a8a;font-size:13px;margin-bottom:24px">Basandote en tu experiencia como supervisor/a, considerando su desempeno hasta ahora, recomendarias que la organizacion mantenga su vinculacion?</p><div style="display:flex;gap:12px;justify-content:center"><button class="btn" style="padding:14px 40px;font-size:16px;border-radius:12px;'+yesStyle+'" data-action="setNpsEval" data-arg="true">Si</button><button class="btn" style="padding:14px 40px;font-size:16px;border-radius:12px;'+noStyle+'" data-action="setNpsEval" data-arg="false">No</button></div></div>';
+    return;
+  }
+
+  // Dimension step
+  var dim=evalDims[evalStep];
+  document.getElementById('evalStepLabel').textContent=dim.name;
+  var pctW=Math.round(dim.weight*100);
+  // Likert legend card (separate)
+  var h='<div class="card fade" style="padding:16px;margin-bottom:14px;background:#f9fafb"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-size:12px;font-weight:700;color:#8a8a8a;text-transform:uppercase;letter-spacing:.5px">Escala de Valoracion</span><span style="font-size:11px;color:#8a8a8a">Deslice el control para asignar su puntaje</span></div><div class="likert-legend">';
+  for(var lv=1;lv<=5;lv++){var lk=LIKERT[lv];h+='<div class="likert-item" style="background:'+lk.bg+';border:1px solid '+lk.c+'20"><b style="color:'+lk.c+'">'+lv+'</b><br><span style="color:'+lk.c+'">'+lk.t+'</span></div>';}
+  h+='</div></div>';
+  // Dimension header card (separate)
+  h+='<div class="card fade" style="padding:20px">';
+  h+='<div style="margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #f0f0f0"><h3 style="font-size:18px;font-weight:700">'+dim.name+'</h3><p style="color:#8a8a8a;font-size:13px;margin-top:4px">Evalua cada aspecto de esta dimension. '+dim.qs.length+' preguntas a responder.</p></div>';
+
+  for(var j=0;j<dim.qs.length;j++){
+    var q=dim.qs[j],v=sc[q.id]||3,lk=LIKERT[v];
+    var isLow=v<3;
+    h+='<div style="margin-bottom:16px;padding-bottom:16px;'+(j<dim.qs.length-1?'border-bottom:1px solid #f0f0f0':'')+'">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px"><div style="flex:1"><div style="font-size:14px;font-weight:600">'+q.l+'</div><div style="font-size:12px;color:#8a8a8a;margin-top:2px">'+q.d+'</div></div>';
+    h+='<span id="v-'+q.id+'" style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;white-space:nowrap;color:'+lk.c+';background:'+lk.bg+'">'+v+' - '+lk.t+'</span></div>';
+    h+='<div style="display:flex;align-items:center;gap:8px;margin-top:8px"><span style="font-size:11px;font-weight:700;color:#dc2626">1</span><input type="range" min="1" max="5" step="1" value="'+v+'" data-qid="'+q.id+'" data-action="slide" style="accent-color:'+c.accent+';height:8px"><span style="font-size:11px;font-weight:700;color:#059669">5</span></div>';
+    // Observations field
+    var obsRequired=v<3;
+    h+='<div style="margin-top:10px" id="obs-wrap-'+q.id+'"><label style="font-size:11px;font-weight:600;color:'+(obsRequired?'#dc2626':'#8a8a8a')+'">'+( obsRequired?'Observaciones (obligatorio - puntaje bajo)':'Observaciones / Evidencias (opcional)')+'</label><textarea data-action="obsInput" data-qid="'+q.id+'" rows="2" style="margin-top:4px;min-height:50px;'+(obsRequired?'border-color:#fca5a5':'')+'" placeholder="Describa evidencias o comportamientos observados...">'+( obs[q.id]||'')+'</textarea></div>';
+    h+='</div>';
+  }
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+function checkObsRequired(){
+  // Update obs labels when slider changes
+  var dim=evalDims[evalStep];
+  if(!dim)return;
+  for(var j=0;j<dim.qs.length;j++){
+    var q=dim.qs[j],v=sc[q.id]||3;
+    var wrap=document.getElementById('obs-wrap-'+q.id);
+    if(!wrap)continue;
+    var label=wrap.querySelector('label');
+    var ta=wrap.querySelector('textarea');
+    if(v<3){
+      label.textContent='Observaciones (obligatorio - puntaje bajo)';
+      label.style.color='#dc2626';
+      if(ta)ta.style.borderColor='#fca5a5';
+    }else{
+      label.textContent='Observaciones / Evidencias (opcional)';
+      label.style.color='#8a8a8a';
+      if(ta)ta.style.borderColor='#e2e2e2';
+    }
+  }
+}
+
+function evalNext(){
+  // Validate: if any question in current step has score < 3, obs is required
+  if(evalStep<evalDims.length){
+    var dim=evalDims[evalStep];
+    for(var j=0;j<dim.qs.length;j++){
+      var q=dim.qs[j],v=sc[q.id]||3;
+      // Save obs from textarea
+      var ta=document.querySelector('textarea[data-qid="'+q.id+'"]');
+      if(ta)obs[q.id]=ta.value;
+      if(v<3&&!obs[q.id].trim()){
+        alert('El campo "'+q.l+'" tiene un puntaje bajo. Debe incluir observaciones o evidencias.');
+        return;
+      }
+    }
+  }
+  // Continuidad validation
+  if(evalStep>=evalDims.length&&npsVal===null){
+    alert('Seleccione Si o No en la pregunta de continuidad.');
+    return;
+  }
+  if(evalStep<evalTotalSteps-1){
+    evalStep++;renderEvalStep();
+    document.getElementById('evalStepContent').scrollIntoView({behavior:'smooth',block:'start'});
+  }else{
+    showConfirmation();
+  }
+}
+function evalPrev(){if(evalStep>0){
+  // Save obs before going back
+  if(evalStep<evalDims.length){var dim=evalDims[evalStep];for(var j=0;j<dim.qs.length;j++){var q=dim.qs[j];var ta=document.querySelector('textarea[data-qid="'+q.id+'"]');if(ta)obs[q.id]=ta.value;}}
+  evalStep--;renderEvalStep();
+}}
+
+function goBackList(){
+  if(role==='admin'){renderList();showScreen('listScreen');}
+  else{renderSupList();showScreen('supScreen');}
+}
+
+// ===== CONFIRMATION =====
+function showConfirmation(){
+  document.getElementById('confName').textContent=curCol.n;
+  document.getElementById('confMeta').textContent=curCol.ca+' | '+curCol.de+' | '+coKey+' | Mes '+curPer;
+  // Unified layout: each dimension is ONE row with puntaje left + obs right
+  var h='';
+  for(var i=0;i<evalDims.length;i++){
+    var dim=evalDims[i];
+    h+='<div class="card" style="margin-bottom:10px;padding:16px"><div style="font-weight:700;font-size:14px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">'+dim.name+'</div>';
+    for(var j=0;j<dim.qs.length;j++){
+      var q=dim.qs[j],v=sc[q.id]||3,lk=LIKERT[v];
+      var obsText=obs[q.id]&&obs[q.id].trim()?obs[q.id]:'—';
+      var obsColor=obs[q.id]&&obs[q.id].trim()?'#1e293b':'#ccc';
+      var bdr=j<dim.qs.length-1?'border-bottom:1px solid #f8f8f8;padding-bottom:8px;margin-bottom:8px':'';
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;'+bdr+'">';
+      // Left: question + score
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>'+q.l+'</span><span style="font-weight:700;color:'+lk.c+';white-space:nowrap;margin-left:8px">'+v+' - '+lk.t+'</span></div>';
+      // Right: observation
+      h+='<div style="font-size:12px;color:'+obsColor+';line-height:1.4">'+obsText+'</div>';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+  // Replace the two-column layout with unified
+  document.getElementById('confLeft').innerHTML=h;
+  document.getElementById('confRight').innerHTML='';
+  document.getElementById('confNps').innerHTML='<div class="lbl">Indicador de Continuidad</div><div style="font-size:16px;font-weight:700;color:'+(npsVal?'#16a34a':'#dc2626')+'">'+(npsVal?'Si - Recomiendo su continuidad':'No - No recomiendo su continuidad')+'</div>';
+  showScreen('confirmScreen');
+}
+
+function confirmSave(){
+  if(!curCol)return;
+  var w=SCH[curPer].w,t=0;
+  var dk=Object.keys(w);
+  var dimScores={};
+  for(var i=0;i<dk.length;i++){var avg=calcDimAvg(dk[i]);dimScores[dk[i]]=avg;t+=avg*w[dk[i]];}
+  var now=new Date();var ds=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  evaluated[curCol.id]={scores:JSON.parse(JSON.stringify(sc)),obs:JSON.parse(JSON.stringify(obs)),dimScores:dimScores,nps:npsVal,qoh:t,period:curPer,date:ds};
+  saveToLocal();
+  alert('Evaluacion guardada exitosamente para '+curCol.n);
+  var badge=document.getElementById('lsBadge');if(badge){var cnt=Object.keys(evaluated).length;badge.textContent=cnt+' evaluacion'+(cnt>1?'es':'')+' guardada'+(cnt>1?'s':'');}
+  goBackList();
+}
+
+// ===== VIEW RESULT (with full metrics, radar, ponderaciones) =====
+function viewResult(id){
+  var ev=evaluated[id];
+  if(!ev){openEval(id);return;}
+  var col=null;for(var i=0;i<COLLABS.length;i++){if(COLLABS[i].id===id){col=COLLABS[i];break;}}
+  if(!col)return;
+  var cf=SCH[ev.period];
+  var stTxt=ev.qoh>=cf.min?(ev.nps?'Ingreso Exitoso':'Revisar Continuidad'):'Riesgo de Desvinculacion';
+  var stCls=ev.qoh>=cf.min?(ev.nps?'st-don':'st-pen'):'st-risk';
+  var h='<div style="text-align:center;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #f0f0f0"><h2 style="font-size:18px;font-weight:700">Informe de Evaluacion</h2><p style="color:#8a8a8a;font-size:12px;margin-top:4px">'+col.co+' | Mes '+ev.period+' | '+ev.date+'</p></div>';
+  // Employee info row
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;font-size:13px"><div><span class="lbl">Colaborador</span><div style="font-weight:600">'+col.n+'</div><div style="color:#8a8a8a;font-size:12px">'+col.ca+' | '+col.de+'</div></div><div><span class="lbl">Supervisor</span><div style="font-weight:600">'+col.su+'</div></div></div>';
+  // Score badge - compact
+  h+='<div style="text-align:center;padding:16px;background:#f9fafb;border-radius:10px;margin-bottom:14px"><div style="font-size:36px;font-weight:800;'+(ev.qoh>=cf.min?'color:#388e3c':'color:#d32f2f')+'">'+ev.qoh.toFixed(2)+'<span style="font-size:16px;color:#ccc"> / 5.0</span></div><span class="badge '+stCls+'" style="margin-top:4px">'+stTxt+'</span><div style="font-size:11px;color:#8a8a8a;margin-top:4px">Umbral: '+cf.min+' | Continuidad: '+(ev.nps?'Si':'No')+'</div></div>';
+  // Radar LEFT + Table RIGHT
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">';
+  // Left: Radar
+  h+='<div><span class="lbl">Balance por Competencias</span><canvas id="resultRadar" style="max-height:220px;margin-top:8px"></canvas></div>';
+  // Right: Table
+  h+='<div><span class="lbl">Detalle por Indicador</span><table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px">';
+  var dk=Object.keys(cf.w);
+  for(var i=0;i<dk.length;i++){var k=dk[i],p=Math.round(cf.w[k]*100);if(!p)continue;
+    h+='<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:6px 4px;font-weight:600;font-size:12px">'+LM[k]+'</td><td style="padding:6px 4px;text-align:center;font-size:12px">'+((ev.dimScores[k]||0).toFixed(2))+'</td><td style="padding:6px 4px;text-align:center;color:#8a8a8a;font-size:11px">'+p+'%</td><td style="padding:6px 4px;text-align:right;font-weight:700;font-size:12px">'+((ev.dimScores[k]||0)*cf.w[k]).toFixed(2)+'</td></tr>';}
+  h+='</table></div></div>';
+  // Observations
+  if(ev.obs){
+    var hasObs=false;for(var key in ev.obs){if(ev.obs[key])hasObs=true;}
+    if(hasObs){
+      h+='<div class="lbl">Observaciones Registradas</div>';
+      var dims=getDimsForPeriod(ev.period);
+      for(var i=0;i<dims.length;i++){for(var j=0;j<dims[i].qs.length;j++){var q=dims[i].qs[j];if(ev.obs[q.id]){h+='<div style="margin-bottom:6px;padding:8px 12px;background:#fef2f2;border-radius:8px;font-size:12px"><b>'+q.l+':</b> '+ev.obs[q.id]+'</div>';}}}
+    }
+  }
+  document.getElementById('resultContent').innerHTML=h;
+  showScreen('resultScreen');
+  setTimeout(function(){
+    var canvas=document.getElementById('resultRadar');
+    if(!canvas)return;
+    var co=COS[col.co]||{accent:'#1e293b'};
+    var vals=[],labels=[];
+    for(var i=0;i<dk.length;i++){if(Math.round(cf.w[dk[i]]*100)===0)continue;vals.push(ev.dimScores[dk[i]]||0);labels.push(LM[dk[i]]);}
+    new Chart(canvas.getContext('2d'),{type:'radar',data:{labels:labels,datasets:[{label:'Puntaje',data:vals,backgroundColor:co.accent+'30',borderColor:co.accent,borderWidth:2,pointBackgroundColor:co.accent,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:true,scales:{r:{min:0,max:5,ticks:{display:false,stepSize:1},grid:{color:'rgba(0,0,0,.06)'},angleLines:{color:'rgba(0,0,0,.06)'},pointLabels:{color:'#666',font:{size:10,weight:'600'}}}},plugins:{legend:{display:false}}}});
+  },200);
+}
+
+function getDimsForPeriod(per){
+  var w=SCH[per].w,dims=[];
+  var keys=Object.keys(w);
+  for(var i=0;i<keys.length;i++){
+    if(Math.round(w[keys[i]]*100)===0)continue;
+    var qs=[];
+    for(var j=0;j<SCH[per].q.length;j++){if(SCH[per].q[j].dim===keys[i])qs.push(SCH[per].q[j]);}
+    dims.push({key:keys[i],name:LM[keys[i]],qs:qs});
+  }
+  return dims;
+}
+
+function downloadPDF(){
+  var c=document.getElementById('resultContent');
+  if(!c||!c.innerHTML){alert('No hay contenido para descargar.');return;}
+  var clone=c.cloneNode(true);
+  var canvas=clone.querySelector('canvas');
+  if(canvas)canvas.parentElement.remove();
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Informe de Evaluacion</title><style>body{font-family:Segoe UI,Arial,sans-serif;padding:40px;color:#1e293b;font-size:14px;max-width:800px;margin:0 auto}.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}.st-don{background:#d4edda;color:#155724;border:1px solid #c3e6cb}.st-pen{background:#fff3cd;color:#856404;border:1px solid #ffeeba}.st-risk{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}.lbl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8a8a8a;margin-bottom:6px}table{width:100%;border-collapse:collapse}@media print{body{padding:20px}}</style></head><body>'+clone.innerHTML+'</body></html>';
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='Informe_Evaluacion.html';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// GUIDE
+function renderGuide(){
+  var s=GUIDE_STEPS[guideStep];
+  document.getElementById('guideTitle').textContent=s.title;
+  document.getElementById('guideContent').innerHTML='<div class="info-box" style="font-size:14px;line-height:1.7">'+s.body+'</div>';
+  document.getElementById('guideCounter').textContent=(guideStep+1)+' de '+GUIDE_STEPS.length;
+  document.getElementById('guidePrev').style.visibility=guideStep===0?'hidden':'visible';
+  document.getElementById('guideNext').textContent=guideStep===GUIDE_STEPS.length-1?'Cerrar':'Siguiente';
+  if(guideStep===GUIDE_STEPS.length-1)document.getElementById('guideNext').setAttribute('data-action','closeGuide');
+  else document.getElementById('guideNext').setAttribute('data-action','guideNext');
+  var dh='';for(var i=0;i<GUIDE_STEPS.length;i++){dh+='<div class="step-dot'+(i===guideStep?' active':'')+'"></div>';}
+  document.getElementById('guideSteps').innerHTML=dh;
+}
+
+</script>
+</body>
+</html>
