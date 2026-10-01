@@ -168,26 +168,59 @@ body {
   padding: 14px 16px;
   min-width: 140px;
   flex: 1;
+  transition: transform var(--fast), box-shadow var(--fast);
+}
+.m:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 .m-label {
-  font-size: 11px;
-  text-transform: none;
-  letter-spacing: 0.04em;
-  color: var(--g500);
+  font-family: var(--font);
+  font-size: 12.5px;
+  letter-spacing: -0.01em;
+  color: var(--g600);
   font-weight: 600;
+  margin-bottom: 3px;
 }
 .m-val {
-  font-size: 24px;
+  font-family: var(--font);
+  font-size: 26px;
   font-weight: 700;
   color: var(--black);
   line-height: 1.15;
   margin-top: 3px;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.m-denom {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--g500);
+  margin-left: 1px;
+}
+.badge-pct {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--g200);
+  color: var(--g800);
+  vertical-align: middle;
+  display: inline-block;
+  line-height: 1.2;
+  margin-left: 5px;
 }
 .m-sub {
-  font-size: 11px;
+  font-family: var(--font);
+  font-size: 11.5px;
   color: var(--g600);
-  margin-top: 3px;
+  margin-top: 4px;
   line-height: 1.35;
+}
+.m-sub-ctx {
+  color: var(--g500);
 }
 .strips {
   display: grid;
@@ -550,7 +583,7 @@ tr:hover td {
     <select id="fEmp"><option value="">Todas</option></select>
   </div>
   <div class="fg">
-    <label>Área</label>
+    <label>Departamento</label>
     <select id="fArea"><option value="">Todas</option></select>
   </div>
   <div class="fg">
@@ -602,64 +635,133 @@ var INIT_DATA = [{"nombre":"Edgar Martinez","duracion":"31 horas","empresa":"Bev
 var DATA = (typeof INIT_DATA !== 'undefined' && INIT_DATA.length > 0) ? INIT_DATA.slice() : [];
 
 var POP_TOTAL = {
-  "Febeca": 261,
-  "Beval": 98,
-  "Sillaca": 72,
-  "Cofersa": 91,
+  "Febeca": 188,
+  "Beval": 81,
+  "Sillaca": 60,
+  "Cofersa": 102,
   "Mundipartes": 59,
-  "Prisma": 160
+  "Prisma": 156
 };
-var POP_GLOBAL = 741;
+var POP_GLOBAL = 646;
+
+var RAW_AREAS = [
+  "Centro de Distribución",
+  "Compras",
+  "Ventas",
+  "Servicio Técnico",
+  "Control",
+  "Mercadeo",
+  "Personal",
+  "Reposición",
+  "Servicios Operacionales",
+  "Sistemas",
+  "Gerencia"
+];
 
 var POP_AREA = {
-  "Febeca|Logística": 76,
-  "Beval|Logística": 17,
-  "Sillaca|Logística": 12,
-  "Cofersa|Logística": 5,
+  "Febeca|Centro de Distribución": 3,
+  "Febeca|Logística": 3,
+  "Febeca|Logistica": 3,
+  "Cofersa|Centro de Distribución": 8,
+  "Cofersa|Logística": 8,
+  "Cofersa|Logistica": 8,
+  "Mundipartes|Centro de Distribución": 19,
   "Mundipartes|Logística": 19,
+  "Mundipartes|Logistica": 19,
+  "Prisma|Centro de Distribución": 1,
+  "Prisma|Logística": 1,
+  "Prisma|Logistica": 1,
   "Febeca|Compras": 13,
   "Beval|Compras": 6,
   "Sillaca|Compras": 3,
-  "Cofersa|Compras": 17,
+  "Cofersa|Compras": 21,
   "Mundipartes|Compras": 5,
   "Febeca|Ventas": 171,
   "Beval|Ventas": 73,
   "Sillaca|Ventas": 57,
-  "Cofersa|Ventas": 48,
+  "Cofersa|Ventas": 51,
   "Mundipartes|Ventas": 24,
-  "Cofersa|Operaciones": 4,
-  "Prisma|Operaciones": 1,
+  "Cofersa|Servicio Técnico": 1,
+  "Cofersa|Servicio Tecnico": 1,
   "Beval|Control": 1,
   "Cofersa|Control": 12,
   "Mundipartes|Control": 6,
   "Prisma|Control": 74,
   "Prisma|Mercadeo": 12,
-  "Cofersa|Personal": 3,
+  "Cofersa|Personal": 4,
   "Mundipartes|Personal": 4,
   "Prisma|Personal": 17,
-  "Prisma|Pronóstico": 4,
-  "Prisma|Reposición": 12,
+  "Prisma|Reposición": 16,
+  "Prisma|Reposicion": 16,
+  "Cofersa|Servicios Operacionales": 2,
   "Prisma|Servicios Operacionales": 19,
-  "Cofersa|Sistemas": 2,
-  "Prisma|Sistemas": 14,
-  "Prisma|Procesos": 7,
+  "Cofersa|Sistemas": 3,
+  "Prisma|Sistemas": 17,
   "Febeca|Gerencia": 1,
   "Beval|Gerencia": 1,
   "Mundipartes|Gerencia": 1
 };
 
-var POP_AREA_TOTAL = {};
-Object.keys(POP_AREA).forEach(function(k) {
-  var a = k.split('|')[1];
-  POP_AREA_TOTAL[a] = (POP_AREA_TOTAL[a] || 0) + POP_AREA[k];
-});
+var POP_AREA_TOTAL = {
+  "Centro de Distribución": 31,
+  "Logística": 31,
+  "Logistica": 31,
+  "Compras": 48,
+  "Ventas": 376,
+  "Servicio Técnico": 1,
+  "Servicio Tecnico": 1,
+  "Control": 93,
+  "Mercadeo": 12,
+  "Personal": 25,
+  "Reposición": 16,
+  "Reposicion": 16,
+  "Servicios Operacionales": 21,
+  "Sistemas": 20,
+  "Gerencia": 3
+};
+
+function normStr(str) {
+  return String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function getPopArea(emp, area) {
+  if (!POP_AREA || !emp || !area) return 0;
+  var key = emp + '|' + area;
+  if (POP_AREA[key] != null) return POP_AREA[key];
+  var nA = normStr(area);
+  for (var k in POP_AREA) {
+    var parts = k.split('|');
+    if (parts[0] === emp) {
+      var kNorm = normStr(parts[1]);
+      if (kNorm === nA) return POP_AREA[k];
+      if ((nA === 'logistica' || nA === 'centro de distribucion') && (kNorm === 'logistica' || kNorm === 'centro de distribucion')) {
+        return POP_AREA[k];
+      }
+    }
+  }
+  return 0;
+}
+
+function getPopAreaTotal(area) {
+  if (!POP_AREA_TOTAL || !area) return 0;
+  if (POP_AREA_TOTAL[area] != null) return POP_AREA_TOTAL[area];
+  var nA = normStr(area);
+  for (var k in POP_AREA_TOTAL) {
+    var kNorm = normStr(k);
+    if (kNorm === nA) return POP_AREA_TOTAL[k];
+    if ((nA === 'logistica' || nA === 'centro de distribucion') && (kNorm === 'logistica' || kNorm === 'centro de distribucion')) {
+      return POP_AREA_TOTAL[k];
+    }
+  }
+  return 0;
+}
 
 var sortCol = -1;
 var sortDir = 1;
 
 var COLS = [
   {key: 'empresa', label: 'Empresa', w: '110px'},
-  {key: 'area', label: 'Área', w: '130px'},
+  {key: 'area', label: 'Departamento', w: '130px'},
   {key: 'nombre', label: 'Colaborador', w: '160px'},
   {key: 'tipo', label: 'Tipo', w: '80px'},
   {key: 'formacion', label: 'Formación', w: '220px'},
@@ -759,33 +861,98 @@ function fetchSheet2() {
       dn = true;
       try {
         if (resp && resp.table && resp.table.rows) {
-          var rows = resp.table.rows;
-          var nPA = {}, nPT = {};
-          var hdr = rows[0].c;
-          var en = [];
-          for (var j = 2; j < hdr.length; j++) {
-            if (hdr[j] && hdr[j].v) en.push(String(hdr[j].v).trim());
+          var table = resp.table;
+          var cols = table.cols || [];
+          var rows = table.rows || [];
+          var companyCols = [];
+          var totalAreaColIdx = -1;
+
+          var hasColLabels = false;
+          for (var c = 2; c < cols.length; c++) {
+            if (cols[c] && cols[c].label && cols[c].label.trim().length > 0) {
+              hasColLabels = true;
+              break;
+            }
           }
-          for (var i = 1; i < rows.length; i++) {
-            var c = rows[i].c;
-            if (!c || !c[1] || !c[1].v) continue;
-            var area = String(c[1].v).trim();
-            if (area === 'Total') {
-              for (var j2 = 0; j2 < en.length; j2++) {
-                if (c[j2+2] && c[j2+2].v != null) nPT[en[j2]] = parseInt(c[j2+2].v) || 0;
-              }
-            } else {
-              for (var j3 = 0; j3 < en.length; j3++) {
-                if (c[j3+2] && c[j3+2].v != null) {
-                  var v = parseInt(c[j3+2].v);
-                  if (v > 0) nPA[en[j3] + '|' + area] = v;
-                }
+
+          var startRow = 0;
+          if (hasColLabels) {
+            for (var c2 = 2; c2 < cols.length; c2++) {
+              var lbl = String(cols[c2].label || '').trim();
+              if (!lbl) continue;
+              if (lbl.toLowerCase().indexOf('total') >= 0) {
+                totalAreaColIdx = c2;
+              } else {
+                companyCols.push({ colIdx: c2, name: lbl });
               }
             }
+          } else {
+            var hdrCells = rows[0].c || [];
+            for (var c3 = 2; c3 < hdrCells.length; c3++) {
+              var lbl2 = hdrCells[c3] && hdrCells[c3].v != null ? String(hdrCells[c3].v).trim() : '';
+              if (!lbl2) continue;
+              if (lbl2.toLowerCase().indexOf('total') >= 0) {
+                totalAreaColIdx = c3;
+              } else {
+                companyCols.push({ colIdx: c3, name: lbl2 });
+              }
+            }
+            startRow = 1;
+          }
+
+          var nPA = {}, nPT = {}, nPAT = {}, rAreas = [];
+          var globTotal = 0;
+
+          for (var i = startRow; i < rows.length; i++) {
+            var row = rows[i];
+            if (!row || !row.c) continue;
+            var cell = row.c;
+            var areaCell = cell[1];
+            if (!areaCell || areaCell.v == null) continue;
+            var areaName = String(areaCell.v).trim();
+            if (!areaName) continue;
+
+            if (areaName.toLowerCase().indexOf('total') >= 0) {
+              companyCols.forEach(function(comp) {
+                if (cell[comp.colIdx] && cell[comp.colIdx].v != null) {
+                  nPT[comp.name] = parseInt(cell[comp.colIdx].v) || 0;
+                }
+              });
+              if (totalAreaColIdx >= 0 && cell[totalAreaColIdx] && cell[totalAreaColIdx].v != null) {
+                globTotal = parseInt(cell[totalAreaColIdx].v) || 0;
+              }
+            } else {
+              rAreas.push(areaName);
+              var rowSum = 0;
+              companyCols.forEach(function(comp) {
+                if (cell[comp.colIdx] && cell[comp.colIdx].v != null) {
+                  var v = parseInt(cell[comp.colIdx].v) || 0;
+                  if (v > 0) {
+                    nPA[comp.name + '|' + areaName] = v;
+                    rowSum += v;
+                  }
+                }
+              });
+              var aTot = (totalAreaColIdx >= 0 && cell[totalAreaColIdx] && cell[totalAreaColIdx].v != null)
+                ? (parseInt(cell[totalAreaColIdx].v) || rowSum)
+                : rowSum;
+              nPAT[areaName] = aTot;
+            }
+          }
+
+          if (Object.keys(nPT).length > 0) {
+            POP_TOTAL = nPT;
+            if (!globTotal) {
+              var sTot = 0;
+              Object.keys(nPT).forEach(function(k) { sTot += nPT[k]; });
+              globTotal = sTot;
+            }
+            POP_GLOBAL = globTotal;
           }
           if (Object.keys(nPA).length > 0) {
             POP_AREA = nPA;
-            POP_TOTAL = nPT;
+            POP_AREA_TOTAL = nPAT;
+            if (rAreas.length > 0) RAW_AREAS = rAreas;
             resolve(true);
             return;
           }
@@ -925,16 +1092,16 @@ function renderMetrics(f) {
   var refContext = '';
 
   if (selEmp && selArea) {
-    refPop = (POP_AREA && POP_AREA[selEmp + '|' + selArea]) || 0;
+    refPop = getPopArea(selEmp, selArea);
     refContext = selEmp + ' · ' + selArea;
   } else if (selEmp && !selArea) {
     refPop = (POP_TOTAL && POP_TOTAL[selEmp]) || 0;
     refContext = selEmp;
   } else if (!selEmp && selArea) {
-    refPop = (POP_AREA_TOTAL && POP_AREA_TOTAL[selArea]) || 0;
+    refPop = getPopAreaTotal(selArea);
     refContext = selArea + ' (Todas)';
   } else {
-    refPop = POP_GLOBAL || 741;
+    refPop = POP_GLOBAL || 646;
     refContext = 'Plantilla total global';
   }
 
@@ -944,22 +1111,25 @@ function renderMetrics(f) {
   if (refPop > 0) {
     var pctVal = (colabs / refPop) * 100;
     var pctStr = (pctVal % 1 === 0 ? pctVal.toFixed(0) : pctVal.toFixed(1)) + '%';
-    colabVal = colabs + ' <span style="font-size:15px;font-weight:500;color:var(--g500)">/ ' + refPop + '</span> <span class="badge" style="font-size:11px;padding:2px 7px;vertical-align:middle;margin-left:4px;background:var(--g200);color:var(--g800)">' + pctStr + '</span>';
-    colabSub = pctStr + ' de cobertura<br><span style="color:var(--g500)">' + refContext + '</span>';
+    colabVal = colabs + ' <span class="m-denom">/ ' + refPop + '</span>';
+    colabSub = pctStr + ' de cobertura<br><span class="m-sub-ctx">' + refContext + '</span>';
   } else {
     colabVal = colabs;
     colabSub = Object.keys(empSet).length + ' empresas con registro';
   }
 
-  var subUF = '<div>Internas: ' + intCount + '</div><div>Externas: ' + extCount + '</div>';
+  var pctInt = ufCount > 0 ? ((intCount / ufCount) * 100).toFixed(0) + '%' : '0%';
+  var pctExt = ufCount > 0 ? ((extCount / ufCount) * 100).toFixed(0) + '%' : '0%';
+  var areasCount = Object.keys(areaSet).length;
+  var pctAreas = ((areasCount / 11) * 100).toFixed(0) + '%';
 
   document.getElementById('metrics').innerHTML =
     mc('Colaboradores Formados', colabVal, colabSub) +
-    mc('Formaciones', ufCount, subUF) +
-    mc('Horas de Formación', totalH.toLocaleString('es') + ' h', 'En formaciones') +
-    mc('Cursos Internos', intCount, intH.toLocaleString('es') + ' h') +
-    mc('Cursos Externos', extCount, extH.toLocaleString('es') + ' h') +
-    mc('Áreas con Formación', Object.keys(areaSet).length, 'Áreas activas');
+    mc('Formaciones', ufCount + ' <span class="m-denom">cursos</span>', intCount + ' internas &bull; ' + extCount + ' externas<br><span class="m-sub-ctx">Catálogo activo</span>') +
+    mc('Horas de Formación', totalH.toLocaleString('es') + ' <span class="m-denom">horas</span>', intH.toLocaleString('es') + ' h int. &bull; ' + extH.toLocaleString('es') + ' h ext.<br><span class="m-sub-ctx">Horas acumuladas</span>') +
+    mc('Cursos Internos', intCount + ' <span class="m-denom">/ ' + ufCount + '</span>', pctInt + ' del catálogo &bull; ' + intH.toLocaleString('es') + ' h<br><span class="m-sub-ctx">Formación interna</span>') +
+    mc('Cursos Externos', extCount + ' <span class="m-denom">/ ' + ufCount + '</span>', pctExt + ' del catálogo &bull; ' + extH.toLocaleString('es') + ' h<br><span class="m-sub-ctx">Formación externa</span>') +
+    mc('Departamentos con Formación', areasCount + ' <span class="m-denom">/ 11</span>', pctAreas + ' de cobertura<br><span class="m-sub-ctx">Departamentos activos</span>');
 }
 
 function mc(l, v, s) {
@@ -1009,7 +1179,7 @@ function renderStrips(f) {
 
   var sortedA = Object.entries(areaH).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 8);
   var maxAH = sortedA.length ? sortedA[0][1] : 1;
-  html += '<div class="strip"><div class="strip-title"><span>Horas por Área</span><span class="strip-toggle" id="toggleAreaBtn" data-action="toggleAllAreaDetails">Ver detalle</span></div>';
+  html += '<div class="strip"><div class="strip-title"><span>Horas por Departamento</span><span class="strip-toggle" id="toggleAreaBtn" data-action="toggleAllAreaDetails">Ver detalle</span></div>';
   sortedA.forEach(function(item, idx) {
     var area = item[0], hours = item[1];
     var colabsInArea = areaColabs[area] ? Object.values(areaColabs[area]) : [];
@@ -1181,7 +1351,11 @@ function doSort(i) {
 /* ========== POPULATION ========== */
 function renderPond() {
   var f = getFiltered();
-  var empList = Object.keys(POP_TOTAL).sort();
+  var STANDARD_EMPS = ['Febeca', 'Beval', 'Sillaca', 'Cofersa', 'Mundipartes', 'Prisma'];
+  var empList = STANDARD_EMPS.filter(function(e) { return POP_TOTAL[e] !== undefined; });
+  Object.keys(POP_TOTAL).forEach(function(e) {
+    if (empList.indexOf(e) < 0) empList.push(e);
+  });
   var h = '';
   var gC = 0, gP = 0;
   empList.forEach(function(e) {
@@ -1199,20 +1373,26 @@ function renderPond() {
   if (pondEl) pondEl.innerHTML = h;
 
   var allA = {};
-  Object.keys(POP_AREA).forEach(function(k) { allA[k.split('|')[1]] = 1; });
+  if (RAW_AREAS && RAW_AREAS.length > 0) {
+    RAW_AREAS.forEach(function(a) { allA[a] = 1; });
+  } else {
+    Object.keys(POP_AREA).forEach(function(k) { allA[k.split('|')[1]] = 1; });
+  }
   f.forEach(function(d) { if (d.area) allA[d.area] = 1; });
   var aL = Object.keys(allA).sort();
 
-  var t = '<table><thead><tr><th>Área</th>';
+  var t = '<table><thead><tr><th>Departamento</th>';
   empList.forEach(function(e) { t += '<th style="text-align:center">' + e + '</th>'; });
   t += '</tr></thead><tbody>';
 
   aL.forEach(function(area) {
     var row = '<tr><td><strong>' + area + '</strong></td>';
     empList.forEach(function(emp) {
-      var pop = POP_AREA[emp + '|' + area] || 0;
+      var pop = getPopArea(emp, area);
       var u = {};
-      f.forEach(function(d) { if (d.empresa === emp && d.area === area) u[d.nombre] = 1; });
+      f.forEach(function(d) {
+        if (d.empresa === emp && normStr(d.area) === normStr(area)) u[d.nombre] = 1;
+      });
       var cap = Object.keys(u).length;
       if (pop > 0) {
         var pct = ((cap / pop) * 100).toFixed(0);
@@ -1259,32 +1439,21 @@ function doRefresh() {
   if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
   var st = document.getElementById('statusMsg');
   if (st) { st.className = 'status-msg'; st.style.display = 'none'; }
-  try {
-    fetchData().then(function(ok) {
-      if (ok) {
-        try {
-          fetchSheet2().then(function() { renderPond(); }).catch(function() { renderPond(); });
-        } catch(e2) {
-          renderPond();
-        }
-        populateFilters();
-        apply();
-        stamp();
-      } else {
-        var tsEl = document.getElementById('ts');
-        if (tsEl) tsEl.textContent = 'Usando datos locales';
-      }
-      if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
-    }).catch(function() {
-      if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
-      var tsEl = document.getElementById('ts');
-      if (tsEl) tsEl.textContent = 'Error de conexión';
-    });
-  } catch(e) {
+  
+  Promise.all([fetchData(), fetchSheet2()]).then(function() {
+    populateFilters();
+    apply();
+    try { renderPond(); } catch(e) {}
+    stamp();
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+  }).catch(function() {
+    populateFilters();
+    apply();
+    try { renderPond(); } catch(e) {}
     if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
     var tsEl = document.getElementById('ts');
-    if (tsEl) tsEl.textContent = 'Error de conexión';
-  }
+    if (tsEl) tsEl.textContent = 'Actualizado con datos locales';
+  });
 }
 
 function stamp() {
@@ -1300,17 +1469,11 @@ try { renderPond(); } catch(e) { console.error('Pond render error:', e); }
 stamp();
 
 // Fetch background update if available
-fetchData().then(function(ok) {
-  if (ok) {
-    populateFilters();
-    apply();
-    try {
-      fetchSheet2().then(function() { renderPond(); }).catch(function() { renderPond(); });
-    } catch(e2) {
-      renderPond();
-    }
-    stamp();
-  }
+Promise.all([fetchData(), fetchSheet2()]).then(function() {
+  populateFilters();
+  apply();
+  try { renderPond(); } catch(e2) {}
+  stamp();
 }).catch(function(e) {
   console.log('Modo local activo:', e);
 });

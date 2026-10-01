@@ -162,39 +162,42 @@ body { background: var(--g50); font-family: var(--font); color: var(--black); fo
   position: relative;
   overflow: hidden;
 }
-.q-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.q-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
 .q-card.selected {
   outline: 2px solid var(--black);
   outline-offset: -1px;
 }
-.q-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 4px;
-}
-.q-card.q-green::before { background: var(--g800); }
-.q-card.q-blue::before { background: var(--g700); }
-.q-card.q-amber::before { background: var(--g600); }
-.q-card.q-gray::before { background: var(--g400); }
 
-.q-badge {
-  display: inline-block;
-  font-size: 10px;
+.q-title {
+  font-family: var(--font);
+  font-size: 12.5px;
+  letter-spacing: -0.01em;
+  color: var(--g600);
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.q-val {
+  font-family: var(--font);
+  font-size: 26px;
   font-weight: 700;
-  text-transform: none;
-  letter-spacing: 0.02em;
-  padding: 2px 7px;
-  border-radius: 999px;
-  margin-bottom: 6px;
+  color: var(--black, #0f172a);
+  line-height: 1.15;
+  margin-top: 3px;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 3px;
 }
-.q-card.q-green .q-badge { background: var(--g200); color: var(--g800); }
-.q-card.q-blue .q-badge { background: var(--g100); color: var(--g700); }
-.q-card.q-amber .q-badge { background: var(--g200); color: var(--g600); }
-.q-card.q-gray .q-badge { background: var(--g100); color: var(--g600); }
-
-.q-val { font-size: 28px; font-weight: 800; color: var(--g900); line-height: 1.1; margin-bottom: 2px; }
-.q-title { font-size: 13px; font-weight: 700; color: var(--g800); text-transform: none; }
-.q-desc { font-size: 11px; color: var(--g500); margin-top: 4px; line-height: 1.4; }
+.q-desc {
+  font-family: var(--font);
+  font-size: 11.5px;
+  color: var(--g600);
+  margin-top: 4px;
+  line-height: 1.35;
+}
 
 /* SUMMARY BAR (TOTALS) */
 .summary-bar {
@@ -207,12 +210,64 @@ body { background: var(--g50); font-family: var(--font); color: var(--black); fo
   background: var(--white);
   border: 1px solid var(--g200);
   border-radius: var(--r);
-  padding: 12px 16px;
+  padding: 14px 16px;
   box-shadow: var(--shadow);
+  transition: transform var(--fast), box-shadow var(--fast);
 }
-.sb-lbl { font-size: 11px; text-transform: none; letter-spacing: 0.02em; color: var(--g500); font-weight: 600; }
-.sb-val { font-size: 22px; font-weight: 800; color: var(--g900); margin-top: 2px; }
-.sb-sub { font-size: 11px; color: var(--g500); }
+.sb-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.sb-lbl {
+  font-family: var(--font);
+  font-size: 12.5px;
+  letter-spacing: -0.01em;
+  color: var(--g600);
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.sb-val {
+  font-family: var(--font);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--black, #0f172a);
+  line-height: 1.15;
+  margin-top: 3px;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.sb-sub {
+  font-family: var(--font);
+  font-size: 11.5px;
+  color: var(--g600);
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+/* Common denominator, badge and context */
+.m-denom {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--g500);
+  margin-left: 1px;
+}
+.badge-pct {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--g200);
+  color: var(--g800);
+  vertical-align: middle;
+  display: inline-block;
+  line-height: 1.2;
+  margin-left: 5px;
+}
+.m-sub-ctx {
+  color: var(--g500);
+}
 
 /* FILTERS */
 .filters {
@@ -409,7 +464,7 @@ tr:hover td { background: var(--g50); }
       <select id="fEmp"><option value="">Todas</option></select>
     </div>
     <div class="fg">
-      <label>Area</label>
+      <label>Departamento</label>
       <select id="fArea"><option value="">Todas</option></select>
     </div>
     <div class="fg">
@@ -485,6 +540,7 @@ var SHEET_ID = '1jbN1XJMuHLC0czCH3XX6Zo6RXDQc1QUVXMLRPTmL8Pw';
 var GID = '1023385026';
 var GID_FORMACIONES = '0'; // Hoja 1: detalle de capacitaciones
 var GID_INICIATIVAS = '433982814'; // Colaboradores en iniciativas
+var GID_COLABORADORES_COMPANIA = '496508915'; // Colaboradores por compania y area
 
 // Dataset de formaciones cargado desde Hoja 1
 var FORMACIONES_DATA = []; // Array de {empresa, tipo, formacion}
@@ -504,7 +560,7 @@ var sortDir = -1; // Default: sort descending by number of improvements
 var COLS = [
   { key: 'colaborador', label: 'Colaborador', w: '220px' },
   { key: 'empresa', label: 'Empresa', w: '120px' },
-  { key: 'area', label: 'Area', w: '140px' },
+  { key: 'area', label: 'Departamento', w: '140px' },
   { key: 'mejoras', label: 'Iniciativas', w: '180px' },
   { key: 'capacitaciones', label: 'Capacitaciones', w: '180px' },
   { key: 'estado', label: 'Participacion IA', w: '180px' }
@@ -768,19 +824,194 @@ function apply() {
   renderTable();
 }
 
-var TOTAL_EMPRESA = 741; // Total de colaboradores en la compania (todas las sedes)
+var TOTAL_EMPRESA = 646; // Total de colaboradores en la compania (todas las sedes)
 var TOTAL_REGISTRADOS_IA = 285; // Total registrados en IA (formacion o iniciativas)
 
 // Colaboradores por compania segun la pestaña "Colaboradores por compañia" (GID 496508915)
 var COLABORADORES_POR_COMPANIA = {
-  'Febeca': 261,
-  'Beval': 98,
-  'Sillaca': 72,
-  'Cofersa': 91,
+  'Febeca': 188,
+  'Beval': 81,
+  'Sillaca': 60,
+  'Cofersa': 102,
   'Mundipartes': 59,
-  'Prisma': 160
+  'Prisma': 156
 };
-var TOTAL_COLABORADORES_COMPANIAS = 741;
+var TOTAL_COLABORADORES_COMPANIAS = 646;
+
+var POP_AREA = {
+  "Febeca|Centro de Distribución": 24, "Febeca|Logística": 24, "Febeca|Logistica": 24,
+  "Febeca|Compras": 7, "Febeca|Ventas": 142, "Febeca|Servicio Técnico": 1,
+  "Febeca|Control": 8, "Febeca|Mercadeo": 1, "Febeca|Personal": 2, "Febeca|Sistemas": 3,
+  "Beval|Centro de Distribución": 7, "Beval|Logística": 7, "Beval|Logistica": 7,
+  "Beval|Compras": 8, "Beval|Ventas": 58, "Beval|Control": 3, "Beval|Personal": 2, "Beval|Sistemas": 3,
+  "Sillaca|Compras": 5, "Sillaca|Ventas": 52, "Sillaca|Control": 2, "Sillaca|Sistemas": 1,
+  "Cofersa|Compras": 9, "Cofersa|Ventas": 74, "Cofersa|Control": 12, "Cofersa|Mercadeo": 1, "Cofersa|Personal": 2, "Cofersa|Sistemas": 4,
+  "Mundipartes|Compras": 6, "Mundipartes|Ventas": 50, "Mundipartes|Control": 2, "Mundipartes|Sistemas": 1,
+  "Prisma|Compras": 13, "Prisma|Control": 66, "Prisma|Mercadeo": 10, "Prisma|Personal": 19,
+  "Prisma|Reposición": 16, "Prisma|Reposicion": 16, "Prisma|Servicios Operacionales": 21,
+  "Prisma|Sistemas": 8, "Prisma|Gerencia": 3
+};
+
+var POP_AREA_TOTAL = {
+  "Centro de Distribución": 31, "Logística": 31, "Logistica": 31,
+  "Compras": 48, "Ventas": 376, "Servicio Técnico": 1,
+  "Control": 93, "Mercadeo": 12, "Personal": 25,
+  "Reposición": 16, "Reposicion": 16,
+  "Servicios Operacionales": 21, "Sistemas": 20, "Gerencia": 3
+};
+
+function normStr(str) {
+  return String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function getPopArea(emp, area) {
+  if (!POP_AREA || !emp || !area) return 0;
+  var key = emp + '|' + area;
+  if (POP_AREA[key] != null) return POP_AREA[key];
+  var nA = normStr(area);
+  for (var k in POP_AREA) {
+    var parts = k.split('|');
+    if (parts[0] === emp) {
+      var kNorm = normStr(parts[1]);
+      if (kNorm === nA) return POP_AREA[k];
+      if ((nA === 'logistica' || nA === 'centro de distribucion') && (kNorm === 'logistica' || kNorm === 'centro de distribucion')) {
+        return POP_AREA[k];
+      }
+    }
+  }
+  return 0;
+}
+
+function getPopAreaTotal(area) {
+  if (!POP_AREA_TOTAL || !area) return 0;
+  if (POP_AREA_TOTAL[area] != null) return POP_AREA_TOTAL[area];
+  var nA = normStr(area);
+  for (var k in POP_AREA_TOTAL) {
+    var kNorm = normStr(k);
+    if (kNorm === nA) return POP_AREA_TOTAL[k];
+    if ((nA === 'logistica' || nA === 'centro de distribucion') && (kNorm === 'logistica' || kNorm === 'centro de distribucion')) {
+      return POP_AREA_TOTAL[k];
+    }
+  }
+  return 0;
+}
+
+function fetchPopData() {
+  return new Promise(function(resolve) {
+    var dn = false;
+    var cb = '__gviz_pop_uni_' + Date.now();
+    window[cb] = function(resp) {
+      if (dn) return;
+      dn = true;
+      try { delete window[cb]; } catch(e) {}
+      try {
+        if (resp && resp.table && resp.table.rows) {
+          var table = resp.table;
+          var cols = table.cols || [];
+          var rows = table.rows || [];
+          var companyCols = [];
+          var totalAreaColIdx = -1;
+
+          var hasColLabels = false;
+          for (var c = 2; c < cols.length; c++) {
+            if (cols[c] && cols[c].label && cols[c].label.trim().length > 0) {
+              hasColLabels = true;
+              break;
+            }
+          }
+
+          var startRow = 0;
+          if (hasColLabels) {
+            for (var c2 = 2; c2 < cols.length; c2++) {
+              var lbl = String(cols[c2].label || '').trim();
+              if (!lbl) continue;
+              if (lbl.toLowerCase().indexOf('total') >= 0) {
+                totalAreaColIdx = c2;
+              } else {
+                companyCols.push({ colIdx: c2, name: lbl });
+              }
+            }
+          } else {
+            var hdrCells = rows[0].c || [];
+            for (var c3 = 2; c3 < hdrCells.length; c3++) {
+              var lbl2 = hdrCells[c3] && hdrCells[c3].v != null ? String(hdrCells[c3].v).trim() : '';
+              if (!lbl2) continue;
+              if (lbl2.toLowerCase().indexOf('total') >= 0) {
+                totalAreaColIdx = c3;
+              } else {
+                companyCols.push({ colIdx: c3, name: lbl2 });
+              }
+            }
+            startRow = 1;
+          }
+
+          var nPA = {}, nPT = {}, nPAT = {};
+          var globTotal = 0;
+
+          for (var i = startRow; i < rows.length; i++) {
+            var row = rows[i];
+            if (!row || !row.c) continue;
+            var cell = row.c;
+            var areaCell = cell[1];
+            if (!areaCell || areaCell.v == null) continue;
+            var areaName = String(areaCell.v).trim();
+            if (!areaName) continue;
+
+            if (areaName.toLowerCase().indexOf('total') >= 0) {
+              companyCols.forEach(function(comp) {
+                if (cell[comp.colIdx] && cell[comp.colIdx].v != null) {
+                  nPT[comp.name] = parseInt(cell[comp.colIdx].v) || 0;
+                }
+              });
+              if (totalAreaColIdx >= 0 && cell[totalAreaColIdx] && cell[totalAreaColIdx].v != null) {
+                globTotal = parseInt(cell[totalAreaColIdx].v) || 0;
+              }
+            } else {
+              var rowSum = 0;
+              companyCols.forEach(function(comp) {
+                if (cell[comp.colIdx] && cell[comp.colIdx].v != null) {
+                  var v = parseInt(cell[comp.colIdx].v) || 0;
+                  if (v > 0) {
+                    nPA[comp.name + '|' + areaName] = v;
+                    rowSum += v;
+                  }
+                }
+              });
+              var aTot = (totalAreaColIdx >= 0 && cell[totalAreaColIdx] && cell[totalAreaColIdx].v != null)
+                ? (parseInt(cell[totalAreaColIdx].v) || rowSum)
+                : rowSum;
+              nPAT[areaName] = aTot;
+            }
+          }
+
+          if (Object.keys(nPT).length > 0) {
+            COLABORADORES_POR_COMPANIA = nPT;
+            if (!globTotal) {
+              var sTot = 0;
+              Object.keys(nPT).forEach(function(k) { sTot += nPT[k]; });
+              globTotal = sTot;
+            }
+            TOTAL_COLABORADORES_COMPANIAS = globTotal;
+            TOTAL_EMPRESA = globTotal;
+          }
+          if (Object.keys(nPA).length > 0) {
+            POP_AREA = nPA;
+            POP_AREA_TOTAL = nPAT;
+          }
+          apply();
+          resolve(true);
+          return;
+        }
+      } catch(e) {}
+      resolve(false);
+    };
+    var s = document.createElement('script');
+    s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=responseHandler:' + cb + '&tq=select%20*&gid=' + GID_COLABORADORES_COMPANIA;
+    s.onerror = function() { if (!dn) { dn = true; resolve(false); } };
+    document.head.appendChild(s);
+    setTimeout(function() { if (!dn) { dn = true; resolve(false); } }, 8000);
+  });
+}
 
 // Metas de iniciativas por empresa
 var META_INICIATIVAS = {
@@ -793,6 +1024,7 @@ var META_INICIATIVAS_TOTAL = 300;
 function renderQuadrants() {
   var cAmbos = 0, cMejora = 0, cCap = 0, cBase = 0;
   var empVal = document.getElementById('fEmp').value;
+  var areaVal = document.getElementById('fArea').value;
 
   // Total registrados en IA segun empresa (o todos si no hay filtro)
   var totalRegistradosIA = 0;
@@ -802,8 +1034,17 @@ function renderQuadrants() {
   });
   if (!totalRegistradosIA) totalRegistradosIA = TOTAL_REGISTRADOS_IA;
 
-  // Total empresa (censo real por compania o total global de 741)
-  var totalEmpresa = empVal ? (COLABORADORES_POR_COMPANIA[empVal] || TOTAL_EMPRESA) : TOTAL_EMPRESA;
+  // Total empresa (censo real por compania o area o total global)
+  var totalEmpresa;
+  if (empVal && areaVal) {
+    totalEmpresa = getPopArea(empVal, areaVal) || 1;
+  } else if (empVal && !areaVal) {
+    totalEmpresa = COLABORADORES_POR_COMPANIA[empVal] || TOTAL_EMPRESA;
+  } else if (!empVal && areaVal) {
+    totalEmpresa = getPopAreaTotal(areaVal) || 1;
+  } else {
+    totalEmpresa = TOTAL_EMPRESA;
+  }
   filteredData.forEach(function(d) {
     var st = getColabState(d);
     if (st === 'ambos') cAmbos++;
@@ -829,44 +1070,28 @@ function renderQuadrants() {
   var pctEnIAvsEmp = ((totalConAlgo / totalEmpresa) * 100).toFixed(1);
 
   var html = '' +
-    '<div class="q-card q-green ' + (curState === 'ambos' ? 'selected' : '') + '" onclick="filterByState(\'ambos\')">' +
-      '<span class="q-badge">Capacitaciones e iniciativas</span>' +
-      '<div class="q-val">' + cAmbos + '</div>' +
-      '<div class="q-title">Colaboradores con capacitaciones e iniciativas</div>' +
-      '<div class="q-desc">' +
-        '<strong>' + pctAmbosIA + '%</strong> de registrados en IA<br>' +
-        '<strong>' + pctAmbosEmp + '%</strong> del total de colaboradores' +
-      '</div>' +
+    '<div class="q-card ' + (curState === 'ambos' ? 'selected' : '') + '" onclick="filterByState(\'ambos\')">' +
+      '<div class="q-title">Capacitaciones e Iniciativas</div>' +
+      '<div class="q-val">' + cAmbos + ' <span class="m-denom">/ ' + totalEmpresa + '</span></div>' +
+      '<div class="q-desc">' + pctAmbosEmp + '% de cobertura global<br><span class="m-sub-ctx">' + pctAmbosIA + '% de registrados en IA</span></div>' +
     '</div>' +
 
-    '<div class="q-card q-blue ' + (curState === 'solo_mejora' ? 'selected' : '') + '" onclick="filterByState(\'solo_mejora\')">' +
-      '<span class="q-badge">Solo iniciativas</span>' +
-      '<div class="q-val">' + cMejora + '</div>' +
-      '<div class="q-title">Colaboradores con participacion en iniciativas</div>' +
-      '<div class="q-desc">' +
-        '<strong>' + pctMejoraIA + '%</strong> de registrados en IA<br>' +
-        '<strong>' + pctMejoraEmp + '%</strong> del total de colaboradores' +
-      '</div>' +
+    '<div class="q-card ' + (curState === 'solo_mejora' ? 'selected' : '') + '" onclick="filterByState(\'solo_mejora\')">' +
+      '<div class="q-title">Solo Iniciativas</div>' +
+      '<div class="q-val">' + cMejora + ' <span class="m-denom">/ ' + totalEmpresa + '</span></div>' +
+      '<div class="q-desc">' + pctMejoraEmp + '% de cobertura global<br><span class="m-sub-ctx">' + pctMejoraIA + '% de registrados en IA</span></div>' +
     '</div>' +
 
-    '<div class="q-card q-amber ' + (curState === 'solo_cap' ? 'selected' : '') + '" onclick="filterByState(\'solo_cap\')">' +
-      '<span class="q-badge">Solo formacion</span>' +
-      '<div class="q-val">' + cCap + '</div>' +
-      '<div class="q-title">Colaboradores con formacion</div>' +
-      '<div class="q-desc">' +
-        '<strong>' + pctCapIA + '%</strong> de registrados en IA<br>' +
-        '<strong>' + pctCapEmp + '%</strong> del total de colaboradores' +
-      '</div>' +
+    '<div class="q-card ' + (curState === 'solo_cap' ? 'selected' : '') + '" onclick="filterByState(\'solo_cap\')">' +
+      '<div class="q-title">Solo Formación</div>' +
+      '<div class="q-val">' + cCap + ' <span class="m-denom">/ ' + totalEmpresa + '</span></div>' +
+      '<div class="q-desc">' + pctCapEmp + '% de cobertura global<br><span class="m-sub-ctx">' + pctCapIA + '% de registrados en IA</span></div>' +
     '</div>' +
 
-    '<div class="q-card q-gray">' +
-      '<span class="q-badge">% en IA</span>' +
-      '<div class="q-val">' + pctEnIAvsEmp + '%</div>' +
-      '<div class="q-title">% de colaboradores en IA</div>' +
-      '<div class="q-desc">' +
-        '<strong>' + pctEnIAvsIA + '%</strong> de registrados en IA<br>' +
-        '<strong>' + pctEnIAvsEmp + '%</strong> del total de colaboradores' +
-      '</div>' +
+    '<div class="q-card">' +
+      '<div class="q-title">Colaboradores en IA</div>' +
+      '<div class="q-val">' + totalConAlgo + ' <span class="m-denom">/ ' + totalEmpresa + '</span></div>' +
+      '<div class="q-desc">' + pctEnIAvsEmp + '% de la plantilla global<br><span class="m-sub-ctx">' + pctEnIAvsIA + '% de registrados en IA</span></div>' +
     '</div>';
 
   document.getElementById('quadrantsGrid').innerHTML = html;
@@ -881,14 +1106,29 @@ function filterByState(state) {
 /* ========== RENDER SUMMARY BAR ========== */
 function renderSummaryBar() {
   var empVal = document.getElementById('fEmp').value;
+  var areaVal = document.getElementById('fArea').value;
   var conIA = 0;
   var conIniciativas = 0;
   var conFormacion = 0;
   var iniciativasUnicas = new Set();
   var capUnicas = new Set();
 
-  // Total empresa base para %: censo real por compania o total global de 741
-  var totalEmpresaBase = empVal ? (COLABORADORES_POR_COMPANIA[empVal] || TOTAL_EMPRESA) : TOTAL_EMPRESA;
+  // Total empresa base para %: censo real por compania o area o total global
+  var totalEmpresaBase;
+  var refContext;
+  if (empVal && areaVal) {
+    totalEmpresaBase = getPopArea(empVal, areaVal) || 1;
+    refContext = empVal + ' · ' + areaVal;
+  } else if (empVal && !areaVal) {
+    totalEmpresaBase = COLABORADORES_POR_COMPANIA[empVal] || TOTAL_EMPRESA;
+    refContext = empVal;
+  } else if (!empVal && areaVal) {
+    totalEmpresaBase = getPopAreaTotal(areaVal) || 1;
+    refContext = areaVal + ' (Todas)';
+  } else {
+    totalEmpresaBase = TOTAL_EMPRESA;
+    refContext = 'Plantilla total global';
+  }
 
   // Meta de iniciativas segun empresa
   var metaIniciativas = empVal ? (META_INICIATIVAS[empVal] || 50) : META_INICIATIVAS_TOTAL;
@@ -912,10 +1152,11 @@ function renderSummaryBar() {
   });
 
   var iniUniqTotal = iniUniqSet.size;
-  var pctMetaIniciativas = metaIniciativas > 0 ? ((iniUniqTotal / metaIniciativas) * 100).toFixed(1) : '0.0';
-  if (parseFloat(pctMetaIniciativas) > 100) pctMetaIniciativas = '100.0';
+  var pctMetaInitsNum = metaIniciativas > 0 ? (iniUniqTotal / metaIniciativas) * 100 : 0;
+  var pctMetaIniciativas = (pctMetaInitsNum % 1 === 0 ? pctMetaInitsNum.toFixed(0) : pctMetaInitsNum.toFixed(1)) + '%';
 
-  var pctAvanzando = ((conIA / totalEmpresaBase) * 100).toFixed(1);
+  var pctAvanzandoNum = totalEmpresaBase > 0 ? (conIA / totalEmpresaBase) * 100 : 0;
+  var pctAvanzando = (pctAvanzandoNum % 1 === 0 ? pctAvanzandoNum.toFixed(0) : pctAvanzandoNum.toFixed(1)) + '%';
 
   // ---- Capacitaciones  desde FORMACIONES_DATA (Hoja 1) ----
   var capUniqTotalSet = new Set();
@@ -939,31 +1180,31 @@ function renderSummaryBar() {
   var capUniqInt   = capUniqIntSet.size;
   var capUniqExt   = capUniqExtSet.size;
 
-  // Si aun no hay datos de formaciones cargados, mostrar placeholder
-  var capLine = capUniqTotal > 0
-    ? capUniqTotal
-    : '...';
-  var capSubLine = capUniqTotal > 0
-    ? '<span style="display:block;font-size:11px;color:var(--g500);margin-top:2px">' +
-        capUniqInt + ' internas &nbsp;|&nbsp; ' + capUniqExt + ' externas' +
-      '</span>'
-    : '<span style="font-size:11px;color:var(--g500)">Cargando...</span>';
+  var capVal = '';
+  var capSub = '';
+  if (capUniqTotal > 0) {
+    capVal = capUniqTotal + ' <span class="m-denom">cursos</span>';
+    capSub = capUniqInt + ' internas &bull; ' + capUniqExt + ' externas<br><span class="m-sub-ctx">Catálogo activo</span>';
+  } else {
+    capVal = '...';
+    capSub = '<span class="m-sub-ctx">Cargando formaciones...</span>';
+  }
 
   var html = '' +
     '<div class="sb-item">' +
       '<div class="sb-lbl">Colaboradores Avanzando en IA</div>' +
-      '<div class="sb-val">' + conIA + ' <span style="font-size:14px; font-weight:600; color:var(--g500)">(' + pctAvanzando + '%)</span></div>' +
-      '<div class="sb-sub">' + conIA + ' de ' + totalEmpresaBase + ' colaboradores en total (' + pctAvanzando + '%)</div>' +
+      '<div class="sb-val">' + conIA + ' <span class="m-denom">/ ' + totalEmpresaBase + '</span></div>' +
+      '<div class="sb-sub">' + pctAvanzando + ' de cobertura<br><span class="m-sub-ctx">' + refContext + '</span></div>' +
     '</div>' +
     '<div class="sb-item">' +
-      '<div class="sb-lbl">Iniciativas creadas</div>' +
-      '<div class="sb-val" style="color:var(--primary)">' + iniUniqTotal + ' <span style="font-size:14px; font-weight:600; color:var(--g500)">/ ' + metaIniciativas + '</span></div>' +
-      '<div class="sb-sub">Meta: ' + metaIniciativas + ' iniciativas &mdash; ' + pctMetaIniciativas + '% cumplido</div>' +
+      '<div class="sb-lbl">Iniciativas Creadas</div>' +
+      '<div class="sb-val">' + iniUniqTotal + ' <span class="m-denom">/ ' + metaIniciativas + '</span></div>' +
+      '<div class="sb-sub">' + pctMetaIniciativas + ' de cumplimiento de meta<br><span class="m-sub-ctx">Meta ' + (empVal ? 'por empresa (' + metaIniciativas + ')' : 'global (' + metaIniciativas + ')') + '</span></div>' +
     '</div>' +
     '<div class="sb-item">' +
-      '<div class="sb-lbl">Total capacitaciones registradas</div>' +
-      '<div class="sb-val" style="color:var(--amber)">' + capLine + '</div>' +
-      capSubLine +
+      '<div class="sb-lbl">Capacitaciones Registradas</div>' +
+      '<div class="sb-val">' + capVal + '</div>' +
+      '<div class="sb-sub">' + capSub + '</div>' +
     '</div>';
 
   document.getElementById('summaryBar').innerHTML = html;
@@ -1163,7 +1404,7 @@ function escapeHtml(text) {
 
 /* ========== EXPORT CSV ========== */
 document.getElementById('exportBtn').onclick = function() {
-  var csv = '\uFEFF"Colaborador","Empresa","Area","Iniciativas","Capacitaciones","Participacion IA"\r\n';
+  var csv = '\uFEFF"Colaborador","Empresa","Departamento","Iniciativas","Capacitaciones","Participacion IA"\r\n';
   filteredData.forEach(function(d) {
     var st = getColabState(d);
     var stLabel = st === 'ambos' ? 'Formacion, Iniciativas o ambas' : st === 'solo_mejora' ? 'Solo Iniciativas' : st === 'solo_cap' ? 'Solo Formacion' : 'Sin Registro';
@@ -1199,6 +1440,7 @@ document.getElementById('refreshBtn').onclick = function() {
   fetchData();
   fetchFormaciones();
   fetchIniciativas();
+  fetchPopData();
 };
 
 /* ========== INITIALIZATION ========== */
@@ -1212,6 +1454,8 @@ window.onload = function() {
   fetchFormaciones();
   // Fetch initiatives detail from "Colaboradores en iniciativas"
   fetchIniciativas();
+  // Fetch census data from "Colaboradores por compañia"
+  fetchPopData();
 };
 </script>
 </body>
