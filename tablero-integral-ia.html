@@ -1,179 +1,1078 @@
-﻿<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tablero Integral de Inteligencia Artificial</title>
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Adopción de IA Mayoreo</title>
 <style>
-:root {
-  --white: #fff;
-  --g50: #f9fafb;
-  --g100: #eee;
-  --g200: #e2e2e2;
-  --g300: #c6c6c6;
-  --g400: #a8a8a8;
-  --g500: #8a8a8a;
-  --g600: #666;
-  --g700: #4a4a4a;
-  --g800: #2b2b2b;
-  --g900: #111;
-  --black: #000;
-  --font: Arial, sans-serif;
-  --r: 8px;
-  --shadow: 0 1px 3px rgba(0,0,0,.08);
-  --fast: 150ms ease;
+/* Layout: encabezado con filtro global + pestañas; cada vista responde una pregunta de gestión, del indicador a su detalle. */
+:root{
+  --azul:#009EE3; --azul-oscuro:#0079AC; --azul-tenue:#EAF7FD;
+  --gris:#707173; --gris-claro:#C6C6C5; --linea:#E2E4E6;
+  --rojo:#C0392B; --rojo-tenue:#FDEEEC; --verde:#1E8A4C; --ambar:#B8860B; --ambar-tenue:#FDF6E3;
+  --tinta:#1A1C1E; --fondo:#F7F8F9; --panel:#fff; --calc:#FAFBFC; --fila:#F0F1F2;
+  --s-ambos:#00527A; --s-ini:#009EE3; --s-form:#9AD8F4; --s-sin:#E2E4E6;
+  --sobre-azul:#fff;
 }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --azul:#2AB3F0; --azul-oscuro:#7FD0F7; --azul-tenue:#12303F;
+  --gris:#A3A7AB; --gris-claro:#4A4F54; --linea:#2E3236;
+  --rojo:#F08A7E; --rojo-tenue:#3A1F1C; --verde:#5CC98A; --ambar:#E0B040; --ambar-tenue:#33290F;
+  --tinta:#E8EAEC; --fondo:#121416; --panel:#1B1E21; --calc:#202428; --fila:#272B2F;
+  --s-ambos:#C4ECFD; --s-ini:#2AB3F0; --s-form:#1F6485; --s-sin:#2E3236;
+  --sobre-azul:#06202C; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --azul:#2AB3F0; --azul-oscuro:#7FD0F7; --azul-tenue:#12303F;
+  --gris:#A3A7AB; --gris-claro:#4A4F54; --linea:#2E3236;
+  --rojo:#F08A7E; --rojo-tenue:#3A1F1C; --verde:#5CC98A; --ambar:#E0B040; --ambar-tenue:#33290F;
+  --tinta:#E8EAEC; --fondo:#121416; --panel:#1B1E21; --calc:#202428; --fila:#272B2F;
+  --s-ambos:#C4ECFD; --s-ini:#2AB3F0; --s-form:#1F6485; --s-sin:#2E3236;
+  --sobre-azul:#06202C; color-scheme:dark }
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--tinta);background:var(--fondo);font-size:14px;line-height:1.45}
+.num{font-variant-numeric:tabular-nums}
+header{background:var(--panel);border-bottom:1px solid var(--linea);padding:18px 28px 0}
+.marca{display:flex;align-items:center;gap:14px}
+.logo{width:40px;height:34px;object-fit:contain;background:#fff;border-radius:3px;padding:2px}
+h1{font-size:20px;margin:0;text-wrap:balance}
+.sub{font-size:13px;color:var(--gris)}
+.barra{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-end;margin-top:14px}
+.campo label{display:block;font-size:12px;color:var(--gris);margin-bottom:3px}
+.campo select,.campo input{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--gris-claro);border-radius:3px;background:var(--panel);color:var(--tinta);min-width:150px;max-width:100%}
+.campo select:focus,.campo input:focus,button:focus-visible{outline:2px solid var(--azul);outline-offset:1px}
+.acciones-header{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn-primario{font:inherit;font-size:13px;background:var(--azul);color:var(--sobre-azul);border:1px solid var(--azul);border-radius:3px;padding:6px 12px;cursor:pointer;font-weight:bold;transition:all 150ms ease}
+.btn-primario:hover{background:var(--azul-oscuro);border-color:var(--azul-oscuro)}
+.btn-outline{font:inherit;font-size:12.5px;background:var(--panel);color:var(--tinta);border:1px solid var(--gris-claro);border-radius:3px;padding:5px 11px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:5px;transition:all 120ms ease}
+.btn-outline:hover{border-color:var(--azul);color:var(--azul-oscuro);background:var(--azul-tenue)}
+.btn-limpiar{font:inherit;font-size:12px;background:none;border:none;color:var(--azul-oscuro);cursor:pointer;padding:6px 8px;text-decoration:underline}
+.btn-limpiar:hover{color:var(--rojo)}
+@keyframes spin{100%{transform:rotate(360deg)}}
+.spinning{animation:spin .75s linear infinite}
+.pestanas{display:flex;gap:6px;margin-top:14px;overflow-x:auto}
+.pestanas button{font:inherit;font-size:13px;background:none;border:0;border-bottom:3px solid transparent;color:var(--gris);padding:8px 10px;cursor:pointer;white-space:nowrap;transition:all 120ms ease}
+.pestanas button.on{color:var(--azul-oscuro);border-bottom-color:var(--azul);font-weight:bold}
+main{padding:22px 28px 60px;display:grid;gap:22px;max-width:1280px}
+.g2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:22px}
+.g2e{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.panel{background:var(--panel);border:1px solid var(--linea);border-radius:4px;min-width:0}
+.panel h2{font-size:14px;margin:0;padding:10px 16px;border-bottom:1px solid var(--linea)}
+.panel h2 small{font-weight:normal;color:var(--gris);font-size:12px;margin-left:6px}
+.cuerpo{padding:14px 16px}
+.preg{font-size:12px;color:var(--gris);margin:0 0 12px;max-width:75ch}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0;border-top:1px solid var(--linea)}
+.kpis>div{padding:12px 16px;border-right:1px solid var(--linea)}
+.kpis>div:last-child{border-right:0}
+.kpis .t{font-size:12px;color:var(--gris)}
+.kpis .v{font-size:24px;font-weight:bold;letter-spacing:-.5px}
+.kpis .v small{font-size:13px;color:var(--gris);font-weight:normal;letter-spacing:0}
+.kpis .p{font-size:11.5px;color:var(--gris)}
+.heroe{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center;padding:18px 16px}
+.cifra{font-size:56px;font-weight:bold;letter-spacing:-2px;line-height:1}
+.pie{font-size:12px;color:var(--gris);margin-top:4px}
+.comp{display:flex;height:30px;gap:2px;border-radius:3px;overflow:hidden}
+.comp span,.bar span{display:block;height:100%;min-width:0}
+.sA{background:var(--s-ambos)}.sI{background:var(--s-ini)}.sF{background:var(--s-form)}.sN{background:var(--s-sin)}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;margin-top:10px}
+.leyenda i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.leyenda b{font-variant-numeric:tabular-nums}
+.emp{display:grid;grid-template-columns:120px minmax(0,1fr) 54px 74px;gap:12px;align-items:center;padding:7px 6px;border-bottom:1px solid var(--fila);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;width:100%;font:inherit;color:inherit;text-align:left}
+.emp:hover,.emp.sel{background:var(--azul-tenue)}
+.emp .nom b{display:block}
+.emp .nom span{font-size:11px;color:var(--gris)}
+.bar{display:flex;height:14px;gap:2px;border-radius:3px;overflow:hidden}
+.emp .pct{font-weight:bold;text-align:right}
+.delta{font-size:11.5px;text-align:right}
+.mejora{color:var(--verde)}.empeora{color:var(--rojo)}
+.chip{display:inline-block;font-size:10.5px;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.chip.A{background:var(--s-ambos);color:var(--panel)}
+.chip.I{background:var(--s-ini);color:var(--sobre-azul)}
+.chip.F{background:var(--s-form);color:var(--tinta)}
+.badge-per{font-size:11px;padding:2px 6px;border-radius:3px;background:var(--calc);border:1px solid var(--linea);color:var(--gris);white-space:nowrap}
+ul.lect{margin:0;padding-left:18px;display:grid;gap:9px;font-size:13px}
+ul.lect b{font-variant-numeric:tabular-nums}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:10.5px;color:var(--gris);text-align:right;padding:6px 6px;border-bottom:1px solid var(--linea);letter-spacing:.3px;text-transform:uppercase;white-space:nowrap}
+tbody td{padding:6px 6px;border-bottom:1px solid var(--fila);text-align:right;font-variant-numeric:tabular-nums;vertical-align:top}
+th.izq,td.izq{text-align:left}
+tr.calc td{background:var(--calc);font-weight:bold}
+tr.fila{cursor:pointer}
+tr.fila:hover td{background:var(--azul-tenue)}
+tr.det td{background:var(--calc);text-align:left;font-size:12.5px;padding:12px 16px}
+tr.det h4{margin:0 0 6px;font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.3px}
+tr.det ul{margin:0 0 10px;padding-left:18px}
+tr.det ul:last-child{margin-bottom:0}
+.mini{display:inline-block;width:70px;height:6px;background:var(--linea);border-radius:3px;vertical-align:middle;margin-left:8px;overflow:hidden}
+.mini span{display:block;height:100%;background:var(--azul)}
+.calor td{text-align:center;padding:0;border:2px solid var(--panel)}
+.calor td.izq{text-align:left;padding:6px}
+.calor td div{padding:7px 4px}
+svg text{font-family:Arial,Helvetica,sans-serif;fill:var(--tinta)}
+svg .eje{fill:var(--gris);font-size:11px}
+.lista{display:grid;gap:0}
+.lista>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:7px 2px;border-bottom:1px solid var(--fila);font-size:13px}
+.lista>div span{color:var(--gris);font-size:11.5px;display:block}
+.lista>div b{font-variant-numeric:tabular-nums;white-space:nowrap}
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Estilos de Strips de Distribución */
+.strip-item{display:grid;grid-template-columns:130px minmax(0,1fr) 56px 64px;gap:10px;align-items:center;padding:7px 8px;border-bottom:1px solid var(--fila);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;width:100%;font:inherit;color:inherit;text-align:left;border-radius:3px;transition:background 120ms ease}
+.strip-item:hover,.strip-item.sel{background:var(--azul-tenue)}
+.strip-item .strip-name{font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.strip-item .strip-bar-wrap{display:flex;height:10px;background:var(--linea);border-radius:3px;overflow:hidden}
+.strip-item .strip-bar-fill{background:var(--azul);height:100%;border-radius:3px;transition:width 200ms ease}
+.strip-item .strip-count{font-weight:bold;text-align:right;font-size:12px}
+.strip-item .strip-pct{color:var(--gris);text-align:right;font-size:11.5px}
 
-html, body {
-  width: 100%;
-  height: 100%;
-  background: var(--g50);
-  font-family: var(--font);
-  color: var(--black);
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+.aviso{color:var(--ambar);font-size:12px}
+.nota{background:var(--ambar-tenue);border:1px solid var(--linea);border-radius:4px;padding:10px 14px;font-size:12.5px}
+#tip{position:fixed;pointer-events:none;background:var(--tinta);color:var(--panel);font-size:12px;padding:6px 9px;border-radius:3px;max-width:280px;z-index:99;white-space:pre-line;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+dl{margin:0;display:grid;gap:10px}
+dt{font-weight:bold}
+dd{margin:0;color:var(--gris);max-width:80ch}
+@media (max-width:980px){.g2,.g2e{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){
+  header{padding:14px 16px 0} main{padding:16px 16px 50px}
+  .heroe{grid-template-columns:minmax(0,1fr);gap:14px}
+  .emp{grid-template-columns:86px minmax(0,1fr) 48px}
+  .emp .delta{display:none}
+  .strip-item{grid-template-columns:100px minmax(0,1fr) 48px;gap:8px}
+  .strip-item .strip-pct{display:none}
+  .kpis>div{border-right:0;border-bottom:1px solid var(--linea)}
 }
-
-/* Encabezado con contenedor que coincide con el ancho de los mÃ³dulos */
-.suite-header-bar {
-  width: 100%;
-  background: var(--g50);
-  border-bottom: 1px solid var(--g200);
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-}
-
-.suite-header-inner {
-  max-width: 1260px;
-  width: 100%;
-  padding: 16px 24px 12px 24px;
-}
-
-/* NAV SUITE EXACTO */
-.nav-suite {
-  display: flex;
-  gap: 8px;
-  padding: 4px;
-  background: var(--g200);
-  border-radius: calc(var(--r) + 2px);
-  width: fit-content;
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-.nav-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: var(--r);
-  border: none;
-  background: transparent;
-  font-family: var(--font);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--g600);
-  cursor: pointer;
-  transition: all var(--fast);
-  white-space: nowrap;
-}
-
-.nav-tab:hover {
-  color: var(--g900);
-  background: rgba(255, 255, 255, 0.6);
-}
-
-.nav-tab.active {
-  background: var(--white);
-  color: var(--g900);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.nav-tab svg {
-  flex-shrink: 0;
-}
-
-/* Ãrea de contenido para cada vista */
-.suite-main {
-  flex: 1;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  background: var(--g50);
-}
-
-.view-frame {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: none;
-  background: var(--g50);
-}
-
-.view-frame.active {
-  display: block;
-}
+@media print{.acciones-header,.barra,.pestanas{display:none}.panel{border:0}}
 </style>
-</head>
-<body>
+</head><body>
 
-  <!-- Barra de navegaciÃ³n exacta original -->
-  <header class="suite-header-bar">
-    <div class="suite-header-inner">
-      <nav class="nav-suite">
-        <button type="button" class="nav-tab" id="btn-capacitacion" onclick="switchTab('capacitacion')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-          Formaciones IA
-        </button>
-
-        <button type="button" class="nav-tab" id="btn-iniciativas" onclick="switchTab('iniciativas')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-          Colaboradores en Iniciativas
-        </button>
-
-        <button type="button" class="nav-tab active" id="btn-unificados" onclick="switchTab('unificados')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Indicador Unificado (IA)
-        </button>
-      </nav>
+<header>
+  <div class="marca">
+    <img class="logo" src="data:image/png;base64,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" alt="Mayoreo">
+    <div>
+      <h1>Adopción de IA en Grupo Mayoreo</h1>
+      <div class="sub">Colaboradores en IA (formación + iniciativas) sobre plantilla total · corte 2 oct 2026 · plantilla 646</div>
     </div>
-  </header>
+  </div>
+  <div class="barra">
+    <div class="campo"><label for="fEmp">Empresa</label><select id="fEmp"></select></div>
+    <div class="acciones-header">
+      <span id="msg" class="sub" role="status"></span>
+      <button type="button" id="btnRefresh" class="btn-outline" title="Refrescar vista y datos">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="refreshIcon"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        Refrescar
+      </button>
+      <button id="dl" class="btn-primario" hidden>Descargar datos de esta vista</button>
+    </div>
+  </div>
+  <div class="pestanas" role="tablist" id="tabs"></div>
+</header>
+<main id="main"></main>
+<div id="tip" hidden></div>
 
-  <!-- Vistas 100% aisladas con src directo garantizado para navegador local -->
-  <main class="suite-main">
-    <iframe id="frame-unificados" class="view-frame active" src="indicadores-unificados-ia.html" title="Indicador Unificado (IA)"></iframe>
-    <iframe id="frame-capacitacion" class="view-frame" src="indicadores-capacitacion-ia.html" title="Formaciones IA"></iframe>
-    <iframe id="frame-iniciativas" class="view-frame" src="indicadores-iniciativas-ia.html" title="Colaboradores en Iniciativas"></iframe>
-  </main>
+<script>
+let HC={Beval:81,Cofersa:102,Febeca:188,Mundipartes:59,Prisma:156,Sillaca:60};
+let D=[{"n":"Alejandra Lopez","e":"Beval","d":"Compras","i":0,"c":2,"h":3,"hi":0,"ini":[],"per":"","cur":[["Prompts ChatGPT","Externo","Youtube",1],["Claude","Externo","Youtube",2]],"pf":"F"},{"n":"Edgar Martinez","e":"Beval","d":"Compras","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Fabiola Bonifacio","e":"Beval","d":"Compras","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Jade Varela","e":"Beval","d":"Compras","i":0,"c":2,"h":3,"hi":0,"ini":[],"per":"","cur":[["Prompts ChatGPT","Externo","Youtube",1],["Claude","Externo","Youtube",2]],"pf":"F"},{"n":"Natasha Briceño","e":"Beval","d":"Compras","i":1,"c":5,"h":11,"hi":0,"ini":["Estandarización de Descripciones Comerciales"],"per":"","cur":[["Specialized AI Agents with Amazon Quick","Externo","Youtube",1],["Specialized AI Agents with Amazon Quick","Externo","Youtube",1],["Curso Google Apps Script: Acceso e interfaz","Externo","Youtube",6],["Prompts ChatGPT","Externo","Youtube",1],["Claude","Externo","Youtube",2]],"pf":"A"},{"n":"Ramon Manzol","e":"Beval","d":"Compras","i":0,"c":2,"h":3,"hi":0,"ini":[],"per":"","cur":[["Prompts ChatGPT","Externo","Youtube",1],["Claude","Externo","Youtube",2]],"pf":"F"},{"n":"José Seijas","e":"Beval","d":"Gerencia","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Brayan Veliz","e":"Beval","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Charles Hernández","e":"Beval","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Christian Flores","e":"Beval","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Edgar Graterol","e":"Beval","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Frank Pérez","e":"Beval","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Franyexon Mosquera","e":"Beval","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Jesús Gil","e":"Beval","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Juan Cardenas","e":"Beval","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Juan Jiménez","e":"Beval","d":"Ventas","i":0,"c":2,"h":77,"hi":77,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46],["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Kenny Hernández","e":"Beval","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Oneida Sanchez","e":"Beval","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Orianny Villanueva","e":"Beval","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Pablo Montaño","e":"Beval","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Renny Noguera","e":"Beval","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Willmer Márquez","e":"Beval","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Alejandro Barrios","e":"Cofersa","d":"Compras","i":1,"c":0,"h":0,"hi":0,"ini":["App de negociaciones especiales"],"per":"","cur":[],"pf":"I"},{"n":"Alejandro Jimenez","e":"Cofersa","d":"Compras","i":1,"c":1,"h":40,"hi":40,"ini":["Automatización de envío de dinámias"],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"A"},{"n":"Freddy Alvarado","e":"Cofersa","d":"Compras","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Viviana Arce","e":"Cofersa","d":"Compras","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Jeffrey Díaz","e":"Cofersa","d":"Control","i":6,"c":0,"h":0,"hi":0,"ini":["Automatización de Reportes CxC – Facturas Plazos Especiales","Cliente Digital Cofersa","Control de Facturas CxC - COFERSA","CYC Cofersa — Sistema de Gestión de Cartera","Sistema Automatizado de Reporte Semanal — Clientes Bloqueados","Sistema de Seguimiento Semanal — Facturas Pendientes Clientes Espejo"],"per":"","cur":[],"pf":"I"},{"n":"Jorge Figeac","e":"Cofersa","d":"Control","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Raul Orellana","e":"Cofersa","d":"Control","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Oswaldo Silva","e":"Cofersa","d":"Gerencia","i":1,"c":0,"h":0,"hi":0,"ini":["Automatización presentaciones en formato"],"per":"","cur":[],"pf":"I"},{"n":"Jose Araya","e":"Cofersa","d":"Sistemas","i":1,"c":0,"h":0,"hi":0,"ini":["BPA Mayoreo"],"per":"","cur":[],"pf":"I"},{"n":"Alejandro Prado","e":"Cofersa","d":"Ventas","i":1,"c":0,"h":0,"hi":0,"ini":["APP para vacacionista"],"per":"","cur":[],"pf":"I"},{"n":"Esteban Araya","e":"Cofersa","d":"Ventas","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Jonathan Tarazon","e":"Cofersa","d":"Ventas","i":1,"c":0,"h":0,"hi":0,"ini":["Gestión Ordenes de Compras"],"per":"","cur":[],"pf":"I"},{"n":"Jorge Garcia","e":"Cofersa","d":"Ventas","i":14,"c":0,"h":0,"hi":0,"ini":["Alerta de Clientes Caidos por Marca","APP Feria Bosch","Auditor de Margenes en Listas de Precio","Automatizacion de Envio de Correos Masivos","Calculadora de Incentivos - Pedidos PL","Cotizador Multi-SKU con Ingreso Masivo y Cálculo por Volumen","Generador de Metas de Ventas Trimestrales","Gestion de Reclamos","Inteligencia Comercial","Liquidaciones","Optimizador de Rutas de Visita","Recopilacion de Datos de Clientes","Seguimiento Diario","Upscaler de Imagenes"],"per":"","cur":[],"pf":"I"},{"n":"Pablo Jimenez","e":"Cofersa","d":"Ventas","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Pamela Sandoval","e":"Cofersa","d":"Ventas","i":0,"c":2,"h":80,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40],["Introducción a la IA","Externo","Universidad de Costa Rica",40]],"pf":"F"},{"n":"Victor Moreno","e":"Cofersa","d":"Ventas","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Wilfredo Lopez","e":"Cofersa","d":"Ventas","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Nieves Gabriel","e":"Febeca","d":"Centro de Distribución","i":0,"c":1,"h":5,"hi":5,"ini":[],"per":"","cur":[["IA Generativa en el Logística","Interno","Mejora Continua Mayoreo",5]],"pf":"F"},{"n":"Alejandro Prieto","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Alexander Castillo","e":"Febeca","d":"Ventas","i":0,"c":1,"h":5,"hi":5,"ini":[],"per":"","cur":[["IA Generativa en el Logística","Interno","Mejora Continua Mayoreo",5]],"pf":"F"},{"n":"Anand Panday","e":"Febeca","d":"Ventas","i":0,"c":2,"h":51,"hi":51,"ini":[],"per":"","cur":[["IA Generativa en el Logística","Interno","Mejora Continua Mayoreo",5],["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Anarella Montilla","e":"Febeca","d":"Ventas","i":0,"c":1,"h":5,"hi":5,"ini":[],"per":"","cur":[["IA Generativa en el Logística","Interno","Mejora Continua Mayoreo",5]],"pf":"F"},{"n":"Arismar Escalona","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Bernando Duque","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Carlos Dos Santos","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Carlos Guanipa","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Carlos Lagares","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Daniel Almeira","e":"Febeca","d":"Ventas","i":0,"c":2,"h":51,"hi":51,"ini":[],"per":"","cur":[["IA Generativa en el Logística","Interno","Mejora Continua Mayoreo",5],["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Diego Pereda","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Donys Vera","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Edison Carrillo","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Eliabel Aguirre","e":"Febeca","d":"Ventas","i":0,"c":1,"h":5,"hi":5,"ini":[],"per":"","cur":[["IA Generativa en el Logística","Interno","Mejora Continua Mayoreo",5]],"pf":"F"},{"n":"Elías Jiménez","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Emerita Ferrer","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Eyber Melendez","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Franny Indriago","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Geraldine Castellano","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Gilberto Mata","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Gustavo Pacheco","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Héctor Fernández","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Henry Yepez","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Humberto Carrizo","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Jean Rojas","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Jesús Aponte","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Jesús Muñoz","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Joel Sanoja","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"José Estrella","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"José Natera","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"José Rincón","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Juan Giménez","e":"Febeca","d":"Ventas","i":8,"c":1,"h":6,"hi":6,"ini":["Análisis de Efectividad FFVV","Boleta de Clientes","Boletas de Gestión de Asesores y Supervisores","Cálculo de Metas","Cotizador Mayoreo","Módulo de Cliente Retira","Portal de Supervisores","Reporte Diario - Reenvío formateado del \"Como Vamos\""],"per":"","cur":[["Mejora Continua para Colaboradores","Interno","Mejora Continua Mayoreo",6]],"pf":"A"},{"n":"Juliane Cruz","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Lizmar Marrero","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Luis Carmona","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Luis Jaimes","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Luis Landaeta","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Martín Santander","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Natalia Álvarez","e":"Febeca","d":"Ventas","i":0,"c":1,"h":5,"hi":5,"ini":[],"per":"","cur":[["IA Generativa en el Logística","Interno","Mejora Continua Mayoreo",5]],"pf":"F"},{"n":"Nehomar Chirinos","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Nelly Patiño","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Orlando Ortegano","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Oscar Sánchez","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Rafael Anato","e":"Febeca","d":"Ventas","i":0,"c":1,"h":5,"hi":5,"ini":[],"per":"","cur":[["IA Generativa en el Logística","Interno","Mejora Continua Mayoreo",5]],"pf":"F"},{"n":"Richard Gómez","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Richard Pineda","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Richard Salazar","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Rodolfo Briceño","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Tabardo Villasmil","e":"Febeca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Wilfredo González","e":"Febeca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Estid Castañeda","e":"Mundipartes","d":"Centro de Distribución","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"F"},{"n":"Jhon Camargo","e":"Mundipartes","d":"Centro de Distribución","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"F"},{"n":"Jhon Echeverry","e":"Mundipartes","d":"Centro de Distribución","i":1,"c":1,"h":40,"hi":40,"ini":["Tablero de operacion de transporte (KPI)"],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"A"},{"n":"Jose Sanchez","e":"Mundipartes","d":"Centro de Distribución","i":1,"c":0,"h":0,"hi":0,"ini":["Asistente Virtual Mayoreo"],"per":"","cur":[],"pf":"I"},{"n":"Juan Esteban","e":"Mundipartes","d":"Centro de Distribución","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"F"},{"n":"Kevin Montoya","e":"Mundipartes","d":"Centro de Distribución","i":1,"c":1,"h":40,"hi":40,"ini":["Clasificación arancelaria"],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"A"},{"n":"Miguel Hernandez","e":"Mundipartes","d":"Centro de Distribución","i":1,"c":1,"h":40,"hi":40,"ini":["Simulación de repuestos en 3D"],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"A"},{"n":"Carolina Marín","e":"Mundipartes","d":"Compras","i":2,"c":1,"h":40,"hi":40,"ini":["Investigación de Mercado para Artículos nuevos y actuales","Modelo de Predicción y Análisis del Comportamiento Comercial"],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"A"},{"n":"Jonathan Restrepo","e":"Mundipartes","d":"Compras","i":3,"c":0,"h":0,"hi":0,"ini":["Análisis de precios","Programación Acompañamiento en Calle","Segmentación de productos según aplicación"],"per":"","cur":[],"pf":"I"},{"n":"Yuliana Dominguez","e":"Mundipartes","d":"Compras","i":1,"c":0,"h":0,"hi":0,"ini":["Escuela Partes y Mentes"],"per":"","cur":[],"pf":"I"},{"n":"Alexander Zuluaga","e":"Mundipartes","d":"Control","i":0,"c":2,"h":57,"hi":57,"ini":[],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40],["Claude IA Experto para contadores","Interno","Ministerio de Tecnologías de la Información",17]],"pf":"F"},{"n":"Andres Jaramillo","e":"Mundipartes","d":"Control","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"F"},{"n":"Angy Tamayo","e":"Mundipartes","d":"Control","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"F"},{"n":"Karina Cuberos","e":"Mundipartes","d":"Control","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"F"},{"n":"Sandra Ortega","e":"Mundipartes","d":"Control","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"F"},{"n":"Alexandra Orozco","e":"Mundipartes","d":"Personal","i":6,"c":2,"h":41,"hi":41,"ini":["Consolidada de Gastos de Viaje (2025-2026)","Control_Reservas_Hoteles MP 2026","Escuela Partes y Mentes","Estándar de comunicación viajes personal","Gestor de Formaciones académicas de los empleados","Loctite Experience"],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40],["El riesgo invisible detrás de la IA","Interno","Ministerio de Tecnologías de la Información",1]],"pf":"A"},{"n":"Elda Ceballos","e":"Mundipartes","d":"Personal","i":3,"c":1,"h":5,"hi":5,"ini":["Escuela Partes y Mentes","Estrategia de comunicación","Mapeo de gestión de tiempos"],"per":"","cur":[["IA en RRHH","Interno","Ministerio de Tecnologías de la Información",5]],"pf":"A"},{"n":"Mildrey Correa","e":"Mundipartes","d":"Personal","i":2,"c":2,"h":8,"hi":8,"ini":["Base de datos autogestionable de datos socio económicos y seguridad vial","Escuela Partes y Mentes"],"per":"","cur":[["El riesgo invisible detrás de la IA","Interno","Ministerio de Tecnologías de la Información",1],["IA para SST","Interno","Ministerio de Tecnologías de la Información",7]],"pf":"A"},{"n":"Alexander Gomez","e":"Mundipartes","d":"Sistemas","i":3,"c":0,"h":0,"hi":0,"ini":["Causacion automatica facturas","Notificacion Egreso Factura","Notificacion Facturas cliente"],"per":"","cur":[],"pf":"I"},{"n":"Angel Lopez","e":"Mundipartes","d":"Ventas","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"F"},{"n":"Jorge Restrepo","e":"Mundipartes","d":"Ventas","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"F"},{"n":"Jose Torres","e":"Mundipartes","d":"Ventas","i":3,"c":1,"h":40,"hi":40,"ini":["Escuela Partes y Mentes","Mundi SmartSales","SmartFeedback AI – Mundipartes"],"per":"","cur":[["Bootcamp de Inteligencia Artificial – Nivel Explorador","Interno","Inwork",40]],"pf":"A"},{"n":"Yulitze Querales","e":"Prisma","d":"Centro de Distribución","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Alejandro Saavedra","e":"Prisma","d":"Control","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Andrea Ramirez","e":"Prisma","d":"Control","i":2,"c":0,"h":0,"hi":0,"ini":["Laboratorio de Innovación Contable","Portal Central de Herramientas Contables Inteligentes."],"per":"","cur":[],"pf":"I"},{"n":"Luis Cardozo","e":"Prisma","d":"Control","i":1,"c":1,"h":40,"hi":40,"ini":["Inteligencia Operativa: Automatización y Centro de Control Beval (Crédito y Cobranza)."],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"A"},{"n":"Lusibely Gonzalez","e":"Prisma","d":"Control","i":2,"c":0,"h":0,"hi":0,"ini":["Automatizacion reserva contingencia de gastos","Cuadre auxiliar FA"],"per":"","cur":[],"pf":"I"},{"n":"Mario La Veglia","e":"Prisma","d":"Control","i":0,"c":1,"h":6,"hi":6,"ini":[],"per":"","cur":[["Mejora Continua para Colaboradores","Interno","Mejora Continua Mayoreo",6]],"pf":"F"},{"n":"Paola Guerra","e":"Prisma","d":"Control","i":1,"c":0,"h":0,"hi":0,"ini":["Cargador facturas de suministros"],"per":"","cur":[],"pf":"I"},{"n":"Paola Rodriguez","e":"Prisma","d":"Control","i":1,"c":1,"h":1,"hi":0,"ini":["Portal Auditoria de Retenciones de Compras"],"per":"","cur":[["Specialized AI Agents with Amazon Quick","Externo","Youtube",1]],"pf":"A"},{"n":"Stephany De Sousa","e":"Prisma","d":"Control","i":1,"c":0,"h":0,"hi":0,"ini":["Cargador de Movimientos Bancarios"],"per":"","cur":[],"pf":"I"},{"n":"Ali Navarro","e":"Prisma","d":"Mercadeo","i":1,"c":2,"h":102,"hi":0,"ini":["AIPEX"],"per":"","cur":[["Machine Learning especialization","Externo","Coursera",95],["curso de openspec + opencode","Externo","Youtube",7]],"pf":"A"},{"n":"Maria Marquez","e":"Prisma","d":"Mercadeo","i":0,"c":1,"h":2,"hi":0,"ini":[],"per":"","cur":[["Microcredencial en IA para el Análisis de Datos y la Toma de Decisiones Estratégicas","Externo","Universidad Internacional de La Rioja",2]],"pf":"F"},{"n":"Reina Chirinos","e":"Prisma","d":"Mercadeo","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Ruth Martinez","e":"Prisma","d":"Mercadeo","i":0,"c":2,"h":58,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40],["Claude Code","Externo","Udemy",18]],"pf":"F"},{"n":"Angélica González","e":"Prisma","d":"Personal","i":0,"c":1,"h":6,"hi":6,"ini":[],"per":"","cur":[["Mejora Continua para Colaboradores","Interno","Mejora Continua Mayoreo",6]],"pf":"F"},{"n":"Daniela Melendez","e":"Prisma","d":"Personal","i":0,"c":2,"h":13,"hi":0,"ini":[],"per":"","cur":[["Inteligencia Artificial Aplicada a RRHH","Externo","Intezia",10],["Inteligencia Artificial para Reclutadores","Externo","SkillsAcademy",3]],"pf":"F"},{"n":"Eimy Marquez","e":"Prisma","d":"Personal","i":0,"c":1,"h":6,"hi":6,"ini":[],"per":"","cur":[["Mejora Continua para Colaboradores","Interno","Mejora Continua Mayoreo",6]],"pf":"F"},{"n":"Fabián Tovar","e":"Prisma","d":"Personal","i":0,"c":2,"h":10,"hi":10,"ini":[],"per":"","cur":[["Mejora Continua para Colaboradores","Interno","Mejora Continua Mayoreo",6],["Mejora Continua para Nuevos Pasantes","Interno","Mejora Continua Mayoreo",4]],"pf":"F"},{"n":"Jessie Espinoza","e":"Prisma","d":"Personal","i":1,"c":1,"h":3,"hi":0,"ini":["Generador de organigramas"],"per":"","cur":[["Inteligencia Artificial para Reclutadores","Externo","SkillsAcademy",3]],"pf":"A"},{"n":"Jesús Redondo","e":"Prisma","d":"Personal","i":0,"c":2,"h":10,"hi":10,"ini":[],"per":"","cur":[["Mejora Continua para Colaboradores","Interno","Mejora Continua Mayoreo",6],["Mejora Continua para Nuevos Pasantes","Interno","Mejora Continua Mayoreo",4]],"pf":"F"},{"n":"Jhossett Vela","e":"Prisma","d":"Personal","i":4,"c":0,"h":0,"hi":0,"ini":["Automatización indicadores de Beconsult para VE, COL, CR.","Implementación de detalles de pago a vendedores (Nómina y Outsourcing) y/o supervisores y automatización en envío de órdenes de pago.","Optimización y automatización del proceso de prestaciones sociales","Portal gestión de vendedores - Febeca, Sillaca y Beval"],"per":"","cur":[],"pf":"I"},{"n":"Krysmar Oliveros","e":"Prisma","d":"Personal","i":2,"c":1,"h":6,"hi":6,"ini":["Herramienta de Gestión de Archivos de Personal","Herramienta Para la Gestión de Nuevos Ingresos"],"per":"","cur":[["Mejora Continua para Colaboradores","Interno","Mejora Continua Mayoreo",6]],"pf":"A"},{"n":"Lourdes Manrique","e":"Prisma","d":"Personal","i":0,"c":2,"h":29,"hi":29,"ini":[],"per":"","cur":[["Power Automate","Interno","B-aprendiendo",15],["Curso de automatizaciones con N8N","Interno","Platzi",14]],"pf":"F"},{"n":"Luis Millan","e":"Prisma","d":"Personal","i":1,"c":6,"h":9,"hi":0,"ini":["Vision Gerencial de candidatos"],"per":"","cur":[["Specialized AI Agents with Amazon Quick","Externo","Youtube",1],["The Ultimate Guide to AWS Database Services","Externo","Youtube",2],["Introduction | NLP Tutorial For Beginners In Python","Externo","Youtube",3],["Generate Analyses with AI from Natural Language Prompts in Amazon Quick","Externo","Youtube",1],["Your First Automation Step-by-Step with Amazon Quick Automate","Externo","Youtube",1],["Multi Agent Automation with Amazon Quick Automate","Externo","Youtube",1]],"pf":"A"},{"n":"Miguelangel Vásquez","e":"Prisma","d":"Personal","i":0,"c":1,"h":4,"hi":4,"ini":[],"per":"","cur":[["Mejora Continua para Nuevos Pasantes","Interno","Mejora Continua Mayoreo",4]],"pf":"F"},{"n":"Rosalia Rincones","e":"Prisma","d":"Personal","i":1,"c":2,"h":13,"hi":0,"ini":["Auto-Respuesta y Captación Automatizada de CVs"],"per":"","cur":[["Inteligencia Artificial Aplicada a RRHH","Externo","Intezia",10],["Inteligencia Artificial para Reclutadores","Externo","SkillsAcademy",3]],"pf":"A"},{"n":"Saúl Vargas","e":"Prisma","d":"Personal","i":0,"c":2,"h":10,"hi":10,"ini":[],"per":"","cur":[["Mejora Continua para Colaboradores","Interno","Mejora Continua Mayoreo",6],["Mejora Continua para Nuevos Pasantes","Interno","Mejora Continua Mayoreo",4]],"pf":"F"},{"n":"Yazmin Quiceno","e":"Prisma","d":"Personal","i":5,"c":4,"h":52,"hi":40,"ini":["Agente Entrevistador Mayoreo","Entrevista de Salida","Seguimiento de nuevos ingresos","Test de Medición del Ingles","Generador de organigramas"],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40],["Domina la IA con prompting responsable","Externo","Open Academy Santander",8],["Inteligencia Artificial para Reclutadores","Externo","SkillsAcademy",3],["Specialized AI Agents with Amazon Quick","Externo","Youtube",1]],"pf":"A"},{"n":"Anixy Guedez","e":"Prisma","d":"Reposición","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Anyimar Perez","e":"Prisma","d":"Reposición","i":1,"c":1,"h":40,"hi":40,"ini":["Análisis de Data de Reposición IA"],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"A"},{"n":"Branfort Monro","e":"Prisma","d":"Reposición","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Daniel Duran","e":"Prisma","d":"Reposición","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Edgar Montilla","e":"Prisma","d":"Reposición","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Glendys Rodriguez","e":"Prisma","d":"Reposición","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Hamilkar Sandoval","e":"Prisma","d":"Reposición","i":4,"c":1,"h":40,"hi":40,"ini":["Forecast Flow (v1.0.4) - Herramienta Operativa de Gestión por Procesos","Radar I - Doppler - Auditoría Gaps (Plan to Forecast)","Radar II - Doppler - RPA - Revisión de Portafolio y Ejecución","Radar III - Doppler -  RPA - Documentación de Oportunidades Plan de demanda"],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"A"},{"n":"Jose Garcia","e":"Prisma","d":"Reposición","i":0,"c":2,"h":133,"hi":0,"ini":[],"per":"","cur":[["Ciberseguridad en la nube","Externo","Fundación de Carlos Slim",58],["Desarrollador de Aplicaciones en la Nube","Externo","Fundación de Carlos Slim",75]],"pf":"F"},{"n":"Josshana Tesorero","e":"Prisma","d":"Reposición","i":1,"c":1,"h":40,"hi":40,"ini":["Seguimiento de Pedidos de Importación"],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"A"},{"n":"Juan Guanipa","e":"Prisma","d":"Reposición","i":1,"c":0,"h":0,"hi":0,"ini":["Creador de archivos excel para Ordenes de compra"],"per":"","cur":[],"pf":"I"},{"n":"Kevin Escobar","e":"Prisma","d":"Reposición","i":5,"c":1,"h":40,"hi":40,"ini":["Análisis de inventario y fallas","Análisis de venta normal","Facilitador de relaciones entre archivos","Identificador de órdenes","Separador de archivos"],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"A"},{"n":"Nancy Garcia","e":"Prisma","d":"Reposición","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Raquel Perozo","e":"Prisma","d":"Reposición","i":0,"c":2,"h":21,"hi":0,"ini":[],"per":"","cur":[["Analisis de negocios para ciencias de datos e IA","Externo","Platzi",13],["Data science e inteligencia artificial","Externo","Platzi",8]],"pf":"F"},{"n":"Wleidy Ramones","e":"Prisma","d":"Reposición","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Oswaldo A Silva","e":"Prisma","d":"Servicios Operacionales","i":0,"c":1,"h":40,"hi":40,"ini":[],"per":"","cur":[["Ecosistema Digital e Inteligencia Artificial","Interno","Mejora Continua Mayoreo",40]],"pf":"F"},{"n":"Aida Urdaneta","e":"Prisma","d":"Sistemas","i":3,"c":4,"h":5,"hi":0,"ini":["Alertas de seguimiento tareas de proyectos","Arquitecto de Procesos Inteligentes ( API)","Índice dinámico"],"per":"","cur":[["Claude","Externo","Youtube",2],["Claude Cowork","Externo","Youtube",1],["Claude AI 2026","Externo","Youtube",1],["Prompts ChatGPT","Externo","Youtube",1]],"pf":"A"},{"n":"Alejandro Mora","e":"Prisma","d":"Sistemas","i":3,"c":0,"h":0,"hi":0,"ini":["Automatización de Control Fiscal","Calculadora de Diferencial Cambiario","Saldos a favor"],"per":"","cur":[],"pf":"I"},{"n":"Ambar Pulido","e":"Prisma","d":"Sistemas","i":1,"c":5,"h":6,"hi":0,"ini":["BPA Mayoreo"],"per":"","cur":[["Claude","Externo","Youtube",2],["Claude Cowork","Externo","Youtube",1],["Claude AI 2026","Externo","Youtube",1],["Prompts ChatGPT","Externo","Youtube",1],["Lovable","Externo","Youtube",1]],"pf":"A"},{"n":"Angely Ojeda","e":"Prisma","d":"Sistemas","i":3,"c":4,"h":9,"hi":0,"ini":["App Inciativas IA Mayoreo","Procesos Mayoreo","Generador de organigramas"],"per":"","cur":[["Specialized AI Agents with Amazon Quick","Externo","Youtube",1],["Claude code","Externo","Youtube",2],["Antigravity","Externo","Youtube",4],["NotebookLM de 0 a experto","Externo","Youtube",2]],"pf":"A"},{"n":"Cesar Campo","e":"Prisma","d":"Sistemas","i":2,"c":1,"h":2,"hi":0,"ini":["Centro de Formación de Fuerza de Ventas","Portal de Condiciones Comerciales"],"per":"","cur":[["Cloud 2026 - Despliega tu primera web en la nube desde cero","Externo","Youtube",2]],"pf":"A"},{"n":"Flavio Ruiz","e":"Prisma","d":"Sistemas","i":0,"c":8,"h":46,"hi":0,"ini":[],"per":"","cur":[["Claude Code (Skills, MCP, SubAgents)","Externo","Youtube",2],["Cómo escoger la IA correcta en la práctica","Externo","Youtube",2],["Cursor desde cero","Externo","Youtube",3],["Machine Learning","Externo","w3schools.com",21],["Make.com para Principiantes","Externo","https://www.make.com",5],["N8N Beginner","Externo","Youtube",4],["N8N desde cero","Externo","Youtube",6],["Spec Driven Development: El flujo real para crear apps con IA","Externo","Youtube",3]],"pf":"F"},{"n":"Gabriel Arcila","e":"Prisma","d":"Sistemas","i":0,"c":13,"h":183,"hi":0,"ini":[],"per":"","cur":[["Automatizaciones con n8n","Externo","Platzi",15],["Claude AI","Externo","Platzi",16],["Claude Code","Externo","Platzi",8],["FastAPI","Externo","Platzi",19],["Fundamentos de PythonPlatzi","Externo","Platzi",16],["Introducción a AWS: Cómputo, Almacenamiento y Bases de Datos","Externo","Platzi",11],["Introducción a AWS: Fundamentos de Cloud Computing","Externo","Platzi",14],["OpenAI API","Externo","Platzi",19],["PostgreSQL","Externo","Platzi",14],["Python Intermedio para Entornos virtuales y PEP8","Externo","Platzi",14],["Python Orientado a Objetos","Externo","Platzi",12],["SupabaseCurso de Unit Testing en Python","Externo","Platzi",10],["Unit Testing en Python","Externo","Platzi",15]],"pf":"F"},{"n":"Giovanny Milano","e":"Prisma","d":"Sistemas","i":1,"c":8,"h":45,"hi":0,"ini":["Bot de estados de cuenta"],"per":"","cur":[["Experto Zapier. Aprende a Automatizar Procesos sin programar","Externo","Udemy",8],["Curso n8n. Agentes de IA Avanzados: MCP, Whatsapp, Voz y más","Externo","Udemy",11],["Curso n8n. Crea Agentes de IA Sin Programar","Externo","Udemy",9],["Experto en Airtable. Crea Aplicaciones, Bases de Datos, Automatizaciones, Dashboards, Visualización de Datos y mucho más","Externo","Udemy",11],["Claude Code","Externo","Youtube",2],["Claude","Externo","Youtube",2],["Prompt Engineering","Externo","Youtube",1],["ChatGPT","Externo","Youtube",1]],"pf":"A"},{"n":"Jesús Araujo","e":"Prisma","d":"Sistemas","i":5,"c":5,"h":6,"hi":0,"ini":["Automatización de transformación de datos","Bot aviso próximo ingreso artículos","Data Completer","Herramienta para Gestión de Solicitudes de Compras","Sistema Gestión de Tickets"],"per":"","cur":[["Claude","Externo","Youtube",2],["Claude Cowork","Externo","Youtube",1],["Claude AI 2026","Externo","Youtube",1],["Prompts ChatGPT","Externo","Youtube",1],["Lovable","Externo","Youtube",1]],"pf":"A"},{"n":"Luis Rivas","e":"Prisma","d":"Sistemas","i":6,"c":6,"h":10,"hi":0,"ini":["Ecosistemas Talento Mayoreo","Generador de recursos de formación (Videos)","Sistema de acompañamiento de fuerza ventas","Sistema de cálculo de comisiones","Solicitudes de mercadeo (Tickets)","Generador de organigramas"],"per":"","cur":[["Prompts ChatGPT","Externo","Youtube",1],["Lovable","Externo","Youtube",1],["Curso de AWS Desde Cero (Amazon Web Services)","Externo","Youtube",2],["AI-Driven Development Lifecycle (AI-DLC): A Free and Complete","Externo","Youtube",2],["Cloud 2026 - Despliega tu primera web en la nube desde cero","Externo","Youtube",2],["Gemini 3.8 Flash + Antigravity","Externo","Youtube",2]],"pf":"A"},{"n":"Mayte Zarraga","e":"Prisma","d":"Sistemas","i":0,"c":4,"h":5,"hi":0,"ini":[],"per":"","cur":[["Claude","Externo","Youtube",2],["Claude Cowork","Externo","Youtube",1],["Claude AI 2026","Externo","Youtube",1],["Prompts ChatGPT","Externo","Youtube",1]],"pf":"F"},{"n":"Daniel Salas","e":"Sillaca","d":"Compras","i":2,"c":1,"h":31,"hi":31,"ini":["AIPEX (Versión Beta)","Cargador TADIA"],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"A"},{"n":"Luis Hidalgo","e":"Sillaca","d":"Control","i":0,"c":2,"h":37,"hi":37,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31],["Mejora Continua para Colaboradores","Interno","Mejora Continua Mayoreo",6]],"pf":"F"},{"n":"Alfonso Escalante","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Andrés Guzman","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Andy Saldivia","e":"Sillaca","d":"Ventas","i":1,"c":1,"h":31,"hi":31,"ini":["SUGERIDO DE VENTA"],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"A"},{"n":"Argenis Araque","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Argenis Ontiveros","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Christina Gómez","e":"Sillaca","d":"Ventas","i":1,"c":1,"h":31,"hi":31,"ini":["Aplicativo de Como vamos (diario)"],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"A"},{"n":"David Cala","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Francisco Zambrano","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Hector Villalón","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"José Revette","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":31,"hi":31,"ini":[],"per":"","cur":[["IA para Supervisores","Interno","Mejora Continua Mayoreo",31]],"pf":"F"},{"n":"Joselys Ventura","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"María Meza","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Mariana Palacio","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Mayra Leon","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Ronald Acosta","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Ruthsby Salcedo","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Saulo Bravo","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"},{"n":"Yoleida Pérez","e":"Sillaca","d":"Ventas","i":0,"c":1,"h":46,"hi":46,"ini":[],"per":"","cur":[["IA para Asesores de Ventas","Interno","Mejora Continua Mayoreo",46]],"pf":"F"}];
+D.forEach(p=>{ p.pf = (p.i > 0 && p.c > 0) ? 'A' : (p.i > 0 ? 'I' : (p.c > 0 ? 'F' : '')); });
+const PF={A:'Formación + iniciativas',I:'Solo iniciativas',F:'Solo formación'};
+const TABS=[['indicador','Indicador principal'],['conversion','De formar a producir'],['iniciativas','Colaboradores en iniciativas'],['formacion','Formación'],['personas','Colaboradores'],['notas','Definiciones y calidad de datos']];
 
-  <script>
-    function switchTab(targetId) {
-      const tabs = ['capacitacion', 'iniciativas', 'unificados'];
-      tabs.forEach(id => {
-        const btn = document.getElementById('btn-' + id);
-        const frame = document.getElementById('frame-' + id);
-        if (id === targetId) {
-          btn.classList.add('active');
-          frame.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-          frame.classList.remove('active');
+let emp='', tab='indicador', q='', fDep='', fPf='', abierto=null;
+// Filtros específicos para el dashboard de Colaboradores en iniciativas
+let qIni='', fDepIni='', abiertoIni=null;
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pc=(a,b,d=1)=>b?(100*a/b).toFixed(d).replace('.',',')+'%':'–';
+const nf=(x,d=0)=>x.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
+const sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
+const grp=(a,f)=>{const m=new Map();a.forEach(x=>{const k=f(x);(m.get(k)||m.set(k,[]).get(k)).push(x)});return m};
+const scope=()=>emp?D.filter(p=>p.e===emp):D;
+const hcOf=e=>e?HC[e]:sum(Object.values(HC),x=>x);
+function st(S,hc){
+  const A = S.filter(p => p.c > 0 && p.i > 0).length,
+        I = S.filter(p => p.c === 0 && p.i > 0).length,
+        F = S.filter(p => p.c > 0 && p.i === 0).length;
+  const n = A + I + F;
+  return { n, A, I, F, hc, sin: hc - n, form: A + F, ini: A + I };
+}
+function segs(s,cls){const t=(k,l,v)=>`<span class="${k}" style="flex:${v} 0 0" data-tip="${l}: ${v} (${pc(v,s.hc)} de la plantilla)"></span>`;
+  return `<div class="${cls}">${s.A?t('sA','Formación + iniciativas',s.A):''}${s.I?t('sI','Solo iniciativas',s.I):''}${s.F?t('sF','Solo formación',s.F):''}${s.sin?t('sN','Sin participación',s.sin):''}</div>`}
+const leyenda=s=>`<div class="leyenda">
+  <span><i class="sA"></i>Formación + iniciativas <b>${s.A}</b></span><span><i class="sI"></i>Solo iniciativas <b>${s.I}</b></span>
+  <span><i class="sF"></i>Solo formación <b>${s.F}</b></span><span><i class="sN"></i>Sin participación <b>${s.sin}</b></span></div>`;
+
+/* ---------- Vista 1: indicador ---------- */
+function vIndicador(){
+  const S=scope(), s=st(S,hcOf(emp)), G=st(D,hcOf(''));
+  const emps=Object.keys(HC).map(e=>({e,...st(D.filter(p=>p.e===e),HC[e])})).sort((a,b)=>b.n/b.hc-a.n/a.hc);
+  const gp=100*G.n/G.hc;
+  const filas=emps.map(x=>{const d=100*x.n/x.hc-gp;return `<button class="emp${x.e===emp?' sel':''}" data-emp="${x.e}">
+    <span class="nom"><b>${x.e}</b><span class="num">${x.n} de ${x.hc}</span></span>${segs(x,'bar')}
+    <span class="pct num">${pc(x.n,x.hc)}</span>
+    <span class="delta num ${d>=0?'mejora':'empeora'}">${d>=0?'+':'−'}${Math.abs(d).toFixed(1).replace('.',',')} pp</span></button>`}).join('');
+  const obj=Math.ceil(.5*s.hc)-s.n, best=emps[0], worst=emps[emps.length-1];
+  const top10=[...S].sort((a,b)=>b.i-a.i).slice(0,10), part=sum(S,p=>p.i);
+  const L=[];
+  L.push(`<b>${pc(s.n,s.hc)}</b> de la plantilla participa en IA (${s.n} de ${s.hc}). ${obj>0?`Para llegar al 50% faltan <b>${obj}</b> colaboradores.`:'Ya supera el 50%.'}`);
+  if(!emp)L.push(`<b>${best.e}</b> lidera con ${pc(best.n,best.hc)} y <b>${worst.e}</b> cierra con ${pc(worst.n,worst.hc)}: una brecha de ${(100*best.n/best.hc-100*worst.n/worst.hc).toFixed(0)} puntos entre empresas.`);
+  L.push(`Solo <b>${s.A}</b> personas (${pc(s.A,s.n)} de los participantes) combinan formación e iniciativas. Es el grupo que demuestra adopción real.`);
+  L.push(`De ${s.form} formados, <b>${pc(s.A,s.form,0)}</b> ya produce iniciativas. Quedan <b>${s.F}</b> formados sin iniciativa: la cantera más inmediata.`);
+  L.push(`<b>${pc(s.I,s.ini,0)}</b> de quienes producen iniciativas (${s.I} de ${s.ini}) no tiene formación registrada.`);
+  if(part)L.push(`Las 10 personas más activas concentran <b>${pc(sum(top10,p=>p.i),part,0)}</b> de las participaciones en iniciativas.`);
+    const inisUnicas = new Set(S.flatMap(p=>p.ini).filter(Boolean)).size;
+  const metaIni = emp ? 50 : 300;
+  L.push(`Hay <b>${inisUnicas}</b> iniciativas únicas registradas (${pc(inisUnicas, metaIni, 1)} de la meta de ${metaIni}).`);
+  return `<section class="panel"><h2>Colaboradores en IA <small>${emp||'Grupo Mayoreo'}</small></h2>
+    <div class="heroe"><div><div class="cifra num">${pc(s.n,s.hc)}</div><div class="pie num">${s.n} de ${s.hc} colaboradores</div></div>
+      <div>${segs(s,'comp')}${leyenda(s)}</div></div>
+    <div class="kpis">
+      <div><div class="t">Con formación en IA</div><div class="v num">${s.form} <small>${pc(s.form,s.hc)}</small></div><div class="p">colaboradores con formación</div></div>
+      <div><div class="t">Iniciativas registradas</div><div class="v num">${inisUnicas} <small>${pc(inisUnicas,metaIni,1)}</small></div><div class="p num">meta: ${metaIni} ${emp ? 'en ' + emp : 'totales (50 por cía.)'}</div></div>
+      <div><div class="t">Con iniciativas de IA</div><div class="v num">${s.ini} <small>${pc(s.ini,s.hc)}</small></div><div class="p">con o sin formación</div></div>
+      <div><div class="t">Formados que ya producen</div><div class="v num">${pc(s.A,s.form,0)}</div><div class="p num">${s.A} de ${s.form} formados</div></div>
+      <div><div class="t">Sin participación</div><div class="v num">${s.sin} <small>${pc(s.sin,s.hc)}</small></div><div class="p">plantilla por incorporar</div></div>
+    </div></section>
+  <div class="g2">
+    <section class="panel"><h2>Participación por empresa <small>cada barra es el 100% de su plantilla</small></h2>
+      <div class="cuerpo"><p class="preg">Ordenado de mayor a menor participación. La última columna es la distancia al promedio del grupo (${pc(G.n,G.hc)}). Selecciona una empresa para filtrar todo el tablero.</p>${filas}${leyenda(G)}</div></section>
+    <section class="panel"><h2>Lecturas clave</h2><div class="cuerpo"><ul class="lect">${L.map(x=>`<li>${x}</li>`).join('')}</ul></div></section>
+  </div>`}
+
+/* ---------- Vista 2: conversión ---------- */
+function vConversion(){
+  const S=scope(), s=st(S,hcOf(emp));
+  const G=st(D,hcOf('')), gx=G.form/G.hc, gy=G.ini/G.hc;
+  const lec=x=>{const f=x.form/x.hc>=gx,i=x.ini/x.hc>=gy;return f&&i?'Forma y produce':f?'Forma, aún produce poco':i?'Produce con poca formación':'Por activar'};
+  const emps=Object.keys(HC).map(e=>({e,...st(D.filter(p=>p.e===e),HC[e])})).sort((a,b)=>(b.form?b.A/b.form:0)-(a.form?a.A/a.form:0));
+  const filaE=x=>`<tr class="fila${x.e===emp?' calc':''}" data-emp="${x.e}"><td class="izq"><b>${x.e}</b></td><td>${x.hc}</td><td>${x.form} <span class="sub">${pc(x.form,x.hc,0)}</span></td><td>${x.ini} <span class="sub">${pc(x.ini,x.hc,0)}</span></td><td>${x.A}</td><td>${x.F}</td><td>${pc(x.A,x.form,0)}<span class="mini"><span style="width:${x.form?100*x.A/x.form:0}%"></span></span></td><td class="izq">${lec(x)}</td></tr>`;
+  const deps=[...grp(S,p=>p.d)].map(([d,a])=>({d,...st(a,0)})).sort((a,b)=>b.n-a.n);
+  const filaD=x=>`<tr><td class="izq">${x.d}</td><td>${x.n}</td><td>${x.form}</td><td>${x.ini}</td><td>${x.A}</td><td>${pc(x.A,x.form,0)}<span class="mini"><span style="width:${x.form?100*x.A/x.form:0}%"></span></span></td></tr>`;
+  const ds=[...new Set(D.map(p=>p.d))].sort((a,b)=>D.filter(p=>p.d===b).length-D.filter(p=>p.d===a).length), es=Object.keys(HC);
+  const mxc=Math.max(...ds.flatMap(d=>es.map(e=>D.filter(p=>p.d===d&&p.e===e).length)));
+  const calor=ds.map(d=>`<tr><td class="izq">${d}</td>${es.map(e=>{const a=D.filter(p=>p.d===d&&p.e===e),n=a.length,x=st(a,0);
+    return `<td><div ${n?`style="background:color-mix(in srgb,var(--azul) ${Math.round(8+52*n/mxc)}%,transparent)" data-tip="${e} · ${d}\n${n} participantes\nAmbos ${x.A} · Solo iniciativas ${x.I} · Solo formación ${x.F}"`:''}>${n||'·'}</div></td>`}).join('')}</tr>`).join('');
+  return `<section class="panel"><h2>¿La formación se convierte en iniciativas? <small>${emp||'Grupo Mayoreo'}</small></h2>
+    <div class="kpis" style="border-top:0">
+      <div><div class="t">Formados que producen iniciativas</div><div class="v num">${pc(s.A,s.form,0)}</div><div class="p num">${s.A} de ${s.form} formados</div></div>
+      <div><div class="t">Formados sin iniciativa</div><div class="v num">${s.F}</div><div class="p">población a activar</div></div>
+      <div><div class="t">Producen sin formación registrada</div><div class="v num">${pc(s.I,s.ini,0)}</div><div class="p num">${s.I} de ${s.ini} con iniciativas</div></div>
+      <div><div class="t">Iniciativas por persona</div><div class="v num">${nf(s.ini?sum(S,p=>p.i)/s.ini:0,1)}</div><div class="p">entre quienes tienen alguna</div></div>
+    </div></section>
+  <section class="panel"><h2>Formar frente a producir, por empresa</h2><div class="cuerpo tw">
+      <p class="preg">Ordenado por conversión. La lectura compara a cada empresa con el promedio del grupo: ${pc(G.form,G.hc,0)} de la plantilla con formación y ${pc(G.ini,G.hc,0)} con iniciativas.</p>
+      <table><thead><tr><th class="izq">Empresa</th><th>Plantilla</th><th>Con formación</th><th>Con iniciativas</th><th>Ambos</th><th>Formados sin iniciativa</th><th>Conversión</th><th class="izq">Lectura</th></tr></thead><tbody>${emps.map(filaE).join('')}
+      <tr class="calc"><td class="izq">Grupo Mayoreo</td><td>${G.hc}</td><td>${G.form} <span class="sub">${pc(G.form,G.hc,0)}</span></td><td>${G.ini} <span class="sub">${pc(G.ini,G.hc,0)}</span></td><td>${G.A}</td><td>${G.F}</td><td>${pc(G.A,G.form,0)}</td><td></td></tr></tbody></table></div></section>
+  <div>
+    <section class="panel"><h2>Conversión por departamento</h2><div class="cuerpo tw">
+      <p class="preg">Conversión = personas con formación e iniciativas entre el total de formados del departamento.</p>
+      <table><thead><tr><th class="izq">Departamento</th><th>Particip.</th><th>Formados</th><th>Con inic.</th><th>Ambos</th><th>Conversión</th></tr></thead><tbody>${deps.map(filaD).join('')}</tbody></table></div></section>
+  </div>
+  <section class="panel"><h2>Dónde está la participación <small>participantes por empresa y departamento (todo el grupo)</small></h2><div class="cuerpo tw">
+    <table class="calor"><thead><tr><th class="izq">Departamento</th>${es.map(e=>`<th style="text-align:center">${e}</th>`).join('')}</tr></thead><tbody>${calor}</tbody></table>
+    <p class="preg" style="margin:10px 0 0">Son conteos y no porcentajes: la plantilla solo está disponible por empresa, no por departamento.</p></div></section>`}
+
+/* ---------- Vista 3: Colaboradores en iniciativas ---------- */
+function vIniciativas(){
+  const S_all = scope().filter(p=>p.i>0);
+  const depsDisponibles = [...new Set(S_all.map(p=>p.d))].sort();
+  const empsList = Object.keys(HC);
+  const totalPartGeneral = sum(S_all, p=>p.i);
+
+  return `
+  <!-- PANEL PRINCIPAL Y KPIS -->
+  <section class="panel">
+    <h2>Colaboradores en Iniciativas de IA <small id="subHdrIni">${emp || 'Grupo Mayoreo'}${fDepIni ? ' · ' + fDepIni : ''}</small></h2>
+    <div class="kpis" id="kpisIni" style="border-top:0"></div>
+  </section>
+
+  <!-- BARRA DE FILTROS DEL DASHBOARD DE INICIATIVAS -->
+  <section class="panel">
+    <h2>Filtros del dashboard <small>Empresa, Departamento y Búsqueda por colaborador o iniciativa</small></h2>
+    <div class="cuerpo">
+      <div class="barra" style="margin:0">
+        <div class="campo">
+          <label for="fEmpIni">Empresa</label>
+          <select id="fEmpIni">
+            <option value="">Todas (${totalPartGeneral} participaciones)</option>
+            ${empsList.map(e => `<option value="${e}"${e === emp ? ' selected' : ''}>${e}</option>`).join('')}
+          </select>
+        </div>
+        <div class="campo">
+          <label for="fDepIni">Departamento</label>
+          <select id="fDepIni">
+            <option value="">Todos los departamentos</option>
+            ${depsDisponibles.map(d => `<option value="${d}"${d === fDepIni ? ' selected' : ''}>${d}</option>`).join('')}
+          </select>
+        </div>
+        <div class="campo" style="flex:1;min-width:200px">
+          <label for="qIni">Búsqueda (Colaborador o Iniciativa)</label>
+          <input id="qIni" type="search" placeholder="Escribe el nombre del colaborador o proyecto..." value="${esc(qIni)}">
+        </div>
+        <div>
+          <button type="button" class="btn-limpiar" id="clearBtnIni">Limpiar filtros</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAPA DE CALOR: INICIATIVAS POR EMPRESA Y DEPARTAMENTO -->
+  <section class="panel">
+    <h2>Dónde están las iniciativas <small>Participaciones por empresa y departamento</small></h2>
+    <div class="cuerpo tw">
+      <p class="preg">Mapa de calor de participaciones en iniciativas de IA por departamento y empresa. Haz clic en una empresa o departamento para filtrar.</p>
+      <table class="calor">
+        <thead>
+          <tr>
+            <th class="izq">Departamento</th>
+            ${empsList.map(e => `<th style="text-align:center;cursor:pointer" data-calor-emp="${e}" title="Filtrar por ${e}">${e}${e === emp ? ' ●' : ''}</th>`).join('')}
+            <th style="text-align:center">Total</th>
+          </tr>
+        </thead>
+        <tbody id="tbCalorIni"></tbody>
+      </table>
+      <p class="preg" style="margin:10px 0 0">Conteos de participaciones registradas en proyectos de IA.</p>
+    </div>
+  </section>
+
+  <!-- DISTRIBUCION DE PRODUCCION (TRAMOS) -->
+  <section class="panel">
+    <h2>¿Cuántos sostienen la producción?</h2>
+    <div class="cuerpo tw">
+      <p class="preg">Personas agrupadas por número de iniciativas en las que participan y peso relativo en el ámbito seleccionado.</p>
+      <table>
+        <thead><tr><th class="izq">Tramo</th><th>Personas</th><th>% personas</th><th>Participaciones</th><th>% del total</th></tr></thead>
+        <tbody id="tbTramosIni"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TABLA DETALLADA DE COLABORADORES EN INICIATIVAS -->
+  <section class="panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--linea);flex-wrap:wrap;gap:8px">
+      <h2 style="padding:0;border:0">Detalle de Colaboradores en Iniciativas <small id="cntColabsIni"></small></h2>
+      <div>
+        <button type="button" class="btn-outline" id="btnExportIni">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar tabla (CSV)
+        </button>
+      </div>
+    </div>
+    <div class="cuerpo">
+      <div class="tw">
+        <table>
+          <thead>
+            <tr>
+              <th class="izq">Colaborador</th>
+              <th class="izq">Empresa</th>
+              <th class="izq">Departamento</th>
+              <th>Iniciativas</th>
+              <th class="izq">Detalle</th>
+            </tr>
+          </thead>
+          <tbody id="tbIni"></tbody>
+        </table>
+      </div>
+      <p class="preg" style="margin:10px 0 0">Haz clic en cualquier colaborador para ver la lista completa de iniciativas en las que participa.</p>
+    </div>
+  </section>`;
+}
+
+function filasIni(){
+  const S_all = scope().filter(p=>p.i>0);
+  const k = qIni.trim().toLowerCase();
+
+  // Filtrado reactivo del dashboard
+  const S_filtered = S_all.filter(p=>{
+    const matchDep = !fDepIni || p.d === fDepIni;
+    const matchQ = !k || (p.n + ' ' + p.ini.join(' ')).toLowerCase().includes(k);
+    return matchDep && matchQ;
+  });
+
+  // Métricas
+  const totalColabs = S_filtered.length;
+  const partFiltered = sum(S_filtered, p=>p.i);
+
+  // Mapeo de iniciativas únicas en el conjunto filtrado
+  const mFiltered = new Map();
+  S_filtered.forEach(p=>p.ini.forEach(x=>{
+    const o = mFiltered.get(x) || mFiltered.set(x, {n:x, ps:[], es:new Set()}).get(x);
+    o.ps.push(p.n);
+    o.es.add(p.e);
+  }));
+  const inisUnicas = mFiltered.size;
+  const soloCount = [...mFiltered.values()].filter(x=>x.ps.length === 1).length;
+  const depsCount = new Set(S_filtered.map(p=>p.d)).size;
+
+  // Concentración top 10
+  const ordColabs = [...S_filtered].sort((a,b)=>b.i - a.i);
+  const top10Sum = sum(ordColabs.slice(0, 10), p=>p.i);
+
+  // Subtítulo del encabezado
+  const subHdr = $('#subHdrIni');
+  if(subHdr) subHdr.textContent = (emp || 'Grupo Mayoreo') + (fDepIni ? ' · ' + fDepIni : '');
+
+  // KPIs
+  const kpisEl = $('#kpisIni');
+  if(kpisEl){
+    kpisEl.innerHTML = `
+      <div><div class="t">Iniciativas distintas</div><div class="v num">${inisUnicas}</div><div class="p">en el corte actual</div></div>
+      <div><div class="t">Colaboradores activos</div><div class="v num">${totalColabs} <small>${pc(totalColabs, hcOf(emp))}</small></div><div class="p">de la plantilla total</div></div>
+      <div><div class="t">Total participaciones</div><div class="v num">${partFiltered}</div><div class="p num">${nf(totalColabs ? partFiltered / totalColabs : 0, 1)} por persona</div></div>
+      <div><div class="t">Departamentos involucrados</div><div class="v num">${depsCount}</div><div class="p">en iniciativas de IA</div></div>
+      <div><div class="t">Iniciativas individuales</div><div class="v num">${pc(soloCount, inisUnicas, 0)}</div><div class="p num">${soloCount} con un solo autor</div></div>
+      <div><div class="t">Concentración</div><div class="v num">${pc(top10Sum, partFiltered, 0)}</div><div class="p">en las 10 personas más activas</div></div>
+    `;
+  }
+
+  // Mapa de calor: Iniciativas por Empresa y Departamento
+  const tbCalorEl = $('#tbCalorIni');
+  if(tbCalorEl){
+    const allDeps = [...new Set(D.filter(p=>p.i>0).map(p=>p.d))].sort((a,b)=>{
+      return sum(D.filter(p=>p.d===b&&p.i>0), p=>p.i) - sum(D.filter(p=>p.d===a&&p.i>0), p=>p.i);
+    });
+    const es = Object.keys(HC);
+    const mxc = Math.max(...allDeps.flatMap(d => es.map(e => sum(D.filter(p=>p.e===e && p.d===d && p.i>0), p=>p.i))), 1);
+
+    const rowsHtml = allDeps.map(d => {
+      const isDepSel = fDepIni === d;
+      const totD = sum(D.filter(p=>p.d===d && p.i>0), p=>p.i);
+      const cells = es.map(e => {
+        const a = D.filter(p=>p.e===e && p.d===d && p.i>0);
+        const n = sum(a, p=>p.i);
+        const u = new Set(a.flatMap(p=>p.ini)).size;
+        const isCellEmp = emp === e;
+        const tip = n ? `${e} · ${d}\n${n} participaciones en ${u} iniciativas\n${a.length} colaborador(es)\nHaz clic para filtrar` : '';
+        const bg = n ? `background:color-mix(in srgb,var(--azul) ${Math.round(8 + 52 * n / mxc)}%,transparent)` : '';
+        const activeBorder = (isCellEmp && isDepSel && n) ? ';outline:2px solid var(--azul-oscuro);outline-offset:-1px;font-weight:bold' : '';
+        return `<td style="cursor:${n ? 'pointer' : 'default'}" data-calor-cell data-calor-emp="${e}" data-calor-dep="${esc(d)}"><div ${n ? `style="${bg}${activeBorder}" data-tip="${tip}"` : ''}>${n || '·'}</div></td>`;
+      }).join('');
+      return `<tr${isDepSel ? ' style="background:var(--azul-tenue)"' : ''}>
+        <td class="izq" style="cursor:pointer;font-weight:${isDepSel ? 'bold' : 'normal'}" data-calor-dep="${esc(d)}" title="Filtrar por ${esc(d)}">${isDepSel ? '▶ ' : ''}${esc(d)}</td>
+        ${cells}
+        <td style="font-weight:bold;cursor:pointer" data-calor-dep="${esc(d)}" title="Filtrar por ${esc(d)}"><div>${totD}</div></td>
+      </tr>`;
+    }).join('');
+
+    const totRowCells = es.map(e => {
+      const totE = sum(D.filter(p=>p.e===e && p.i>0), p=>p.i);
+      const isEmpSel = emp === e;
+      return `<td style="font-weight:bold;cursor:pointer;text-align:center" data-calor-emp="${e}" title="Filtrar por ${e}"><div style="${isEmpSel ? 'background:var(--azul-tenue);border-radius:4px' : ''}">${totE}</div></td>`;
+    }).join('');
+    const grandTot = sum(D.filter(p=>p.i>0), p=>p.i);
+    const totRow = `<tr class="calc"><td class="izq"><b>Total empresa</b></td>${totRowCells}<td style="font-weight:bold;text-align:center"><div>${grandTot}</div></td></tr>`;
+
+    tbCalorEl.innerHTML = rowsHtml + totRow;
+  }
+
+  // Tramos de producción
+  const tbTramosEl = $('#tbTramosIni');
+  if(tbTramosEl){
+    const tr = [['1 iniciativa', p=>p.i===1], ['2 a 3', p=>p.i>=2&&p.i<=3], ['4 a 6', p=>p.i>=4&&p.i<=6], ['7 o más', p=>p.i>=7]]
+      .map(([l, f]) => { const a = S_filtered.filter(f); return { l, n: a.length, v: sum(a, p=>p.i) }; });
+    tbTramosEl.innerHTML = tr.map(x => `<tr>
+      <td class="izq">${x.l}</td>
+      <td>${x.n}</td>
+      <td>${pc(x.n, totalColabs, 0)}</td>
+      <td>${x.v}</td>
+      <td>${pc(x.v, partFiltered, 0)}<span class="mini"><span style="width:${partFiltered ? 100 * x.v / partFiltered : 0}%"></span></span></td>
+    </tr>`).join('');
+  }
+
+  // Contador de la tabla
+  const cntColabsEl = $('#cntColabsIni');
+  if(cntColabsEl) cntColabsEl.textContent = totalColabs + ' colaboradores encontrados';
+
+  // Filas de la tabla de Colaboradores en Iniciativas
+  const tbIniEl = $('#tbIni');
+  if(tbIniEl){
+    const filasColabs = S_filtered.map(p => {
+      const id = p.e + '|' + p.n;
+      const isAbierto = abiertoIni === id;
+      return `<tr class="fila" data-ini-id="${esc(id)}">
+        <td class="izq"><b>${esc(p.n)}</b></td>
+        <td class="izq">${p.e}</td>
+        <td class="izq">${p.d}</td>
+        <td><b>${p.i}</b></td>
+        <td class="izq"><span class="sub" style="color:var(--azul-oscuro);font-size:12px;cursor:pointer;">${isAbierto ? 'Ocultar iniciativas ▲' : 'Ver ' + p.i + ' iniciativas ▼'}</span></td>
+      </tr>` +
+      (isAbierto ? `<tr class="det"><td colspan="5">
+        <h4>Iniciativas de ${esc(p.n)} (${p.i})</h4>
+        <ul>${p.ini.map(x => `<li><b>${esc(x)}</b></li>`).join('')}</ul>
+      </td></tr>` : '');
+    }).join('');
+    tbIniEl.innerHTML = filasColabs || '<tr><td colspan="5" class="izq" style="padding:14px;color:var(--gris)">Ningún colaborador en iniciativas coincide con los filtros aplicados.</td></tr>';
+  }
+}
+
+/* ---------- Vista 4: formación ---------- */
+function vFormacion(){
+  const S=scope().filter(p=>p.c>0), ins=S.flatMap(p=>p.cur.map(c=>({p,c:c[0],t:c[1],inst:c[2],h:c[3]})));
+  const H=sum(ins,x=>x.h), Hi=sum(ins.filter(x=>x.t==='Interno'),x=>x.h), ni=ins.filter(x=>x.t==='Interno').length;
+  const cur=[...grp(ins,x=>x.c)].map(([c,a])=>({c,n:a.length,h:sum(a,x=>x.h),t:a[0].t,inst:a[0].inst})).sort((a,b)=>b.n-a.n);
+  const insts=[...grp(ins,x=>x.inst)].map(([k,a])=>({k,n:a.length,h:sum(a,x=>x.h)})).sort((a,b)=>b.n-a.n);
+  const es=(emp?[emp]:Object.keys(HC)).map(e=>{const a=D.filter(p=>p.e===e&&p.c>0),ii=a.flatMap(p=>p.cur);return{e,f:a.length,hc:HC[e],n:ii.length,h:sum(ii,c=>c[3]),hi:sum(ii.filter(c=>c[1]==='Interno'),c=>c[3]),A:a.filter(p=>p.pf==='A').length}}).sort((a,b)=>b.f/b.hc-a.f/a.hc);
+  return `<section class="panel"><h2>Formación en IA <small>${emp||'Grupo Mayoreo'}</small></h2>
+    <div class="kpis" style="border-top:0">
+      <div><div class="t">Colaboradores formados</div><div class="v num">${S.length} <small>${pc(S.length,hcOf(emp))}</small></div><div class="p">colaboradores únicos formados</div></div>
+      <div><div class="t">Horas-persona de formación</div><div class="v num">${nf(H)}</div><div class="p num">${nf(S.length?H/S.length:0,1)} h por formado</div></div>
+      <div><div class="t">Inscripciones</div><div class="v num">${ins.length}</div><div class="p num">${nf(S.length?ins.length/S.length:0,1)} cursos por formado</div></div>
+      <div><div class="t">Formación interna</div><div class="v num">${pc(Hi,H,0)}</div><div class="p num">de las horas · ${pc(ni,ins.length,0)} de inscripciones</div></div>
+      <div><div class="t">Cursos distintos</div><div class="v num">${cur.length}</div><div class="p num">${cur.filter(x=>x.n===1).length} con un solo inscrito</div></div>
+    </div></section>
+  <section class="panel"><h2>Intensidad de formación por empresa</h2><div class="cuerpo tw">
+    <p class="preg">Cobertura dice a cuántos se llegó. Horas por formado dice con qué profundidad. Conversión dice cuántos formados ya producen iniciativas.</p>
+    <table><thead><tr><th class="izq">Empresa</th><th>Formados</th><th>Cobertura</th><th>Inscripciones</th><th>Horas-persona</th><th>H por formado</th><th>% interno</th><th>Conversión</th></tr></thead><tbody>
+    ${es.map(x=>`<tr><td class="izq">${x.e}</td><td>${x.f} / ${x.hc}</td><td>${pc(x.f,x.hc)}<span class="mini"><span style="width:${100*x.f/x.hc}%"></span></span></td><td>${x.n}</td><td>${nf(x.h)}</td><td>${nf(x.f?x.h/x.f:0,1)}</td><td>${pc(x.hi,x.h,0)}</td><td>${pc(x.A,x.f,0)}</td></tr>`).join('')}</tbody></table></div></section>
+  <div class="g2">
+    <section class="panel"><h2>Cursos con más inscritos <small>${pc(sum(cur.slice(0,4),x=>x.n),ins.length,0)} de las inscripciones está en 4 cursos</small></h2><div class="cuerpo tw">
+      <table><thead><tr><th class="izq">Curso</th><th class="izq">Tipo</th><th>Inscritos</th><th>Horas-persona</th></tr></thead><tbody>
+      ${cur.slice(0,12).map(x=>`<tr><td class="izq">${esc(x.c)}<div class="sub" style="font-size:11.5px">${esc(x.inst)}</div></td><td class="izq">${x.t}</td><td>${x.n}</td><td>${nf(x.h)}</td></tr>`).join('')}</tbody></table></div></section>
+    <section class="panel"><h2>Institutos</h2><div class="cuerpo"><div class="lista">
+      ${insts.slice(0,9).map(x=>`<div><div>${esc(x.k)}<span class="num">${nf(x.h)} horas-persona</span></div><b>${x.n} insc.</b></div>`).join('')}</div></div></section>
+  </div>`}
+
+/* ---------- Vista 5: colaboradores ---------- */
+function vPersonas(){
+  const S=scope(), deps=[...new Set(S.map(p=>p.d))].sort();
+  return `<section class="panel"><h2>Colaboradores en IA <small id="cnt"></small></h2><div class="cuerpo">
+    <div class="barra" style="margin:0 0 14px">
+      <div class="campo"><label for="q">Buscar</label><input id="q" type="search" placeholder="Nombre, iniciativa o curso" value="${esc(q)}"></div>
+      <div class="campo"><label for="fDep">Departamento</label><select id="fDep"><option value="">Todos</option>${deps.map(d=>`<option${d===fDep?' selected':''}>${d}</option>`).join('')}</select></div>
+      <div class="campo"><label for="fPf">Perfil de participación</label><select id="fPf"><option value="">Todos</option>${Object.entries(PF).map(([k,v])=>`<option value="${k}"${k===fPf?' selected':''}>${v}</option>`).join('')}</select></div>
+    </div>
+    <div class="tw"><table><thead><tr><th class="izq">Colaborador</th><th class="izq">Empresa</th><th class="izq">Departamento</th><th class="izq">Perfil</th><th>Iniciativas</th><th>Formaciones</th><th>Horas</th></tr></thead><tbody id="tb"></tbody></table></div>
+    <p class="preg" style="margin:10px 0 0">Selecciona una fila para ver sus iniciativas y cursos.</p></div></section>`}
+function filas(){
+  const k=q.trim().toLowerCase();
+  const S=scope().filter(p=>(!fDep||p.d===fDep)&&(!fPf||p.pf===fPf)&&(!k||(p.n+' '+p.ini.join(' ')+' '+p.cur.map(c=>c[0]).join(' ')).toLowerCase().includes(k)))
+    .sort((a,b)=>(b.i+b.c)-(a.i+a.c)||a.n.localeCompare(b.n));
+  const cntEl = $('#cnt');
+  if(cntEl) cntEl.textContent=S.length+' personas';
+  const tbEl = $('#tb');
+  if(tbEl){
+    tbEl.innerHTML=S.map(p=>{const id=p.e+'|'+p.n;return `<tr class="fila" data-id="${esc(id)}"><td class="izq"><b>${esc(p.n)}</b></td><td class="izq">${p.e}</td><td class="izq">${p.d}</td><td class="izq"><span class="chip ${p.pf}">${PF[p.pf]}</span></td><td>${p.i||'–'}</td><td>${p.c||'–'}</td><td>${p.h?nf(p.h):'–'}</td></tr>`+
+      (abierto===id?`<tr class="det"><td colspan="7">${p.ini.length?`<h4>Iniciativas${p.per?' · '+esc(p.per):''}</h4><ul>${p.ini.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${p.cur.length?`<h4>Formaciones</h4><ul>${p.cur.map(c=>`<li>${esc(c[0])} · ${c[1]} · ${esc(c[2])} · ${nf(c[3])} h</li>`).join('')}</ul>`:''}</td></tr>`:'')}).join('')||'<tr><td colspan="7" class="izq">Ningún colaborador coincide con los filtros.</td></tr>';
+  }
+}
+
+/* ---------- Vista 6: notas ---------- */
+function vNotas(){
+  const H=sum(D,p=>p.h), ins=sum(D,p=>p.c), hi=sum(D,p=>p.hi);
+  const todas=new Set(D.flatMap(p=>p.ini));
+  return `<section class="panel"><h2>Cómo se calcula cada indicador</h2><div class="cuerpo"><dl>
+    <div><dt>Colaboradores en IA (indicador principal)</dt><dd>Colaboradores con al menos una formación en IA o al menos una iniciativa de IA, entre la plantilla total. Cada colaborador cuenta una sola vez aunque tenga varias formaciones o iniciativas.</dd></div>
+    <div><dt>Perfil de participación</dt><dd>Formación + iniciativas, solo iniciativas o solo formación, según lo que cada colaborador tiene registrado.</dd></div>
+    <div><dt>Conversión</dt><dd>Colaboradores con formación e iniciativas entre el total de formados. Mide si la formación se traduce en producción.</dd></div>
+    <div><dt>Horas-persona</dt><dd>Suma de las horas de cada curso por cada colaborador inscrito. Es el tiempo realmente invertido en formación: ${nf(H)} horas en ${ins} inscripciones, ${pc(hi,H,0)} en formación interna.</dd></div>
+    <div><dt>Iniciativas distintas y participaciones</dt><dd>Una iniciativa con cinco colaboradores cuenta como una iniciativa y cinco participaciones. Hoy hay ${todas.size} iniciativas distintas y ${sum(D,p=>p.i)} participaciones.</dd></div>
+    <div><dt>Iniciativas por colaborador</dt><dd>Se cuentan las iniciativas que aparecen con nombre en el detalle por colaborador. Dos nombres que solo difieren en tildes, mayúsculas o espacios se cuentan como una sola. Un registro sin nombre de iniciativa no cuenta.</dd></div></dl></div></section>
+  <section class="panel"><h2>Qué conviene corregir en los datos de origen</h2><div class="cuerpo"><ul class="lect">
+    <li><b>Catálogo de Institutos y Facilitadores:</b> En la hoja de formaciones existen registros donde se ingresó el nombre del curso o una URL en la columna de instituto (ej. <i>«Almacenamiento y Bases de Datos"»</i>, <i>«Bases de Datos»</i>, <i>«https://www.make.com»</i>). Asimismo, plataformas externas como <i>Platzi</i> aparecen alternadas entre tipo Interno y Externo. Conviene normalizar el catálogo para que la formación interna corresponda a <i>Mejora Continua Mayoreo</i> y las plataformas de terceros a <i>Externo</i>.</li>
+    <li><b>Unificación de títulos de iniciativas:</b> Existen iniciativas que corresponden al mismo desarrollo pero con ligera variación en la redacción (ej. <i>«Optimizacion del análisis de Cuentas por Pagar»</i> frente a <i>«Optimizar el análisis de Cuentas por Pagar»</i>). Al unificar la redacción se evita que se contabilicen como proyectos distintos.</li>
+    <li><b>Plantilla consolidada:</b> La plantilla general (646 colaboradores) se encuentra completamente registrada y disponible por empresa y por área en la base de datos de Google Sheets.</li>
+    <li><b>Periodo y fechas:</b> El campo de periodo fue retirado de la base de datos y las fechas de ejecución no se están considerando en el modelo, tratándose de un registro continuo y acumulativo de adopción de IA al corte actual.</li></ul></div></section>`}
+
+const V={indicador:vIndicador,conversion:vConversion,iniciativas:vIniciativas,formacion:vFormacion,personas:vPersonas,notas:vNotas};
+
+/* ========== SINCRONIZACIÓN EN VIVO CON GOOGLE SHEETS ========== */
+const GOOGLE_SHEET_CONFIG = {
+  sheetId: '1jbN1XJMuHLC0czCH3XX6Zo6RXDQc1QUVXMLRPTmL8Pw',
+  pubBase: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQ-nA0j0wBrf6-yow8rB1g9GjjviQeZK26erlzdPT7ECw7-Vv6KHlgjt9FN4l0_zctNduc2y1RkQm-/pub?output=csv&gid=',
+  gids: {
+    formaciones: '0',
+    iniciativas: '433982814',
+    consolidado: '1023385026',
+    plantillas: '496508915'
+  }
+};
+
+function parseCSV(text) {
+  const lines = [];
+  let row = [''];
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    const next = text[i + 1];
+    if (c === '"') {
+      if (inQuotes && next === '"') {
+        row[row.length - 1] += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (c === ',' && !inQuotes) {
+      row.push('');
+    } else if ((c === '\r' || c === '\n') && !inQuotes) {
+      if (c === '\r' && next === '\n') i++;
+      lines.push(row);
+      row = [''];
+    } else {
+      row[row.length - 1] += c;
+    }
+  }
+  if (row.length > 1 || row[0] !== '') lines.push(row);
+  return lines;
+}
+
+// Carga via JSONP como fallback si fetch directo fuese bloqueado por política de red
+function fetchGvizJsonp(gid) {
+  return new Promise((resolve, reject) => {
+    const cb = '__gviz_sync_' + Math.random().toString(36).slice(2);
+    let resolved = false;
+    window[cb] = function(resp) {
+      if (resolved) return;
+      resolved = true;
+      try { delete window[cb]; } catch(_) {}
+      s.remove();
+      if (!resp || !resp.table || !resp.table.rows) return resolve([]);
+      const rows = [];
+      const colLabels = (resp.table.cols || []).map(c => c && c.label ? c.label : '');
+      if (colLabels.some(Boolean)) rows.push(colLabels);
+      resp.table.rows.forEach(r => {
+        if (!r.c) return;
+        rows.push(r.c.map(cell => cell && cell.v != null ? String(cell.v).trim() : ''));
+      });
+      resolve(rows);
+    };
+    const s = document.createElement('script');
+    s.src = 'https://docs.google.com/spreadsheets/d/' + GOOGLE_SHEET_CONFIG.sheetId + '/gviz/tq?tqx=responseHandler:' + cb + '&tq=select%20*&gid=' + gid;
+    s.onerror = () => {
+      if (resolved) return;
+      resolved = true;
+      try { delete window[cb]; } catch(_) {}
+      s.remove();
+      reject(new Error('JSONP error'));
+    };
+    document.head.appendChild(s);
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        try { delete window[cb]; } catch(_) {}
+        s.remove();
+        reject(new Error('Timeout'));
+      }
+    }, 12000);
+  });
+}
+
+async function fetchSheetData(gid) {
+  try {
+    const res = await fetch(GOOGLE_SHEET_CONFIG.pubBase + gid, { cache: 'no-cache' });
+    if (res.ok) {
+      const txt = await res.text();
+      const parsed = parseCSV(txt);
+      if (parsed.length > 0) return parsed;
+    }
+  } catch (_) {}
+  // Fallback JSONP
+  return await fetchGvizJsonp(gid);
+}
+
+let sincronizando = false;
+async function sincronizarDatosGoogleSheet(esManual = false) {
+  if (sincronizando) return;
+  sincronizando = true;
+  const icon = $('#refreshIcon');
+  if (icon) icon.classList.add('spinning');
+  const msgEl = $('#msg');
+  if (msgEl && esManual) msgEl.textContent = 'Sincronizando con Google Sheets...';
+
+  const pad = n => n < 10 ? '0' + n : n;
+  const ahora = new Date();
+  const timeStr = pad(ahora.getHours()) + ':' + pad(ahora.getMinutes()) + ':' + pad(ahora.getSeconds());
+
+  try {
+    const [planRows, consRows, formRows, iniRows] = await Promise.all([
+      fetchSheetData(GOOGLE_SHEET_CONFIG.gids.plantillas),
+      fetchSheetData(GOOGLE_SHEET_CONFIG.gids.consolidado),
+      fetchSheetData(GOOGLE_SHEET_CONFIG.gids.formaciones),
+      fetchSheetData(GOOGLE_SHEET_CONFIG.gids.iniciativas)
+    ]);
+
+    // 1. Parsear Plantillas HC
+    const newHC = {};
+    const totalRow = planRows.find(r => r.some(c => c.toLowerCase().includes('total por empresa')));
+    const planHeaderRow = planRows.find(r => r.some(c => c.toLowerCase().includes('febeca')));
+    if (totalRow && planHeaderRow) {
+      ['Febeca', 'Beval', 'Sillaca', 'Cofersa', 'Mundipartes', 'Prisma'].forEach(emp => {
+        const idx = planHeaderRow.findIndex(h => h.trim().toLowerCase() === emp.toLowerCase());
+        if (idx !== -1 && totalRow[idx]) {
+          const val = parseInt(totalRow[idx].trim(), 10);
+          if (!isNaN(val) && val > 0) newHC[emp] = val;
         }
       });
     }
-  </script>
-</body>
-</html>
+
+    // 2. Mapear colaboradores desde la pestaña "Colaboradores en formaciones e Iniciativas IA"
+    const norm = s => (s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const colabs = new Map();
+
+    function getOrCreate(nom, emp, dep) {
+      nom = (nom || '').trim();
+      if (!nom || nom.toLowerCase() === 'colaborador') return null;
+      const key = norm(nom);
+      if (!colabs.has(key)) {
+        colabs.set(key, {
+          n: nom,
+          e: emp ? emp.trim() : '',
+          d: dep ? dep.trim() : '',
+          i: 0,
+          c: 0,
+          h: 0,
+          hi: 0,
+          ini: [],
+          per: '',
+          cur: []
+        });
+      }
+      const o = colabs.get(key);
+      if (emp && (!o.e || o.e === 'Sin asignar')) o.e = emp.trim();
+      if (dep && (!o.d || o.d === 'Sin asignar')) o.d = dep.trim();
+      return o;
+    }
+
+    // 2.1 Cargar base de colaboradores desde "Colaboradores en formaciones e Iniciativas IA" (gid=1023385026)
+    const consHeadIdx = consRows.findIndex(r => r.some(c => c.toLowerCase().trim() === 'colaborador'));
+    if (consHeadIdx !== -1) {
+      const head = consRows[consHeadIdx].map(c => c.toLowerCase().trim());
+      const cNom = head.indexOf('colaborador');
+      const cDep = head.findIndex(c => c.includes('area') || c.includes('departamento'));
+      const cEmp = head.findIndex(c => c.includes('compañia') || c.includes('empresa'));
+      const cIni = head.findIndex(c => c.includes('iniciativas') || c.includes('iniciativa'));
+      const cCap = head.findIndex(c => c.includes('formacion') || c.includes('capacitacion') || c.includes('formaciones'));
+      consRows.slice(consHeadIdx + 1).forEach(r => {
+        const nom = (r[cNom] || '').trim();
+        if (!nom || nom.toLowerCase() === 'colaborador') return;
+        const dep = cDep !== -1 ? (r[cDep] || '').trim() : '';
+        const emp = cEmp !== -1 ? (r[cEmp] || '').trim() : '';
+        const iCount = cIni !== -1 ? (parseInt(r[cIni], 10) || 0) : 0;
+        const cCount = cCap !== -1 ? (parseInt(r[cCap], 10) || 0) : 0;
+        const key = norm(nom);
+        colabs.set(key, {
+          n: nom,
+          e: emp,
+          d: dep,
+          i: iCount,
+          c: cCount,
+          h: 0,
+          hi: 0,
+          ini: [],
+          per: '',
+          cur: []
+        });
+      });
+    }
+
+    // 2.2 Cargar y enriquecer Formaciones (gid=0)
+    const formHeadIdx = formRows.findIndex(r => r.some(c => c.toLowerCase().trim() === 'colaborador'));
+    if (formHeadIdx !== -1) {
+      const head = formRows[formHeadIdx].map(c => c.toLowerCase().trim());
+      const cEmp = head.findIndex(c => c.includes('empresa'));
+      const cDep = head.findIndex(c => c.includes('area') || c.includes('departamento'));
+      const cNom = head.indexOf('colaborador');
+      const cTipo = head.findIndex(c => c.includes('tipo'));
+      const cHrs = head.findIndex(c => c.includes('duraci') || c.includes('hora'));
+      const cCur = head.findIndex(c => c.includes('formaci') || c.includes('curso'));
+      const cInst = head.findIndex(c => c.includes('instituto') || c.includes('facilitador'));
+
+      formRows.slice(formHeadIdx + 1).forEach(r => {
+        const nom = (r[cNom] || '').trim();
+        const emp = cEmp !== -1 ? (r[cEmp] || '').trim() : '';
+        const dep = cDep !== -1 ? (r[cDep] || '').trim() : '';
+        const tipo = cTipo !== -1 ? (r[cTipo] || 'Interno').trim() : 'Interno';
+        const hrsStr = cHrs !== -1 ? (r[cHrs] || '').trim() : '';
+        const hrs = parseFloat(hrsStr.replace(/[^0-9.]/g, '')) || 0;
+        const curso = cCur !== -1 ? (r[cCur] || '').trim() : '';
+        const inst = cInst !== -1 ? (r[cInst] || '').trim() : '';
+
+        if (!nom || nom.toLowerCase() === 'colaborador' || emp === 'Empresa' || !curso) return;
+
+        const p = getOrCreate(nom, emp, dep);
+        if (p) {
+          p.cur.push([curso, tipo, inst, hrs]);
+          p.h += hrs;
+          if (tipo === 'Interno') p.hi += hrs;
+        }
+      });
+    }
+
+    // 2.3 Cargar y enriquecer Iniciativas (gid=433982814)
+    const iniHeadIdx = iniRows.findIndex(r => r.some(c => c.toLowerCase().trim() === 'colaborador'));
+    if (iniHeadIdx !== -1) {
+      const head = iniRows[iniHeadIdx].map(c => c.toLowerCase().trim());
+      const cEmp = head.findIndex(c => c.includes('empresa'));
+      const cDep = head.findIndex(c => c.includes('area') || c.includes('departamento'));
+      const cNom = head.indexOf('colaborador');
+      const cIni = head.findIndex(c => c.includes('iniciativa') || c.includes('mejora'));
+      const cPer = head.findIndex(c => c.includes('medici') || c.includes('periodo'));
+
+      iniRows.slice(iniHeadIdx + 1).forEach(r => {
+        const nom = (r[cNom] || '').trim();
+        const emp = cEmp !== -1 ? (r[cEmp] || '').trim() : '';
+        const dep = cDep !== -1 ? (r[cDep] || '').trim() : '';
+        const ini = cIni !== -1 ? (r[cIni] || '').trim() : '';
+        const per = cPer !== -1 ? (r[cPer] || '').trim() : '';
+
+        if (!nom || nom.toLowerCase() === 'colaborador' || emp === 'Empresa' || !ini) return;
+
+        const p = getOrCreate(nom, emp, dep);
+        if (p) {
+          if (!p.ini.includes(ini)) p.ini.push(ini);
+          if (per) {
+            if (!p.per) p.per = per;
+            else if (!p.per.includes(per)) p.per = p.per + ' / ' + per;
+          }
+        }
+      });
+    }
+
+    // Filtrar estrictamente: solo colaboradores con participación real (c > 0 o i > 0)
+    // Esto garantiza que solo los colaboradores con formación o iniciativas reales sean contabilizados
+    const newD = [...colabs.values()].filter(p => p.c > 0 || p.i > 0);
+    newD.forEach(p => {
+      if (p.ini.length > p.i) p.i = p.ini.length;
+      if (p.cur.length > p.c) p.c = p.cur.length;
+      p.pf = (p.i > 0 && p.c > 0) ? 'A' : (p.i > 0 ? 'I' : 'F');
+    });
+
+    if (newD.length > 0) {
+      D = newD;
+      if (Object.keys(newHC).length > 0) HC = newHC;
+      $('#fEmp').innerHTML = '<option value="">Todas (Grupo Mayoreo)</option>' + Object.keys(HC).map(e => `<option value="${e}"${e === emp ? ' selected' : ''}>${e}</option>`).join('');
+      render();
+      if (msgEl) {
+        msgEl.textContent = 'Actualizado en vivo (' + timeStr + ') · ' + D.length + ' colaboradores';
+        setTimeout(() => { if (msgEl.textContent.startsWith('Actualizado')) msgEl.textContent = ''; }, 5000);
+      }
+    }
+  } catch (err) {
+    console.warn('Error sincronizando con Google Sheets:', err);
+    render();
+    if (msgEl) {
+      msgEl.textContent = 'Actualizado local (' + timeStr + ')';
+      setTimeout(() => { if (msgEl.textContent.startsWith('Actualizado')) msgEl.textContent = ''; }, 4000);
+    }
+  } finally {
+    sincronizando = false;
+    if (icon) icon.classList.remove('spinning');
+  }
+}
+
+function render(){
+  $('#tabs').innerHTML=TABS.map(([k,l])=>`<button role="tab" aria-selected="${k===tab}" class="${k===tab?'on':''}" data-tab="${k}">${l}</button>`).join('');
+  $('#main').innerHTML=V[tab]();
+  if(tab==='personas')filas();
+  if(tab==='iniciativas')filasIni();
+}
+$('#fEmp').innerHTML='<option value="">Todas (Grupo Mayoreo)</option>'+Object.keys(HC).map(e=>`<option>${e}</option>`).join('');
+$('#fEmp').addEventListener('change',e=>{emp=e.target.value;fDep='';render()});
+
+// Eventos de clics (Pestañas, Selección de empresa, Strips, Filas expandibles)
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-tab]');
+  if(t){
+    tab=t.dataset.tab;
+    try{history.replaceState(null,'','#'+tab)}catch(_){}
+    render();
+    return;
+  }
+
+  // Botón Refrescar (Sincronización en vivo con Google Sheets)
+  if(e.target.closest('#btnRefresh')){
+    sincronizarDatosGoogleSheet(true);
+    return;
+  }
+
+  // Clic en empresas de la barra comparativa en Vista Indicador
+  const m=e.target.closest('.emp[data-emp]');
+  if(m){
+    emp=emp===m.dataset.emp?'':m.dataset.emp;
+    $('#fEmp').value=emp;
+    render();
+    return;
+  }
+
+  // Clic en celda del Mapa de Calor de Iniciativas
+  const cCell = e.target.closest('[data-calor-cell]');
+  if(cCell){
+    const targetE = cCell.dataset.calorEmp;
+    const targetD = cCell.dataset.calorDep;
+    if(emp === targetE && fDepIni === targetD){
+      emp = '';
+      fDepIni = '';
+    } else {
+      emp = targetE;
+      fDepIni = targetD;
+    }
+    const fEmpEl = $('#fEmp'); if(fEmpEl) fEmpEl.value = emp;
+    const fEmpIniEl = $('#fEmpIni'); if(fEmpIniEl) fEmpIniEl.value = emp;
+    const fDepIniEl = $('#fDepIni'); if(fDepIniEl) fDepIniEl.value = fDepIni;
+    render();
+    return;
+  }
+
+  // Clic en cabecera o total de Empresa del Mapa de Calor
+  const cEmp = e.target.closest('[data-calor-emp]');
+  if(cEmp){
+    const targetE = cEmp.dataset.calorEmp;
+    emp = emp === targetE ? '' : targetE;
+    const fEmpEl = $('#fEmp'); if(fEmpEl) fEmpEl.value = emp;
+    const fEmpIniEl = $('#fEmpIni'); if(fEmpIniEl) fEmpIniEl.value = emp;
+    render();
+    return;
+  }
+
+  // Clic en fila de Departamento del Mapa de Calor
+  const cDep = e.target.closest('[data-calor-dep]');
+  if(cDep){
+    const targetD = cDep.dataset.calorDep;
+    fDepIni = fDepIni === targetD ? '' : targetD;
+    const fDepIniEl = $('#fDepIni');
+    if(fDepIniEl) fDepIniEl.value = fDepIni;
+    filasIni();
+    return;
+  }
+
+  // Botón Limpiar filtros en Dashboard de Iniciativas
+  if(e.target.id === 'clearBtnIni'){
+    qIni = '';
+    fDepIni = '';
+    emp = '';
+    $('#fEmp').value = '';
+    render();
+    return;
+  }
+
+  // Botón Exportar CSV de Colaboradores en Iniciativas
+  if(e.target.closest('#btnExportIni')){
+    exportarCsvIniciativas();
+    return;
+  }
+
+  // Expansión de filas en tabla de Iniciativas
+  const rIni = e.target.closest('tr.fila[data-ini-id]');
+  if(rIni){
+    abiertoIni = abiertoIni === rIni.dataset.iniId ? null : rIni.dataset.iniId;
+    filasIni();
+    return;
+  }
+
+  // Expansión de filas en tabla de Colaboradores
+  const r=e.target.closest('tr.fila[data-id]');
+  if(r){
+    abierto=abierto===r.dataset.id?null:r.dataset.id;
+    filas();
+  }
+});
+
+// Eventos de entrada y búsqueda
+document.addEventListener('input',e=>{
+  if(e.target.id==='q'){ q=e.target.value; filas(); }
+  if(e.target.id==='qIni'){ qIni=e.target.value; filasIni(); }
+});
+
+// Eventos de cambio en selectores
+document.addEventListener('change',e=>{
+  if(e.target.id==='fDep'){ fDep=e.target.value; filas(); }
+  if(e.target.id==='fPf'){ fPf=e.target.value; filas(); }
+  if(e.target.id==='fDepIni'){ fDepIni=e.target.value; filasIni(); }
+  if(e.target.id==='fEmpIni'){
+    emp=e.target.value;
+    $('#fEmp').value=emp;
+    render();
+  }
+});
+
+/* ---------- Exportación y Descarga ---------- */
+function filtrados(){
+  const k=q.trim().toLowerCase();
+  return scope().filter(p=>(!fDep||p.d===fDep)&&(!fPf||p.pf===fPf)&&(!k||(p.n+' '+p.ini.join(' ')+' '+p.cur.map(c=>c[0]).join(' ')).toLowerCase().includes(k)));
+}
+
+function exportarCsvIniciativas(){
+  const k=qIni.trim().toLowerCase();
+  const S_filtered=scope().filter(p=>p.i>0).filter(p=>{
+    const matchDep = !fDepIni || p.d === fDepIni;
+    const matchQ = !k || (p.n + ' ' + p.ini.join(' ')).toLowerCase().includes(k);
+    return matchDep && matchQ;
+  });
+  const cab=['Colaborador','Empresa','Departamento','Periodo','Num_Iniciativas','Iniciativas'];
+  const rows=S_filtered.map(p=>[p.n, p.e, p.d, p.per, p.i, p.ini.join(' | ')]);
+  descargarCsvBlob('colaboradores_en_iniciativas', cab, rows);
+}
+
+function datosVista(){
+  const S=scope(), dec=x=>String(x).replace('.',','), pp=(a,b)=>b?dec((100*a/b).toFixed(1)):'';
+  const per=a=>a.map(p=>[p.n,p.e,p.d,PF[p.pf],p.i,p.c,dec(p.h),p.per,p.ini.join(' | '),p.cur.map(c=>c[0]).join(' | ')]);
+  const hP=['Colaborador','Empresa','Departamento','Perfil de participación','Iniciativas','Formaciones','Horas de formación','Periodos','Detalle de iniciativas','Detalle de formaciones'];
+
+  if(tab==='indicador'){
+    const r=Object.keys(HC).filter(e=>!emp||e===emp).map(e=>{const x=st(D.filter(p=>p.e===e),HC[e]);return[e,x.hc,x.n,pp(x.n,x.hc),x.A,x.I,x.F,x.sin,x.form,x.ini]});
+    return['indicador_ia_por_empresa',['Empresa','Plantilla','Colaboradores en IA','% en IA','Formación + iniciativas','Solo iniciativas','Solo formación','Sin participación','Con formación','Con iniciativas'],r];
+  }
+  if(tab==='conversion'){
+    const r=[...grp(S,p=>p.e+'\u0001'+p.d)].map(([k,a])=>{const x=st(a,0),[e,d]=k.split('\u0001');return[e,d,x.n,x.form,x.ini,x.A,x.F,x.I,pp(x.A,x.form)]});
+    return['conversion_por_empresa_y_departamento',['Empresa','Departamento','Participantes','Con formación','Con iniciativas','Formación + iniciativas','Solo formación','Solo iniciativas','% conversión'],r];
+  }
+  if(tab==='iniciativas'){
+    const k=qIni.trim().toLowerCase();
+    const S_filtered=S.filter(p=>p.i>0).filter(p=>(!fDepIni||p.d===fDepIni)&&(!k||(p.n+' '+p.ini.join(' ')).toLowerCase().includes(k)));
+    return['colaboradores_en_iniciativas',['Colaborador','Empresa','Departamento','Periodo','Num_Iniciativas','Iniciativas'],S_filtered.map(p=>[p.n,p.e,p.d,p.per,p.i,p.ini.join(' | ')])];
+  }
+  if(tab==='formacion')return['formaciones_ia',['Empresa','Departamento','Colaborador','Tipo','Curso','Instituto','Horas'],S.flatMap(p=>p.cur.map(c=>[p.e,p.d,p.n,c[1],c[0],c[2],dec(c[3])]))];
+  if(tab==='personas')return['colaboradores_ia',hP,per(filtrados())];
+  return['colaboradores_ia',hP,per(S)];
+}
+
+function descargarCsvBlob(nombre, cab, rows){
+  const c=v=>{v=String(v??'');return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const csv='﻿'+[cab,...rows].map(r=>r.map(c).join(';')).join('\r\n');
+  const fn=nombre+(emp?'_'+emp.toLowerCase():'')+'_2026-10-02.csv';
+  const u=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const l=document.createElement('a');
+  l.href=u;l.download=fn;document.body.appendChild(l);l.click();l.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),2000);
+  const msg=$('#msg');
+  if(msg) msg.textContent='Archivo descargado ('+rows.length+' filas).';
+}
+
+let descargas=null;
+(async()=>{try{descargas=await window.claude?.use?.('downloads')}catch(_){}
+  if(descargas||!window.claude)$('#dl').hidden=false})();
+
+$('#dl').addEventListener('click',async()=>{
+  const [nom,cab,rows]=datosVista(), c=v=>{v=String(v??'');return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const csv='﻿'+[cab,...rows].map(r=>r.map(c).join(';')).join('\r\n');
+  const msg=$('#msg');
+  const fn=nom+(emp?'_'+emp.toLowerCase():'')+'_2026-10-02.csv';
+  if(!descargas){
+    const u=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),l=document.createElement('a');
+    l.href=u;l.download=fn;document.body.appendChild(l);l.click();l.remove();
+    setTimeout(()=>URL.revokeObjectURL(u),2000);
+    msg.textContent='Archivo descargado ('+rows.length+' filas).';
+    return;
+  }
+  try{
+    await descargas.save({filename:fn,data:csv});
+    msg.textContent='Archivo descargado ('+rows.length+' filas).';
+  }catch(err){
+    msg.textContent=err&&err.code==='declined'?'':'No se pudo descargar en esta vista.';
+  }
+});
+
+// Tooltip flotante interactivo
+const tip=$('#tip');
+document.addEventListener('mousemove',e=>{
+  const t=e.target.closest&&e.target.closest('[data-tip]');
+  if(!t){tip.hidden=true;return}
+  tip.textContent=t.dataset.tip;
+  tip.hidden=false;
+  tip.style.left=Math.min(e.clientX+14,innerWidth-290)+'px';
+  tip.style.top=(e.clientY+16)+'px';
+});
+
+const h=location.hash.slice(1);
+if(V[h]) tab=h;
+render();
+// Sincronización automática en segundo plano al cargar
+setTimeout(() => sincronizarDatosGoogleSheet(false), 500);
+</script>
+
+</body></html>
